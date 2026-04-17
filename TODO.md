@@ -1,0 +1,1 @@
+# Deployment Fix: Requirements.txt Update\n\n## Steps from Plan\n\n### 1. [x] Update requirements.txt\n   - Add sqlalchemy==2.0.35\n   - Ensure Render compatibility\n\n### 2. [ ] Local validation\n   - pip install -r requirements.txt\n   - python app.py\n\n### 3. [ ] Render deployment\n   - Commit & push\n   - Trigger new build\n\nProgress: Editing requirements.txt now.\n

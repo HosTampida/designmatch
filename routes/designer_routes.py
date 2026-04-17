@@ -1,0 +1,140 @@
+from flask import Blueprint, jsonify, request
+from werkzeug.security import generate_password_hash
+
+from database.db import db
+from models.models import Designer, DesignerSkill, DesignerStyle, Skill, Style, User
+
+
+designer_bp = Blueprint("designers", __name__, url_prefix="/api")
+
+
+@designer_bp.get("/designers")
+def list_designers():
+    designers = Designer.query.order_by(Designer.rating.desc(), Designer.id.asc()).all()
+    return jsonify(
+        {
+            "success": True,
+            "data": [designer.to_card_dict() for designer in designers],
+        }
+    )
+
+
+@designer_bp.get("/designers/<int:designer_id>")
+def get_designer(designer_id):
+    designer = Designer.query.get_or_404(designer_id)
+    return jsonify({"success": True, "data": designer.to_card_dict()})
+
+
+@designer_bp.get("/skills")
+def list_skills():
+    skills = Skill.query.order_by(Skill.name.asc()).all()
+    return jsonify({"success": True, "data": [{"id": skill.id, "name": skill.name} for skill in skills]})
+
+
+@designer_bp.get("/styles")
+def list_styles():
+    styles = Style.query.order_by(Style.name.asc()).all()
+    return jsonify({"success": True, "data": [{"id": style.id, "name": style.name} for style in styles]})
+
+
+@designer_bp.post("/designers/import")
+def import_designers():
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, list):
+        return jsonify({"success": False, "message": "Body must be a JSON array"}), 400
+
+    created = []
+    updated = []
+
+    for item in payload:
+        if not isinstance(item, dict):
+            continue
+
+        name = str(item.get("name", "")).strip()
+        email = str(item.get("email", "")).strip().lower()
+
+        if not name or not email:
+            continue
+
+        user = User.query.filter_by(email=email).first()
+        if user and user.designer_profile:
+            designer = user.designer_profile
+            user.name = name
+            designer.bio = str(item.get("bio", "")).strip()
+            designer.portfolio_url = str(item.get("portfolio_url", "")).strip()
+            designer.price_min = _to_float(item.get("price_min"))
+            designer.price_max = _to_float(item.get("price_max"))
+            designer.rating = _to_float(item.get("rating"), 4.5)
+            updated.append(email)
+        else:
+            if not user:
+                user = User(
+                    name=name,
+                    email=email,
+                    password_hash=generate_password_hash("demo123"),
+                    role="designer",
+                )
+                db.session.add(user)
+                db.session.flush()
+            else:
+                user.name = name
+                user.role = "designer"
+
+            designer = Designer(
+                user_id=user.id,
+                bio=str(item.get("bio", "")).strip(),
+                portfolio_url=str(item.get("portfolio_url", "")).strip(),
+                price_min=_to_float(item.get("price_min")),
+                price_max=_to_float(item.get("price_max")),
+                rating=_to_float(item.get("rating"), 4.5),
+            )
+            db.session.add(designer)
+            db.session.flush()
+            created.append(email)
+
+        _replace_designer_links(designer, item.get("skills", []), item.get("styles", []))
+
+    db.session.commit()
+
+    return jsonify(
+        {
+            "success": True,
+            "message": "Designer import completed",
+            "data": {
+                "created": len(created),
+                "updated": len(updated),
+                "emails": created + updated,
+            },
+        }
+    )
+
+
+def _replace_designer_links(designer, skill_ids, style_ids):
+    DesignerSkill.query.filter_by(designer_id=designer.id).delete()
+    DesignerStyle.query.filter_by(designer_id=designer.id).delete()
+
+    valid_skill_ids = {skill.id for skill in Skill.query.filter(Skill.id.in_(_clean_id_list(skill_ids))).all()}
+    valid_style_ids = {style.id for style in Style.query.filter(Style.id.in_(_clean_id_list(style_ids))).all()}
+
+    for skill_id in valid_skill_ids:
+        db.session.add(DesignerSkill(designer_id=designer.id, skill_id=skill_id))
+
+    for style_id in valid_style_ids:
+        db.session.add(DesignerStyle(designer_id=designer.id, style_id=style_id))
+
+
+def _clean_id_list(raw_values):
+    clean_ids = []
+    for value in raw_values or []:
+        try:
+            clean_ids.append(int(value))
+        except (TypeError, ValueError):
+            continue
+    return clean_ids
+
+
+def _to_float(value, default=0.0):
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return float(default)
