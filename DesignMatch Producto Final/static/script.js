@@ -55,7 +55,7 @@ function bindEvents() {
     });
 }
 
-function toggleRoleFields() {
+async function toggleRoleFields() {
     const role = document.getElementById("roleSelect").value;
     const designerFields = document.querySelectorAll(".designer-fields");
     const clientFields = document.querySelectorAll(".client-fields");
@@ -63,9 +63,19 @@ function toggleRoleFields() {
     if (role === "designer") {
         designerFields.forEach(f => f.style.display = "block");
         clientFields.forEach(f => f.style.display = "none");
+        await loadRegSkills();
     } else {
         designerFields.forEach(f => f.style.display = "none");
         clientFields.forEach(f => f.style.display = "block");
+    }
+}
+
+async function loadRegSkills() {
+    try {
+        const response = await api("/api/skills");
+        renderChipOptions("regSkillsOptions", response.data, "reg_skill_ids");
+    } catch (error) {
+        console.error("Failed to load skills for reg:", error);
     }
 }
 
@@ -204,19 +214,31 @@ function renderDesigners() {
 }
 
 
-function applyFilters() {
+async function applyFilters() {
     const skillValue = document.getElementById("filterSkill").value;
     const styleValue = document.getElementById("filterStyle").value;
-    const budgetValue = Number(document.getElementById("filterBudget").value || 0);
+    const budgetValue = document.getElementById("filterBudget").value;
 
-    state.filteredDesigners = state.designers.filter((designer) => {
-        const skillMatch = !skillValue || designer.skills.includes(skillValue);
-        const styleMatch = !styleValue || designer.styles.includes(styleValue);
-        const budgetMatch = !budgetValue || Number(designer.price_min || 0) <= budgetValue;
-        return skillMatch && styleMatch && budgetMatch;
-    });
+    let queryUrl = '/api/designers';
+    const params = [];
 
-    renderDesigners();
+    if (skillValue) params.push(`skill=${encodeURIComponent(skillValue)}`);
+    if (styleValue) params.push(`style=${encodeURIComponent(styleValue)}`);
+    if (budgetValue) params.push(`max_price=${budgetValue}`);
+
+    if (params.length > 0) {
+        queryUrl += '?' + params.join('&');
+    }
+
+    try {
+        const response = await api(queryUrl);
+        state.filteredDesigners = response.data;
+        renderDesigners();
+    } catch (error) {
+        console.error('Filter failed:', error);
+        renderError('Error al aplicar filtros. Intentando cargar todos...');
+        await loadDesigners();  // Fallback
+    }
 }
 
 
@@ -455,7 +477,7 @@ function buildInfoHtml() {
 }
 
 
-function openAccessDialog(mode) {
+async function openAccessDialog(mode) {
     const registerForm = document.getElementById("registerForm");
     const loginForm = document.getElementById("loginForm");
     const title = document.getElementById("accessTitle");
@@ -471,6 +493,7 @@ function openAccessDialog(mode) {
         copy.textContent = "Crea un usuario simple para simular el recorrido de acceso.";
         registerForm.classList.remove("hidden");
         loginForm.classList.add("hidden");
+        document.getElementById("roleSelect").dispatchEvent(new Event("change"));
     }
 
     showDialog("accessDialog");
@@ -481,8 +504,6 @@ async function handleRegister(event) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const role = data.get("role");
-    const skillsInput = data.get("skills");
-    const skills = skillsInput ? skillsInput.split(',').map(s => s.trim()).filter(s => s) : [];
 
     const payload = {
         name: String(data.get("name") || "").trim(),
@@ -492,8 +513,8 @@ async function handleRegister(event) {
         ...(role === "designer" && {
             bio: String(data.get("bio") || "").trim(),
             portfolio_url: String(data.get("portfolio_url") || "").trim(),
-            skills: skills,
-            price_min: 100,  // defaults
+            skills: collectCheckedValues("reg_skill_ids"),
+            price_min: 100,
             price_max: 500,
         }),
         ...(role === "client" && {
@@ -513,7 +534,7 @@ async function handleRegister(event) {
             <h2 class="panel-title">Cuenta creada</h2>
             <p class="modal-copy">${response.message}. Ya puedes usar la plataforma.</p>
         `);
-        await loadStats();  // Refresh stats
+        await loadStats();
     } catch (error) {
         openInfoDialog(`
             <p class="panel-kicker">Error</p>
@@ -554,6 +575,7 @@ function setCurrentUser(user) {
     state.currentUser = user;
     window.localStorage.setItem("designmatch_user", JSON.stringify(user));
     document.getElementById("sessionBadge").textContent = `${user.name} (${user.role === "designer" ? "disenador" : "cliente"})`;
+    updateNavButtons();
 }
 
 
@@ -570,8 +592,18 @@ function restoreSession() {
         if (sessionBadge) {
             sessionBadge.textContent = `${user.name} (${user.role === "designer" ? "disenador" : "cliente"})`;
         }
+        updateNavButtons();
     } catch (_error) {
         window.localStorage.removeItem("designmatch_user");
+    }
+}
+
+function updateNavButtons() {
+    const navActions = document.querySelector(".nav-actions");
+    if (state.currentUser) {
+        navActions.style.display = "none";
+    } else {
+        navActions.style.display = "";
     }
 }
 

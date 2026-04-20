@@ -62,11 +62,11 @@ def create_user():
         )
         db.session.add(designer)
 
-        # Add skills if provided
-        skills = payload.get("skills", [])
-        if skills:
-            for skill_name in skills:
-                skill = Skill.query.filter_by(name=skill_name).first()
+        # Add skills if provided (now IDs)
+        skill_ids = payload.get("skills", [])
+        if skill_ids:
+            for skill_id in skill_ids:
+                skill = Skill.query.get(skill_id)
                 if skill:
                     db.session.add(DesignerSkill(designer_id=designer.id, skill_id=skill.id))
 

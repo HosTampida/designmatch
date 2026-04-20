@@ -10,7 +10,15 @@ designer_bp = Blueprint("designers", __name__, url_prefix="/api")
 
 @designer_bp.get("/designers")
 def list_designers():
-    designers = Designer.query.order_by(Designer.rating.desc(), Designer.id.asc()).all()
+    skill_filter = request.args.get('skill', '').strip()
+    query = Designer.query
+    
+    if skill_filter:
+        query = query.join(DesignerSkill).join(Skill).filter(
+            Skill.name.ilike(f"%{skill_filter}%")
+        ).distinct()
+    
+    designers = query.order_by(Designer.rating.desc(), Designer.id.asc()).all()
     return jsonify(
         {
             "success": True,
@@ -35,6 +43,48 @@ def list_skills():
 def list_styles():
     styles = Style.query.order_by(Style.name.asc()).all()
     return jsonify({"success": True, "data": [{"id": style.id, "name": style.name} for style in styles]})
+
+
+@designer_bp.post("/seed")
+def seed_data():
+    skill_count = Skill.query.count()
+    style_count = Style.query.count()
+
+    if skill_count >= 10 and style_count >= 8:
+        return jsonify({
+            "success": True,
+            "message": "Database already seeded",
+            "data": {"skills": skill_count, "styles": style_count}
+        })
+
+    skills_data = [
+        "UI/UX Design", "Web Design", "Logo Design", "Branding", "Social Media Design", 
+        "Motion Graphics", "3D Design", "Illustration", "Packaging Design", "Video Editing", 
+        "Typography", "Product Design", "Advertising Design", "App Design", "Visual Identity",
+        "Branding", "Ilustración", "Tipografía", "Packaging", "Prototipado", 
+        "Animación 2D", "Gráfico Digital", "Fotografía", "3D Modeling"
+    ]
+    for name in skills_data:
+        if not Skill.query.filter_by(name=name).first():
+            skill = Skill(name=name)
+            db.session.add(skill)
+
+    styles_data = [
+        "Minimalista", "Vintage", "Moderno", "Brutalista", "Orgánico", "Neón",
+        "Flat Design", "Material", "Glassmorphism", "Retro"
+    ]
+    for name in styles_data:
+        if not Style.query.filter_by(name=name).first():
+            style = Style(name=name)
+            db.session.add(style)
+
+    db.session.commit()
+
+    return jsonify({
+        "success": True,
+        "message": f"Seeded {len(skills_data)} skills and {len(styles_data)} styles",
+        "data": {"skills": len(skills_data), "styles": len(styles_data)}
+    })
 
 
 @designer_bp.post("/designers/import")
