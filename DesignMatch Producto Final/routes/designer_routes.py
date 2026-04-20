@@ -10,7 +10,6 @@ designer_bp = Blueprint("designers", __name__, url_prefix="/api")
 
 @designer_bp.get("/designers")
 def list_designers():
-<<<<<<< HEAD
     skill_filter = request.args.get('skill', '').strip()
     query = Designer.query
     
@@ -20,9 +19,6 @@ def list_designers():
         ).distinct()
     
     designers = query.order_by(Designer.rating.desc(), Designer.id.asc()).all()
-=======
-    designers = Designer.query.order_by(Designer.rating.desc(), Designer.id.asc()).all()
->>>>>>> 79ff929e95bb420a457977a7a512c18b5b057754
     return jsonify(
         {
             "success": True,
@@ -49,7 +45,6 @@ def list_styles():
     return jsonify({"success": True, "data": [{"id": style.id, "name": style.name} for style in styles]})
 
 
-<<<<<<< HEAD
 @designer_bp.post("/seed")
 def seed_data():
     skill_count = Skill.query.count()
@@ -92,8 +87,6 @@ def seed_data():
     })
 
 
-=======
->>>>>>> 79ff929e95bb420a457977a7a512c18b5b057754
 @designer_bp.post("/designers/import")
 def import_designers():
     payload = request.get_json(silent=True)

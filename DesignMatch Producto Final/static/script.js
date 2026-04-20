@@ -55,11 +55,7 @@ function bindEvents() {
     });
 }
 
-<<<<<<< HEAD
 async function toggleRoleFields() {
-=======
-function toggleRoleFields() {
->>>>>>> 79ff929e95bb420a457977a7a512c18b5b057754
     const role = document.getElementById("roleSelect").value;
     const designerFields = document.querySelectorAll(".designer-fields");
     const clientFields = document.querySelectorAll(".client-fields");
@@ -67,17 +63,13 @@ function toggleRoleFields() {
     if (role === "designer") {
         designerFields.forEach(f => f.style.display = "block");
         clientFields.forEach(f => f.style.display = "none");
-<<<<<<< HEAD
         await loadRegSkills();
-=======
->>>>>>> 79ff929e95bb420a457977a7a512c18b5b057754
     } else {
         designerFields.forEach(f => f.style.display = "none");
         clientFields.forEach(f => f.style.display = "block");
     }
 }
 
-<<<<<<< HEAD
 async function loadRegSkills() {
     try {
         const response = await api("/api/skills");
@@ -87,8 +79,6 @@ async function loadRegSkills() {
     }
 }
 
-=======
->>>>>>> 79ff929e95bb420a457977a7a512c18b5b057754
 
 async function loadHealth() {
     try {
@@ -224,7 +214,6 @@ function renderDesigners() {
 }
 
 
-<<<<<<< HEAD
 async function applyFilters() {
     const skillValue = document.getElementById("filterSkill").value;
     const styleValue = document.getElementById("filterStyle").value;
@@ -250,21 +239,6 @@ async function applyFilters() {
         renderError('Error al aplicar filtros. Intentando cargar todos...');
         await loadDesigners();  // Fallback
     }
-=======
-function applyFilters() {
-    const skillValue = document.getElementById("filterSkill").value;
-    const styleValue = document.getElementById("filterStyle").value;
-    const budgetValue = Number(document.getElementById("filterBudget").value || 0);
-
-    state.filteredDesigners = state.designers.filter((designer) => {
-        const skillMatch = !skillValue || designer.skills.includes(skillValue);
-        const styleMatch = !styleValue || designer.styles.includes(styleValue);
-        const budgetMatch = !budgetValue || Number(designer.price_min || 0) <= budgetValue;
-        return skillMatch && styleMatch && budgetMatch;
-    });
-
-    renderDesigners();
->>>>>>> 79ff929e95bb420a457977a7a512c18b5b057754
 }
 
 
@@ -503,11 +477,7 @@ function buildInfoHtml() {
 }
 
 
-<<<<<<< HEAD
 async function openAccessDialog(mode) {
-=======
-function openAccessDialog(mode) {
->>>>>>> 79ff929e95bb420a457977a7a512c18b5b057754
     const registerForm = document.getElementById("registerForm");
     const loginForm = document.getElementById("loginForm");
     const title = document.getElementById("accessTitle");
@@ -523,10 +493,7 @@ function openAccessDialog(mode) {
         copy.textContent = "Crea un usuario simple para simular el recorrido de acceso.";
         registerForm.classList.remove("hidden");
         loginForm.classList.add("hidden");
-<<<<<<< HEAD
         document.getElementById("roleSelect").dispatchEvent(new Event("change"));
-=======
->>>>>>> 79ff929e95bb420a457977a7a512c18b5b057754
     }
 
     showDialog("accessDialog");
@@ -537,11 +504,6 @@ async function handleRegister(event) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const role = data.get("role");
-<<<<<<< HEAD
-=======
-    const skillsInput = data.get("skills");
-    const skills = skillsInput ? skillsInput.split(',').map(s => s.trim()).filter(s => s) : [];
->>>>>>> 79ff929e95bb420a457977a7a512c18b5b057754
 
     const payload = {
         name: String(data.get("name") || "").trim(),
@@ -551,13 +513,8 @@ async function handleRegister(event) {
         ...(role === "designer" && {
             bio: String(data.get("bio") || "").trim(),
             portfolio_url: String(data.get("portfolio_url") || "").trim(),
-<<<<<<< HEAD
             skills: collectCheckedValues("reg_skill_ids"),
             price_min: 100,
-=======
-            skills: skills,
-            price_min: 100,  // defaults
->>>>>>> 79ff929e95bb420a457977a7a512c18b5b057754
             price_max: 500,
         }),
         ...(role === "client" && {
@@ -577,11 +534,7 @@ async function handleRegister(event) {
             <h2 class="panel-title">Cuenta creada</h2>
             <p class="modal-copy">${response.message}. Ya puedes usar la plataforma.</p>
         `);
-<<<<<<< HEAD
         await loadStats();
-=======
-        await loadStats();  // Refresh stats
->>>>>>> 79ff929e95bb420a457977a7a512c18b5b057754
     } catch (error) {
         openInfoDialog(`
             <p class="panel-kicker">Error</p>
@@ -622,10 +575,7 @@ function setCurrentUser(user) {
     state.currentUser = user;
     window.localStorage.setItem("designmatch_user", JSON.stringify(user));
     document.getElementById("sessionBadge").textContent = `${user.name} (${user.role === "designer" ? "disenador" : "cliente"})`;
-<<<<<<< HEAD
     updateNavButtons();
-=======
->>>>>>> 79ff929e95bb420a457977a7a512c18b5b057754
 }
 
 
@@ -642,16 +592,12 @@ function restoreSession() {
         if (sessionBadge) {
             sessionBadge.textContent = `${user.name} (${user.role === "designer" ? "disenador" : "cliente"})`;
         }
-<<<<<<< HEAD
         updateNavButtons();
-=======
->>>>>>> 79ff929e95bb420a457977a7a512c18b5b057754
     } catch (_error) {
         window.localStorage.removeItem("designmatch_user");
     }
 }
 
-<<<<<<< HEAD
 function updateNavButtons() {
     const navActions = document.querySelector(".nav-actions");
     if (state.currentUser) {
@@ -661,8 +607,6 @@ function updateNavButtons() {
     }
 }
 
-=======
->>>>>>> 79ff929e95bb420a457977a7a512c18b5b057754
 
 function showDialog(id) {
     const dialog = document.getElementById(id);
