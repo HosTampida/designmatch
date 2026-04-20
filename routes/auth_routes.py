@@ -1,8 +1,9 @@
 from flask import Blueprint, current_app, jsonify, request
-from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from database.db import db
 from models.models import Designer, DesignerSkill, Match, Project, Skill, Style, User
+from services.auth_service import generate_token
 
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api")
@@ -23,33 +24,32 @@ def health_check():
     )
 
 
+@auth_bp.post("/auth/register")
 @auth_bp.post("/users")
 def create_user():
     payload = request.get_json(silent=True) or {}
     name = str(payload.get("name", "")).strip()
     email = str(payload.get("email", "")).strip().lower()
     role = str(payload.get("role", "client")).strip().lower() or "client"
+    password = str(payload.get("password", "")).strip()
 
-    if not name or not email:
-        return jsonify({"success": False, "message": "name y email son obligatorios"}), 400
+    if not name or not email or not password:
+        return jsonify({"success": False, "message": "name, email y password son obligatorios"}), 400
+
+    if role not in {"designer", "client"}:
+        return jsonify({"success": False, "message": "role must be designer or client"}), 400
 
     existing = User.query.filter_by(email=email).first()
     if existing:
-        return jsonify(
-            {
-                "success": True,
-                "message": "El usuario ya existe",
-                "data": {"id": existing.id, "name": existing.name, "email": existing.email, "role": existing.role},
-            }
-        )
+        return jsonify({"success": False, "message": "Email already registered"}), 409
 
     user = User(
         name=name,
         email=email,
         phone=payload.get("phone"),
         project_description=payload.get("project_description") if role == "client" else None,
-        password_hash=generate_password_hash(payload.get("password", "default123")),
-        role="designer" if role == "designer" else "client",
+        password_hash=generate_password_hash(password),
+        role=role,
     )
     db.session.add(user)
     db.session.flush()
@@ -63,6 +63,7 @@ def create_user():
             price_min=float(payload.get("price_min", 0)),
             price_max=float(payload.get("price_max", 0)),
             rating=float(payload.get("rating", 0)),
+            completed_projects=int(payload.get("completed_projects", 0) or 0),
         )
         db.session.add(designer)
         db.session.flush()
@@ -72,33 +73,38 @@ def create_user():
             db.session.add(DesignerSkill(designer_id=designer.id, skill_id=skill.id))
 
     db.session.commit()
+    token = generate_token(user)
 
     return jsonify(
         {
             "success": True,
             "message": "Account created successfully",
-            "data": {"id": user.id, "name": user.name, "email": user.email, "role": user.role},
+            "data": {"user": user.to_dict(), "token": token},
         }
     ), 201
 
 
+@auth_bp.post("/auth/login")
 @auth_bp.post("/login")
 def login():
     payload = request.get_json(silent=True) or {}
     email = str(payload.get("email", "")).strip().lower()
+    password = str(payload.get("password", "")).strip()
 
-    if not email:
-        return jsonify({"success": False, "message": "Email is required"}), 400
+    if not email or not password:
+        return jsonify({"success": False, "message": "Email and password are required"}), 400
 
     user = User.query.filter_by(email=email).first()
-    if not user:
-        return jsonify({"success": False, "message": "User not found"}), 404
+    if not user or not check_password_hash(user.password_hash, password):
+        return jsonify({"success": False, "message": "Invalid credentials"}), 401
+
+    token = generate_token(user)
 
     return jsonify(
         {
             "success": True,
             "message": "Session started",
-            "data": {"id": user.id, "name": user.name, "email": user.email, "role": user.role},
+            "data": {"user": user.to_dict(), "token": token},
         }
     )
 
@@ -114,6 +120,7 @@ def get_stats():
                 "styles": Style.query.count(),
                 "projects": Project.query.count(),
                 "matches": Match.query.count(),
+                "applications": Match.query.count(),
             },
         }
     )

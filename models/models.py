@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 from sqlalchemy import UniqueConstraint
 
@@ -15,6 +16,7 @@ class User(db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(20), nullable=False)
     project_description = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     designer_profile = db.relationship(
         "Designer",
@@ -22,6 +24,16 @@ class User(db.Model):
         uselist=False,
         cascade="all, delete-orphan",
     )
+    client_projects = db.relationship("Project", back_populates="client")
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            "role": self.role,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
 
 
 class Designer(db.Model):
@@ -35,6 +47,7 @@ class Designer(db.Model):
     price_min = db.Column(db.Float, nullable=False, default=0)
     price_max = db.Column(db.Float, nullable=False, default=0)
     rating = db.Column(db.Float, nullable=False, default=0)
+    completed_projects = db.Column(db.Integer, nullable=False, default=0)
 
     user = db.relationship("User", back_populates="designer_profile")
     skills = db.relationship("DesignerSkill", back_populates="designer", cascade="all, delete-orphan")
@@ -63,6 +76,7 @@ class Designer(db.Model):
             "price_min": self.price_min,
             "price_max": self.price_max,
             "rating": round(float(self.rating or 0), 1),
+            "completed_projects": int(self.completed_projects or 0),
             "skills": self.skill_names(),
             "styles": self.style_names(),
         }
@@ -114,14 +128,21 @@ class Project(db.Model):
     __tablename__ = "projects"
 
     id = db.Column(db.Integer, primary_key=True)
+    client_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     title = db.Column(db.String(180), nullable=False)
     description = db.Column(db.Text, nullable=False, default="")
+    budget = db.Column(db.Float, nullable=False, default=0)
     budget_min = db.Column(db.Float, nullable=False, default=0)
     budget_max = db.Column(db.Float, nullable=False, default=0)
     urgency = db.Column(db.String(20), nullable=False, default="medium")
     required_skill_ids = db.Column(db.Text, nullable=False, default="[]")
     preferred_style_ids = db.Column(db.Text, nullable=False, default="[]")
+    skills_used = db.Column(db.Text, nullable=False, default="[]")
+    views_count = db.Column(db.Integer, nullable=False, default=0)
+    applications_count = db.Column(db.Integer, nullable=False, default=0)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
+    client = db.relationship("User", back_populates="client_projects")
     matches = db.relationship("Match", back_populates="project", cascade="all, delete-orphan")
 
     def skill_ids(self):
@@ -130,16 +151,25 @@ class Project(db.Model):
     def style_ids(self):
         return _load_ids(self.preferred_style_ids)
 
+    def skills_used_list(self):
+        return _load_json_list(self.skills_used)
+
     def to_dict(self):
         return {
             "project_id": self.id,
+            "client_id": self.client_id,
             "title": self.title,
             "description": self.description,
+            "budget": self.budget,
             "budget_min": self.budget_min,
             "budget_max": self.budget_max,
             "urgency": self.urgency,
             "skill_ids": self.skill_ids(),
             "style_ids": self.style_ids(),
+            "skills_used": self.skills_used_list(),
+            "views_count": int(self.views_count or 0),
+            "applications_count": int(self.applications_count or 0),
+            "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 
 
@@ -150,10 +180,23 @@ class Match(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     project_id = db.Column(db.Integer, db.ForeignKey("projects.id"), nullable=False)
     designer_id = db.Column(db.Integer, db.ForeignKey("designers.id"), nullable=False)
-    score = db.Column(db.Float, nullable=False)
+    score = db.Column(db.Float, nullable=False, default=0)
+    status = db.Column(db.String(20), nullable=False, default="pending")
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     project = db.relationship("Project", back_populates="matches")
     designer = db.relationship("Designer", back_populates="matches")
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "project_id": self.project_id,
+            "designer_id": self.designer_id,
+            "designer_name": self.designer.user.name if self.designer and self.designer.user else "",
+            "status": self.status,
+            "score": float(self.score or 0),
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
 
 
 def _load_ids(raw_value):
@@ -173,3 +216,15 @@ def _load_ids(raw_value):
             continue
 
     return clean_ids
+
+
+def _load_json_list(raw_value):
+    if not raw_value:
+        return []
+
+    try:
+        parsed = json.loads(raw_value)
+    except (TypeError, ValueError):
+        return []
+
+    return parsed if isinstance(parsed, list) else []
