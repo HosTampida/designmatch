@@ -1,4 +1,5 @@
 import os
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 
 def get_database_uri():
@@ -7,9 +8,27 @@ def get_database_uri():
         database_url = database_url.replace("postgres://", "postgresql://", 1)
 
     if database_url:
+        if database_url.startswith("postgresql://"):
+            database_url = _ensure_sslmode(database_url)
         return database_url
 
     return "sqlite:///designmatch.db"
+
+
+def _ensure_sslmode(database_url):
+    parts = urlsplit(database_url)
+    query_params = dict(parse_qsl(parts.query, keep_blank_values=True))
+
+    if "sslmode" not in query_params:
+        query_params["sslmode"] = "require"
+
+    return urlunsplit((
+        parts.scheme,
+        parts.netloc,
+        parts.path,
+        urlencode(query_params),
+        parts.fragment,
+    ))
 
 
 def get_database_label():
@@ -29,3 +48,6 @@ class Config:
         "pool_pre_ping": True,
     }
     JSON_SORT_KEYS = False
+
+
+print(f"[DesignMatch] DATABASE IN USE: {get_database_label()}")
