@@ -1,8 +1,6 @@
 import os
 
-
 class Config:
-<<<<<<< HEAD
     SECRET_KEY = os.environ.get("SECRET_KEY", "designmatch-prod")
 
     db_url = os.environ.get("DATABASE_URL")
@@ -20,9 +18,3 @@ class Config:
     SQLALCHEMY_DATABASE_URI = db_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JSON_SORT_KEYS = False
-=======
-    SECRET_KEY = os.environ.get("SECRET_KEY", "designmatch-mvp-demo")
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///designmatch.db').replace('postgres://', 'postgresql://')
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    JSON_SORT_KEYS = False
->>>>>>> 79ff929e95bb420a457977a7a512c18b5b057754
