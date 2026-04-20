@@ -1,9 +1,4 @@
 from flask_sqlalchemy import SQLAlchemy
-<<<<<<< HEAD
-=======
-from werkzeug.security import generate_password_hash
-
->>>>>>> 79ff929e95bb420a457977a7a512c18b5b057754
 
 db = SQLAlchemy()
 
@@ -12,12 +7,11 @@ def init_database(app):
     db.init_app(app)
 
     with app.app_context():
-<<<<<<< HEAD
         print("🔥 INIT DATABASE START")
 
         from models.models import Designer, Skill, Style  # noqa
 
-        # Crear tablas
+        # Crear tablas si no existen
         db.create_all()
         print("✅ Tables created (if not exist)")
 
@@ -47,18 +41,6 @@ def seed_data():
 
     db.session.commit()
     print(f"✅ Skills: {len(skill_map)} | Styles: {len(style_map)}")
-=======
-        from models.models import Designer  # noqa: F401
-
-        db.create_all()
-        seed_data()
-
-
-def seed_data():
-    # Demo seed data disabled for production use
-    # Users can now register real profiles via /api/users
-    pass
->>>>>>> 79ff929e95bb420a457977a7a512c18b5b057754
 
 
 def _ensure_named_rows(model, names):
@@ -71,8 +53,4 @@ def _ensure_named_rows(model, names):
             db.session.flush()
             row_map[name] = row
 
-<<<<<<< HEAD
     return row_map
-=======
-    return row_map
->>>>>>> 79ff929e95bb420a457977a7a512c18b5b057754
