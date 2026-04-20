@@ -10,19 +10,25 @@ designer_bp = Blueprint("designers", __name__, url_prefix="/api")
 
 @designer_bp.get("/designers")
 def list_designers():
-<<<<<<< HEAD
-    skill_filter = request.args.get('skill', '').strip()
+    skill_filter = request.args.get("skill", "").strip()
+    style_filter = request.args.get("style", "").strip()
+    max_price = _to_float(request.args.get("max_price"), default=None)
     query = Designer.query
-    
+
     if skill_filter:
         query = query.join(DesignerSkill).join(Skill).filter(
             Skill.name.ilike(f"%{skill_filter}%")
         ).distinct()
-    
+
+    if style_filter:
+        query = query.join(DesignerStyle).join(Style).filter(
+            Style.name.ilike(f"%{style_filter}%")
+        ).distinct()
+
+    if max_price is not None:
+        query = query.filter(Designer.price_min <= max_price)
+
     designers = query.order_by(Designer.rating.desc(), Designer.id.asc()).all()
-=======
-    designers = Designer.query.order_by(Designer.rating.desc(), Designer.id.asc()).all()
->>>>>>> 79ff929e95bb420a457977a7a512c18b5b057754
     return jsonify(
         {
             "success": True,
@@ -49,51 +55,6 @@ def list_styles():
     return jsonify({"success": True, "data": [{"id": style.id, "name": style.name} for style in styles]})
 
 
-<<<<<<< HEAD
-@designer_bp.post("/seed")
-def seed_data():
-    skill_count = Skill.query.count()
-    style_count = Style.query.count()
-
-    if skill_count >= 10 and style_count >= 8:
-        return jsonify({
-            "success": True,
-            "message": "Database already seeded",
-            "data": {"skills": skill_count, "styles": style_count}
-        })
-
-    skills_data = [
-        "UI/UX Design", "Web Design", "Logo Design", "Branding", "Social Media Design", 
-        "Motion Graphics", "3D Design", "Illustration", "Packaging Design", "Video Editing", 
-        "Typography", "Product Design", "Advertising Design", "App Design", "Visual Identity",
-        "Branding", "Ilustración", "Tipografía", "Packaging", "Prototipado", 
-        "Animación 2D", "Gráfico Digital", "Fotografía", "3D Modeling"
-    ]
-    for name in skills_data:
-        if not Skill.query.filter_by(name=name).first():
-            skill = Skill(name=name)
-            db.session.add(skill)
-
-    styles_data = [
-        "Minimalista", "Vintage", "Moderno", "Brutalista", "Orgánico", "Neón",
-        "Flat Design", "Material", "Glassmorphism", "Retro"
-    ]
-    for name in styles_data:
-        if not Style.query.filter_by(name=name).first():
-            style = Style(name=name)
-            db.session.add(style)
-
-    db.session.commit()
-
-    return jsonify({
-        "success": True,
-        "message": f"Seeded {len(skills_data)} skills and {len(styles_data)} styles",
-        "data": {"skills": len(skills_data), "styles": len(styles_data)}
-    })
-
-
-=======
->>>>>>> 79ff929e95bb420a457977a7a512c18b5b057754
 @designer_bp.post("/designers/import")
 def import_designers():
     payload = request.get_json(silent=True)
@@ -191,7 +152,11 @@ def _clean_id_list(raw_values):
 
 
 def _to_float(value, default=0.0):
+    if value in (None, "") and default is None:
+        return None
     try:
         return float(value)
     except (TypeError, ValueError):
+        if default is None:
+            return None
         return float(default)

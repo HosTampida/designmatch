@@ -7,25 +7,15 @@ def init_database(app):
     db.init_app(app)
 
     with app.app_context():
-        print("🔥 INIT DATABASE START")
+        from models.models import Designer, Skill, Style  # noqa: F401
 
-        from models.models import Designer, Skill, Style  # noqa
-
-        # Crear tablas si no existen
         db.create_all()
-        print("✅ Tables created (if not exist)")
-
-        # Seed seguro
         seed_data()
-
-        print("🔥 INIT DATABASE DONE")
 
 
 def seed_data():
-    """Prod-safe auto-seed: Add skills/styles if under minimum."""
+    """Insert baseline reference data without touching existing rows."""
     from models.models import Skill, Style
-
-    print("🌱 Seeding skills and styles...")
 
     skill_map = _ensure_named_rows(Skill, [
         "UI/UX Design", "Web Design", "Logo Design", "Branding", "Social Media Design",
@@ -40,7 +30,6 @@ def seed_data():
     ])
 
     db.session.commit()
-    print(f"✅ Skills: {len(skill_map)} | Styles: {len(style_map)}")
 
 
 def _ensure_named_rows(model, names):

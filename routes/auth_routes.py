@@ -1,8 +1,8 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, current_app, jsonify, request
 from werkzeug.security import generate_password_hash
 
 from database.db import db
-from models.models import Designer, Match, Project, Skill, Style, User
+from models.models import Designer, DesignerSkill, Match, Project, Skill, Style, User
 
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api")
@@ -10,11 +10,15 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/api")
 
 @auth_bp.get("/health")
 def health_check():
+    database_uri = current_app.config.get("SQLALCHEMY_DATABASE_URI", "")
     return jsonify(
         {
             "success": True,
             "message": "DesignMatch is operational",
-            "data": {"status": "ok", "database": "sqlite:///designmatch.db"},
+            "data": {
+                "status": "ok",
+                "database": "postgresql" if str(database_uri).startswith("postgresql://") else "sqlite",
+            },
         }
     )
 
@@ -61,25 +65,12 @@ def create_user():
             rating=float(payload.get("rating", 0)),
         )
         db.session.add(designer)
+        db.session.flush()
 
-<<<<<<< HEAD
-        # Add skills if provided (now IDs)
-        skill_ids = payload.get("skills", [])
-        if skill_ids:
-            for skill_id in skill_ids:
-                skill = Skill.query.get(skill_id)
-=======
-        # Add skills if provided
-        skills = payload.get("skills", [])
-        if skills:
-            for skill_name in skills:
-                skill = Skill.query.filter_by(name=skill_name).first()
->>>>>>> 79ff929e95bb420a457977a7a512c18b5b057754
-                if skill:
-                    db.session.add(DesignerSkill(designer_id=designer.id, skill_id=skill.id))
+        skill_ids = _clean_id_list(payload.get("skills", []))
+        for skill in Skill.query.filter(Skill.id.in_(skill_ids)).all():
+            db.session.add(DesignerSkill(designer_id=designer.id, skill_id=skill.id))
 
-    db.session.commit()
-    db.session.add(user)
     db.session.commit()
 
     return jsonify(
@@ -130,6 +121,7 @@ def get_stats():
 
 @auth_bp.get("/info")
 def get_info():
+    database_uri = current_app.config.get("SQLALCHEMY_DATABASE_URI", "")
     return jsonify(
         {
             "success": True,
@@ -137,7 +129,7 @@ def get_info():
                 "name": "DesignMatch",
                 "description": "Connect clients with designers for real projects.",
                 "version": "1.0",
-                "database": "sqlite:///designmatch.db",
+                "database": "postgresql" if str(database_uri).startswith("postgresql://") else "sqlite",
                 "features": [
                     "Browse designer catalog",
                     "Create projects quickly",
@@ -147,3 +139,13 @@ def get_info():
             },
         }
     )
+
+
+def _clean_id_list(raw_values):
+    clean_ids = []
+    for value in raw_values or []:
+        try:
+            clean_ids.append(int(value))
+        except (TypeError, ValueError):
+            continue
+    return clean_ids
