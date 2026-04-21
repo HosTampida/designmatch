@@ -58,45 +58,21 @@
                 <div class="hero-media">
                     <section class="hero-carousel" id="heroCarousel" aria-label="Banners destacados de DesignMatch">
                         <div class="hero-carousel-track">
-                            <article class="hero-slide is-active" data-slide-index="0">
-                                <img
-                                    class="hero-image"
-                                    src="/static/img/Banner.PNG"
-                                    alt="Banner principal de DesignMatch con presentacion visual de la plataforma"
-                                    width="1883"
-                                    height="560"
-                                    decoding="async"
-                                    fetchpriority="high">
+                            <article class="hero-slide is-active" data-slide-index="0" style="background-image: url('/static/img/Banner.PNG')">
                                 <div class="hero-slide-overlay">
                                     <p class="hero-slide-kicker">Match inteligente</p>
                                     <h2 class="hero-slide-title">Presenta una plataforma que conecta talento y necesidad real.</h2>
                                 </div>
                             </article>
 
-                            <article class="hero-slide" data-slide-index="1">
-                                <img
-                                    class="hero-image"
-                                    src="/static/img/Banner 2.PNG"
-                                    alt="Banner de DesignMatch con propuesta visual de matching creativo"
-                                    width="1883"
-                                    height="560"
-                                    loading="lazy"
-                                    decoding="async">
+                            <article class="hero-slide" data-slide-index="1" style="background-image: url('/static/img/Banner 2.PNG')">
                                 <div class="hero-slide-overlay">
                                     <p class="hero-slide-kicker">Experiencia visual</p>
                                     <h2 class="hero-slide-title">Haz que la demo se sienta como producto, no como maqueta.</h2>
                                 </div>
                             </article>
 
-                            <article class="hero-slide" data-slide-index="2">
-                                <img
-                                    class="hero-image"
-                                    src="/static/img/Banner 3.PNG"
-                                    alt="Banner de DesignMatch con enfoque en ranking y seleccion de talento"
-                                    width="1883"
-                                    height="560"
-                                    loading="lazy"
-                                    decoding="async">
+                            <article class="hero-slide" data-slide-index="2" style="background-image: url('/static/img/Banner 3.PNG')">
                                 <div class="hero-slide-overlay">
                                     <p class="hero-slide-kicker">Ranking visible</p>
                                     <h2 class="hero-slide-title">Muestra seleccion creativa respaldada por datos claros.</h2>
@@ -296,11 +272,9 @@
             </div>
             <a href="#inicio" class="footer-logo-link" aria-label="Ir a inicio">
                 <img
-                    class="footer-logo"
+                    class="footer-logo logo-img--md"
                     src="/static/img/Logo variante 1.png"
                     alt="Logo de DesignMatch"
-                    width="2201"
-                    height="467"
                     loading="lazy"
                     decoding="async">
             </a>
@@ -369,6 +343,10 @@
             <div class="form-group">
                 <label class="form-label">Email</label>
                 <input type="email" name="email" class="form-input" placeholder="tu@email.com" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Contraseña</label>
+                <input type="password" name="password" class="form-input" placeholder="Tu contraseña" required>
             </div>
             <button type="submit" class="btn btn-primary btn-block">Iniciar sesión</button>
         </form>

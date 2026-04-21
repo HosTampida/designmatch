@@ -81,11 +81,52 @@ select {
 .logo {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 0.3s ease;
+}
+
+.logo:hover {
+    opacity: 0.85;
 }
 
 .logo-icon {
-    font-size: 2rem;
+    font-size: clamp(1.8rem, 5vw, 2.2rem);
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.logo-img,
+.footer-logo {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: attr(data-aspect, 1);
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+/* Standard logo size: 50px height */
+.logo-img--sm {
+    height: 40px;
+}
+
+.logo-img--md {
+    height: 50px;
+}
+
+.logo-img--lg {
+    height: 60px;
+}
+
+/* Logo wrapper for flexible layouts */
+.logo-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
 .logo-text,
@@ -96,12 +137,13 @@ select {
 }
 
 .logo-text {
-    font-size: 1.45rem;
+    font-size: clamp(1.2rem, 3vw, 1.45rem);
     font-weight: 700;
     background: linear-gradient(135deg, var(--primary), var(--secondary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    line-height: 1.1;
 }
 
 .nav,
@@ -840,7 +882,9 @@ select:focus-visible {
 
 .hero-carousel-track {
     position: relative;
-    min-height: 100%;
+    width: 100%;
+    min-height: 400px;
+    aspect-ratio: 1883 / 560;
 }
 
 .hero-slide {
@@ -848,20 +892,17 @@ select:focus-visible {
     inset: 0;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.45s ease;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .hero-slide.is-active {
     position: relative;
     opacity: 1;
     pointer-events: auto;
-}
-
-.hero-image {
-    display: block;
-    width: 100%;
-    aspect-ratio: 1883 / 560;
-    object-fit: cover;
+    z-index: 1;
 }
 
 .hero-slide-overlay {
@@ -869,6 +910,18 @@ select:focus-visible {
     inset: auto 0 0 0;
     padding: clamp(18px, 3vw, 28px);
     background: linear-gradient(180deg, transparent 0%, rgba(15, 23, 42, 0.2) 30%, rgba(15, 23, 42, 0.8) 100%);
+    animation: slideInUp 0.6s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .hero-slide-kicker {
@@ -910,6 +963,7 @@ select:focus-visible {
     line-height: 1;
     cursor: pointer;
     backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
 }
 
 .hero-carousel-dots {
@@ -930,6 +984,7 @@ select:focus-visible {
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.45);
     cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .hero-dot.is-active {
@@ -941,6 +996,7 @@ select:focus-visible {
 .hero-carousel-arrow:hover,
 .hero-dot:hover {
     filter: brightness(1.08);
+    transform: scale(1.05);
 }
 
 .footer {
@@ -967,14 +1023,17 @@ select:focus-visible {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+}
+
+.footer-logo-link:hover {
+    opacity: 0.9;
 }
 
 .footer-logo {
-    display: block;
-    width: min(220px, 48vw);
-    height: auto;
-    aspect-ratio: 2201 / 467;
-    object-fit: contain;
+    height: 50px;
+    width: auto;
 }
 
 @media (max-width: 900px) {
@@ -1018,6 +1077,11 @@ select:focus-visible {
         width: 100%;
     }
 
+    .hero-carousel-track {
+        min-height: 280px;
+        aspect-ratio: auto;
+    }
+
     .hero-carousel-controls {
         inset: auto 12px 12px 12px;
     }
@@ -1025,6 +1089,21 @@ select:focus-visible {
     .hero-carousel-arrow {
         width: 40px;
         height: 40px;
+        font-size: 1.4rem;
+    }
+
+    .hero-carousel-dots {
+        gap: 8px;
+        padding: 6px 10px;
+    }
+
+    .hero-dot {
+        width: 8px;
+        height: 8px;
+    }
+
+    .hero-dot.is-active {
+        width: 24px;
     }
 
     .hero-stats {

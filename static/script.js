@@ -76,6 +76,8 @@ function initHeroCarousel() {
         return;
     }
 
+    const SLIDE_DURATION = 5000; // 5 seconds
+
     const renderCarousel = (index) => {
         state.heroCarousel.activeIndex = index;
 
@@ -91,7 +93,7 @@ function initHeroCarousel() {
 
     const goToSlide = (index) => {
         const totalSlides = slides.length;
-        const nextIndex = (index + totalSlides) % totalSlides;
+        const nextIndex = (index % totalSlides + totalSlides) % totalSlides;
         renderCarousel(nextIndex);
     };
 
@@ -99,28 +101,40 @@ function initHeroCarousel() {
         window.clearInterval(state.heroCarousel.timerId);
         state.heroCarousel.timerId = window.setInterval(() => {
             goToSlide(state.heroCarousel.activeIndex + 1);
-        }, 5000);
+        }, SLIDE_DURATION);
     };
 
-    prevButton.addEventListener("click", () => {
+    const handlePrev = () => {
         goToSlide(state.heroCarousel.activeIndex - 1);
         restartAutoplay();
-    });
+    };
 
-    nextButton.addEventListener("click", () => {
+    const handleNext = () => {
         goToSlide(state.heroCarousel.activeIndex + 1);
         restartAutoplay();
-    });
+    };
+
+    const handleDotClick = (dot) => {
+        goToSlide(Number(dot.dataset.slideTarget));
+        restartAutoplay();
+    };
+
+    prevButton.addEventListener("click", handlePrev);
+    nextButton.addEventListener("click", handleNext);
 
     dots.forEach((dot) => {
-        dot.addEventListener("click", () => {
-            goToSlide(Number(dot.dataset.slideTarget));
-            restartAutoplay();
-        });
+        dot.addEventListener("click", () => handleDotClick(dot));
     });
 
+    // Pause on hover, resume on leave
     carousel.addEventListener("mouseenter", () => window.clearInterval(state.heroCarousel.timerId));
     carousel.addEventListener("mouseleave", restartAutoplay);
+
+    // Keyboard navigation
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowLeft") handlePrev();
+        if (event.key === "ArrowRight") handleNext();
+    });
 
     renderCarousel(0);
     restartAutoplay();
@@ -632,14 +646,17 @@ async function handleLogin(event) {
     try {
         const response = await api("/api/login", {
             method: "POST",
-            body: JSON.stringify({ email: String(data.get("email") || "").trim() }),
+            body: JSON.stringify({ 
+                email: String(data.get("email") || "").trim().toLowerCase(),
+                password: String(data.get("password") || "").trim()
+            }),
         });
-        setCurrentUser(response.data);
+        setCurrentUser({ ...response.data.user, token: response.data.token });
         closeDialog("accessDialog");
         openInfoDialog(`
             <p class="panel-kicker">Bienvenido</p>
             <h2 class="panel-title">Sesión iniciada</h2>
-            <p class="modal-copy">Hola, ${response.data.name}. (${response.data.role})</p>
+            <p class="modal-copy">Hola, ${response.data.user.name}. (${response.data.user.role})</p>
         `);
     } catch (error) {
         openInfoDialog(`
