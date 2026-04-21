@@ -26,7 +26,12 @@
                 <button type="button" class="nav-link nav-button" data-action="estado">Estado</button>
             </nav>
 
-            <div class="nav-actions">
+            <div class="session-actions hidden" id="sessionActions">
+                <span class="session-pill" id="headerSessionBadge">Sin sesion</span>
+                <button type="button" class="btn btn-outline" id="logoutButton">Cerrar sesion</button>
+            </div>
+
+            <div class="nav-actions" id="guestActions">
                 <button type="button" class="btn btn-outline" data-open-access="login">Iniciar sesión</button>
                 <button type="button" class="btn btn-primary" data-open-access="register">Registrarse</button>
             </div>
@@ -51,16 +56,64 @@
                 </div>
 
                 <div class="hero-media">
-                    <img
-                        class="hero-image"
-                        src="/static/img/Banner.PNG"
-                        srcset="/static/img/Banner.PNG 1883w"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 92vw, 48vw"
-                        alt="Banner principal de DesignMatch con presentacion visual de la plataforma"
-                        width="1883"
-                        height="560"
-                        decoding="async"
-                        fetchpriority="high">
+                    <section class="hero-carousel" id="heroCarousel" aria-label="Banners destacados de DesignMatch">
+                        <div class="hero-carousel-track">
+                            <article class="hero-slide is-active" data-slide-index="0">
+                                <img
+                                    class="hero-image"
+                                    src="/static/img/Banner.PNG"
+                                    alt="Banner principal de DesignMatch con presentacion visual de la plataforma"
+                                    width="1883"
+                                    height="560"
+                                    decoding="async"
+                                    fetchpriority="high">
+                                <div class="hero-slide-overlay">
+                                    <p class="hero-slide-kicker">Match inteligente</p>
+                                    <h2 class="hero-slide-title">Presenta una plataforma que conecta talento y necesidad real.</h2>
+                                </div>
+                            </article>
+
+                            <article class="hero-slide" data-slide-index="1">
+                                <img
+                                    class="hero-image"
+                                    src="/static/img/Banner 2.PNG"
+                                    alt="Banner de DesignMatch con propuesta visual de matching creativo"
+                                    width="1883"
+                                    height="560"
+                                    loading="lazy"
+                                    decoding="async">
+                                <div class="hero-slide-overlay">
+                                    <p class="hero-slide-kicker">Experiencia visual</p>
+                                    <h2 class="hero-slide-title">Haz que la demo se sienta como producto, no como maqueta.</h2>
+                                </div>
+                            </article>
+
+                            <article class="hero-slide" data-slide-index="2">
+                                <img
+                                    class="hero-image"
+                                    src="/static/img/Banner 3.PNG"
+                                    alt="Banner de DesignMatch con enfoque en ranking y seleccion de talento"
+                                    width="1883"
+                                    height="560"
+                                    loading="lazy"
+                                    decoding="async">
+                                <div class="hero-slide-overlay">
+                                    <p class="hero-slide-kicker">Ranking visible</p>
+                                    <h2 class="hero-slide-title">Muestra seleccion creativa respaldada por datos claros.</h2>
+                                </div>
+                            </article>
+                        </div>
+
+                        <div class="hero-carousel-controls">
+                            <button type="button" class="hero-carousel-arrow" id="heroPrev" aria-label="Banner anterior">‹</button>
+                            <div class="hero-carousel-dots" id="heroDots" aria-label="Seleccion de banners">
+                                <button type="button" class="hero-dot is-active" data-slide-target="0" aria-label="Ver banner 1"></button>
+                                <button type="button" class="hero-dot" data-slide-target="1" aria-label="Ver banner 2"></button>
+                                <button type="button" class="hero-dot" data-slide-target="2" aria-label="Ver banner 3"></button>
+                            </div>
+                            <button type="button" class="hero-carousel-arrow" id="heroNext" aria-label="Siguiente banner">›</button>
+                        </div>
+                    </section>
                 </div>
             </div>
             <!-- DM-UPDATE end: hero refresh -->
@@ -233,37 +286,6 @@
                 <p>El proyecto abre con datos sembrados, ranking visible y una interfaz mas brillante y facil de explicar.</p>
             </article>
         </div>
-        <!-- DM-UPDATE start: banner grid -->
-        <div class="container banner-grid" aria-label="Banners destacados de DesignMatch">
-            <figure class="banner-card">
-                <img
-                    src="/static/img/Banner.PNG"
-                    alt="Banner de DesignMatch sobre conexion entre clientes y disenadores"
-                    width="1883"
-                    height="560"
-                    loading="lazy"
-                    decoding="async">
-            </figure>
-            <figure class="banner-card">
-                <img
-                    src="/static/img/Banner 2.PNG"
-                    alt="Banner de DesignMatch con propuesta visual de matching creativo"
-                    width="1883"
-                    height="560"
-                    loading="lazy"
-                    decoding="async">
-            </figure>
-            <figure class="banner-card">
-                <img
-                    src="/static/img/Banner 3.PNG"
-                    alt="Banner de DesignMatch con enfoque en ranking y seleccion de talento"
-                    width="1883"
-                    height="560"
-                    loading="lazy"
-                    decoding="async">
-            </figure>
-        </div>
-        <!-- DM-UPDATE end: banner grid -->
     </section>
 
     <footer class="footer">

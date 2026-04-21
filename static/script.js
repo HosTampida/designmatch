@@ -7,12 +7,17 @@ const state = {
     info: null,
     currentUser: null,
     selectedDesignerId: null,
+    heroCarousel: {
+        activeIndex: 0,
+        timerId: null,
+    },
 };
 
 
 document.addEventListener("DOMContentLoaded", async () => {
     restoreSession();
     bindEvents();
+    initHeroCarousel();
     await Promise.all([loadHealth(), loadInfo(), loadStats(), loadReferenceData(), loadDesigners()]);
 });
 
@@ -23,6 +28,7 @@ function bindEvents() {
     document.getElementById("loginForm").addEventListener("submit", handleLogin);
     document.getElementById("applyFilters").addEventListener("click", applyFilters);
     document.getElementById("clearFilters").addEventListener("click", clearFilters);
+    document.getElementById("logoutButton").addEventListener("click", handleLogout);
 
     document.getElementById("closeProfileDialog").addEventListener("click", () => closeDialog("profileDialog"));
     document.getElementById("closeInfoDialog").addEventListener("click", () => closeDialog("infoDialog"));
@@ -53,6 +59,71 @@ function bindEvents() {
             }
         });
     });
+}
+
+function initHeroCarousel() {
+    const carousel = document.getElementById("heroCarousel");
+    if (!carousel) {
+        return;
+    }
+
+    const slides = Array.from(carousel.querySelectorAll(".hero-slide"));
+    const dots = Array.from(document.querySelectorAll("[data-slide-target]"));
+    const prevButton = document.getElementById("heroPrev");
+    const nextButton = document.getElementById("heroNext");
+
+    if (!slides.length) {
+        return;
+    }
+
+    const renderCarousel = (index) => {
+        state.heroCarousel.activeIndex = index;
+
+        slides.forEach((slide, slideIndex) => {
+            slide.classList.toggle("is-active", slideIndex === index);
+        });
+
+        dots.forEach((dot, dotIndex) => {
+            dot.classList.toggle("is-active", dotIndex === index);
+            dot.setAttribute("aria-current", dotIndex === index ? "true" : "false");
+        });
+    };
+
+    const goToSlide = (index) => {
+        const totalSlides = slides.length;
+        const nextIndex = (index + totalSlides) % totalSlides;
+        renderCarousel(nextIndex);
+    };
+
+    const restartAutoplay = () => {
+        window.clearInterval(state.heroCarousel.timerId);
+        state.heroCarousel.timerId = window.setInterval(() => {
+            goToSlide(state.heroCarousel.activeIndex + 1);
+        }, 5000);
+    };
+
+    prevButton.addEventListener("click", () => {
+        goToSlide(state.heroCarousel.activeIndex - 1);
+        restartAutoplay();
+    });
+
+    nextButton.addEventListener("click", () => {
+        goToSlide(state.heroCarousel.activeIndex + 1);
+        restartAutoplay();
+    });
+
+    dots.forEach((dot) => {
+        dot.addEventListener("click", () => {
+            goToSlide(Number(dot.dataset.slideTarget));
+            restartAutoplay();
+        });
+    });
+
+    carousel.addEventListener("mouseenter", () => window.clearInterval(state.heroCarousel.timerId));
+    carousel.addEventListener("mouseleave", restartAutoplay);
+
+    renderCarousel(0);
+    restartAutoplay();
 }
 
 async function toggleRoleFields() {
@@ -583,37 +654,68 @@ async function handleLogin(event) {
 function setCurrentUser(user) {
     state.currentUser = user;
     window.localStorage.setItem("designmatch_user", JSON.stringify(user));
-    document.getElementById("sessionBadge").textContent = `${user.name} (${user.role === "designer" ? "disenador" : "cliente"})`;
+    syncSessionBadges();
     updateNavButtons();
+}
+
+function clearCurrentUser() {
+    state.currentUser = null;
+    window.localStorage.removeItem("designmatch_user");
+    syncSessionBadges();
+    updateNavButtons();
+}
+
+function syncSessionBadges() {
+    const label = state.currentUser
+        ? `${state.currentUser.name} (${state.currentUser.role === "designer" ? "disenador" : "cliente"})`
+        : "Sin sesion";
+
+    document.getElementById("sessionBadge").textContent = label;
+
+    const headerSessionBadge = document.getElementById("headerSessionBadge");
+    if (headerSessionBadge) {
+        headerSessionBadge.textContent = label;
+    }
 }
 
 
 function restoreSession() {
     const raw = window.localStorage.getItem("designmatch_user");
     if (!raw) {
+        syncSessionBadges();
+        updateNavButtons();
         return;
     }
 
     try {
-        const user = JSON.parse(raw);
-        state.currentUser = user;
-        const sessionBadge = document.getElementById("sessionBadge");
-        if (sessionBadge) {
-            sessionBadge.textContent = `${user.name} (${user.role === "designer" ? "disenador" : "cliente"})`;
-        }
+        state.currentUser = JSON.parse(raw);
+        syncSessionBadges();
         updateNavButtons();
     } catch (_error) {
-        window.localStorage.removeItem("designmatch_user");
+        clearCurrentUser();
     }
 }
 
 function updateNavButtons() {
-    const navActions = document.querySelector(".nav-actions");
+    const navActions = document.getElementById("guestActions");
+    const sessionActions = document.getElementById("sessionActions");
+
     if (state.currentUser) {
-        navActions.style.display = "none";
+        navActions.classList.add("hidden");
+        sessionActions.classList.remove("hidden");
     } else {
-        navActions.style.display = "";
+        navActions.classList.remove("hidden");
+        sessionActions.classList.add("hidden");
     }
+}
+
+function handleLogout() {
+    clearCurrentUser();
+    openInfoDialog(`
+        <p class="panel-kicker">Hasta pronto</p>
+        <h2 class="panel-title">Sesion cerrada</h2>
+        <p class="modal-copy">Tu sesion se cerro correctamente.</p>
+    `);
 }
 
 function showDialog(id) {
