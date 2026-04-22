@@ -61,6 +61,14 @@ function bindEvents() {
         button.addEventListener("click", () => handleAction(button.dataset.action));
     });
 
+    // Toggle auth forms
+    document.querySelectorAll("[data-toggle]").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            openAccessDialog(e.target.dataset.toggle);
+        });
+    });
+
     // Handle role toggle for conditional fields
     document.getElementById("roleSelect").addEventListener("change", toggleRoleFields);
 
@@ -647,20 +655,26 @@ async function openAccessDialog(mode) {
     const loginForm = document.getElementById("loginForm");
     const title = document.getElementById("accessTitle");
     const copy = document.getElementById("accessCopy");
+    const toggleText = document.getElementById("toggleText");
+
+    clearAuthErrors();
 
     if (mode === "login") {
-        title.textContent = "Ingresar demo";
-        copy.textContent = "Usa un email existente para simular el acceso.";
+        title.textContent = "Bienvenido de vuelta";
+        copy.textContent = "Inicia sesión para continuar con tus proyectos creativos.";
+        toggleText.textContent = "¿Necesitas una cuenta? ";
         registerForm.classList.add("hidden");
         loginForm.classList.remove("hidden");
     } else {
-        title.textContent = "Crear cuenta demo";
-        copy.textContent = "Crea un usuario simple para simular el recorrido de acceso.";
+        title.textContent = "Únete a DesignMatch";
+        copy.textContent = "Crea tu cuenta gratuita como cliente o diseñador.";
+        toggleText.textContent = "¿Ya tienes cuenta? ";
         registerForm.classList.remove("hidden");
         loginForm.classList.add("hidden");
         document.getElementById("roleSelect").dispatchEvent(new Event("change"));
     }
 
+    initAuthCarousel();
     showDialog("accessDialog");
 }
 

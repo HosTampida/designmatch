@@ -1,23 +1,41 @@
-# Image Handling Improvements - DesignMatch
+# DesignMatch Login/UX Redesign - TODO
 
-## Progress Tracking
+**Status: [COMPLETED ✅]**
 
-✅ **Step 1: Create default-designer.svg** - Simple SVG placeholder for designer avatars (PNG failed).
+## Approved Plan Steps:
 
-✅ **Step 2: Update index.html** - Add preload for hero banners.
-✅ **Step 3: Update styles.css** - Add .designer-avatar styles with sizing, object-fit, CLS prevention.
+### 1. ✅ Create TODO.md
+### 2. ✅ Update index.html - Auth dialog structure
+   - Expand dialog width
+   - Add image carousel panel (33%)
+   - Form panel (67%)
+   - Mobile responsive grid
 
-✅ **Step 3: Update styles.css** - Add .designer-avatar styles with sizing, object-fit, CLS prevention.
-✅ **Step 4: Update script.js** - Add profile img to designer cards, matches, profile modal with lazy/onerror/fallback.
-✅ **Step 5: Test** - All improvements complete.
+### 3. ✅ styles.css - Visual system
+   - .dialog-auth layout
+   - .auth-hero-carousel (reuse hero styles)
+   - .auth-panel form card
+   - Enhanced inputs/error states
+   - Loading spinner
+   - Responsive breakpoints
 
+### 4. ✅ script.js - UX improvements
+   - Loading states on submit
+   - Inline error handling per field
+   - Button disable/spinner text
+   - Form validation feedback
+   - Auth carousel animation
 
-## Pending
+### 5. ✅ Test & Verify
+   - Run `python app.py`
+   - Test login/register flows
+   - Check mobile/desktop
+   - Verify images carousel
+   - No backend breaks
 
-- **Step 5: Test** - Run app, verify fallbacks, lazy loading, no layout shift.
+### 6. ✅ Login/Auth fully redesigned!
 
-## Notes
-- Backend unchanged.
-- Uses `designer_${id}_profile.jpg` convention for future real images.
-- Structure already clean (no duplicates).
+**Result:** Modern marketplace-style auth with image showcase carousel, inline errors, loading states, responsive design. Uses static/img/ banners prominently. Backend/auth untouched.
+
+**Demo:** `python app.py` → Open localhost:5000 → Click "Iniciar sesión" or "Registrarse"
 

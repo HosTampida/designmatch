@@ -296,64 +296,121 @@
         <div id="infoContent"></div>
     </dialog>
 
-    <dialog id="accessDialog" class="dialog dialog-sm">
+<dialog id="accessDialog" class="dialog dialog-auth">
         <button class="dialog-close" id="closeAccessDialog" aria-label="Cerrar acceso">&times;</button>
-        <div class="access-header">
-            <p class="panel-kicker">Registro / Login</p>
-            <h2 class="panel-title" id="accessTitle">Registrarse</h2>
-            <p id="accessCopy">Crea tu cuenta como cliente o diseñador.</p>
+        
+        <div class="auth-layout">
+            <!-- Left: Image Showcase Carousel -->
+            <section class="auth-hero-panel" id="authHeroPanel" aria-label="Showcase creativo de DesignMatch">
+                <div class="auth-hero-carousel-track">
+                    <article class="auth-hero-slide is-active" data-slide-index="0" style="background-image: url('/static/img/Banner.PNG')">
+                        <div class="auth-hero-overlay">
+                            <p class="auth-hero-kicker">Creatividad ilimitada</p>
+                            <h3 class="auth-hero-title">Encuentra tu match perfecto</h3>
+                        </div>
+                    </article>
+                    <article class="auth-hero-slide" data-slide-index="1" style="background-image: url('/static/img/Banner 2.PNG')">
+                        <div class="auth-hero-overlay">
+                            <p class="auth-hero-kicker">Talento real</p>
+                            <h3 class="auth-hero-title">Disenadores estudiantes listos</h3>
+                        </div>
+                    </article>
+                    <article class="auth-hero-slide" data-slide-index="2" style="background-image: url('/static/img/Banner 3.PNG')">
+                        <div class="auth-hero-overlay">
+                            <p class="auth-hero-kicker">Datos inteligentes</p>
+                            <h3 class="auth-hero-title">Matches por compatibilidad</h3>
+                        </div>
+                    </article>
+                </div>
+                <div class="auth-hero-controls">
+                    <button type="button" class="auth-hero-arrow" id="authHeroPrev" aria-label="Banner anterior">‹</button>
+                    <div class="auth-hero-dots" id="authHeroDots" aria-label="Navegación de banners">
+                        <button type="button" class="auth-hero-dot is-active" data-slide-target="0" aria-label="Banner 1"></button>
+                        <button type="button" class="auth-hero-dot" data-slide-target="1" aria-label="Banner 2"></button>
+                        <button type="button" class="auth-hero-dot" data-slide-target="2" aria-label="Banner 3"></button>
+                    </div>
+                    <button type="button" class="auth-hero-arrow" id="authHeroNext" aria-label="Siguiente banner">›</button>
+                </div>
+            </section>
+
+            <!-- Right: Form Panel -->
+            <div class="auth-form-panel">
+                <div class="access-header">
+                    <p class="panel-kicker">Acceso a DesignMatch</p>
+                    <h2 class="panel-title" id="accessTitle">Registrarse</h2>
+                    <p id="accessCopy">Únete como cliente o diseñador y conecta con proyectos reales.</p>
+                </div>
+
+                <div class="auth-form-container">
+                    <form id="registerForm" class="access-form">
+                        <div class="form-group">
+                            <label class="form-label">Nombre completo</label>
+                            <input type="text" name="name" class="form-input" placeholder="Tu nombre completo" required>
+                            <div class="input-error" data-error="name"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-input" placeholder="tu@email.com" required>
+                            <div class="input-error" data-error="email"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Teléfono / WhatsApp</label>
+                            <input type="tel" name="phone" class="form-input" placeholder="+1 234 567 890">
+                            <div class="input-error" data-error="phone"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Rol *</label>
+                            <select name="role" class="form-input" id="roleSelect">
+                                <option value="client">Cliente</option>
+                                <option value="designer">Diseñador</option>
+                            </select>
+                        </div>
+                        <div class="form-group designer-fields" id="designerFields" style="display:none;">
+                            <label class="form-label">Bio / Descripción</label>
+                            <textarea name="bio" class="form-input form-textarea" rows="2" placeholder="Breve descripción de tus servicios"></textarea>
+                        </div>
+                        <div class="form-group designer-fields" id="designerPortfolio">
+                            <label class="form-label">Portfolio URL (opcional)</label>
+                            <input type="url" name="portfolio_url" class="form-input" placeholder="https://mi-portfolio.com">
+                        </div>
+                        <div class="form-group designer-fields" id="designerSkills">
+                            <label class="form-label">Skills</label>
+                            <div id="regSkillsOptions" class="chip-grid"></div>
+                        </div>
+                        <div class="form-group client-fields" id="clientFields">
+                            <label class="form-label">Descripción de tu proyecto (opcional)</label>
+                            <textarea name="project_description" class="form-input form-textarea" rows="2" placeholder="Tipo de proyectos que buscas..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" data-loading="Crear cuenta...">
+                            <span class="btn-text">Crear cuenta</span>
+                            <span class="btn-loading hidden">⏳</span>
+                        </button>
+                    </form>
+
+                    <form id="loginForm" class="access-form hidden">
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-input" placeholder="tu@email.com" required>
+                            <div class="input-error" data-error="email"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Contraseña</label>
+                            <input type="password" name="password" class="form-input" placeholder="Tu contraseña" required>
+                            <div class="input-error" data-error="password"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" data-loading="Iniciando...">
+                            <span class="btn-text">Iniciar sesión</span>
+                            <span class="btn-loading hidden">⏳</span>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="auth-toggle">
+                    <span id="toggleText">¿Ya tienes cuenta? </span>
+                    <button type="button" class="auth-toggle-btn" data-toggle="login">Inicia sesión</button>
+                </div>
+            </div>
         </div>
-
-        <form id="registerForm" class="access-form">
-            <div class="form-group">
-                <label class="form-label">Nombre</label>
-                <input type="text" name="name" class="form-input" placeholder="Tu nombre completo" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Email</label>
-                <input type="email" name="email" class="form-input" placeholder="tu@email.com" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Teléfono / WhatsApp</label>
-                <input type="tel" name="phone" class="form-input" placeholder="+1 234 567 890">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Rol *</label>
-                <select name="role" class="form-input" id="roleSelect">
-                    <option value="client">Cliente</option>
-                    <option value="designer">Diseñador</option>
-                </select>
-            </div>
-            <div class="form-group designer-fields" id="designerFields" style="display:none;">
-                <label class="form-label">Bio / Descripción</label>
-                <textarea name="bio" class="form-input form-textarea" rows="2" placeholder="Breve descripción de tus servicios"></textarea>
-            </div>
-            <div class="form-group designer-fields" id="designerPortfolio">
-                <label class="form-label">Portfolio URL (opcional)</label>
-                <input type="url" name="portfolio_url" class="form-input" placeholder="https://mi-portfolio.com">
-            </div>
-            <div class="form-group designer-fields" id="designerSkills">
-                <label class="form-label">Skills</label>
-                <div id="regSkillsOptions" class="chip-grid"></div>
-            </div>
-            <div class="form-group client-fields" id="clientFields">
-                <label class="form-label">Descripción de tu proyecto (opcional)</label>
-                <textarea name="project_description" class="form-input form-textarea" rows="2" placeholder="Tipo de proyectos que buscas..."></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">Crear cuenta</button>
-        </form>
-
-        <form id="loginForm" class="access-form hidden">
-            <div class="form-group">
-                <label class="form-label">Email</label>
-                <input type="email" name="email" class="form-input" placeholder="tu@email.com" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Contraseña</label>
-                <input type="password" name="password" class="form-input" placeholder="Tu contraseña" required>
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">Iniciar sesión</button>
-        </form>
     </dialog>
 
     <script src="/static/script.js"></script>
