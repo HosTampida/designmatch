@@ -630,24 +630,23 @@ async function handleRegister(event) {
     const data = new FormData(event.currentTarget);
     const role = data.get("role");
 
-    const payload = {
-        name: String(data.get("name") || "").trim(),
-        email: String(data.get("email") || "").trim(),
-        phone: String(data.get("phone") || "").trim(),
-        role: role,
-        ...(role === "designer" && {
-            bio: String(data.get("bio") || "").trim(),
-            portfolio_url: String(data.get("portfolio_url") || "").trim(),
-            skills: collectCheckedValues("reg_skill_ids"),
-            price_min: 100,
-            skills: collectCheckedValues("reg_skill_ids"),
-            price_min: 100,
-            price_max: 500,
-        }),
-        ...(role === "client" && {
-            project_description: String(data.get("project_description") || "").trim(),
-        }),
-    };
+        const payload = {
+            name: String(data.get("name") || "").trim(),
+            email: String(data.get("email") || "").trim(),
+            phone: String(data.get("phone") || "").trim(),
+            password: "demo123",
+            role: role,
+            ...(role === "designer" && {
+                bio: String(data.get("bio") || "").trim(),
+                portfolio_url: String(data.get("portfolio_url") || "").trim(),
+                skills: collectCheckedValues("reg_skill_ids"),
+                price_min: 100,
+                price_max: 500,
+            }),
+            ...(role === "client" && {
+                project_description: String(data.get("project_description") || "").trim(),
+            }),
+        };
 
     try {
         const response = await api("/api/users", {

@@ -71,6 +71,7 @@ class Designer(db.Model):
             "designer_id": self.id,
             "name": self.user.name if self.user else "",
             "email": self.user.email if self.user else "",
+            "phone": self.phone,
             "bio": self.bio,
             "portfolio_url": self.portfolio_url,
             "price_min": self.price_min,
