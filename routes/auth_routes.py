@@ -103,23 +103,33 @@ def create_user():
 @auth_bp.post("/login")
 def login():
     try:
+        print("LOGIN START")
         payload = request.get_json(silent=True) or {}
+        print("Payload:", payload)
         email = str(payload.get("email", "")).strip().lower()
         password = str(payload.get("password", "")).strip()
+        print("Email:", email)
 
         if not email or not password:
             current_app.logger.warning("Login attempt with missing credentials: %s", email)
             return jsonify({"success": False, "message": "Email and password are required"}), 400
 
         user = User.query.filter_by(email=email).first()
+        print("User found:", user)
         if not user:
             current_app.logger.warning("Login failed - user not found: %s", email)
             return jsonify({"success": False, "message": "Invalid credentials"}), 401
 
+        if not user.password_hash:
+            return jsonify({"success": False, "message": "User has no password set"}), 400
+
+        print("Password hash:", user.password_hash)
+
         password_ok = False
         try:
             password_ok = check_password_hash(user.password_hash, password)
-        except (TypeError, ValueError):
+        except (TypeError, ValueError) as exc:
+            current_app.logger.warning("Password hash check failed for %s: %s", email, str(exc))
             password_ok = False
 
         # Legacy support: some environments may have stored plain-text passwords.
@@ -145,10 +155,9 @@ def login():
             }
         )
     except Exception as exc:
-        current_app.logger.error("Unexpected error during login for %s: %s",
-                                 payload.get("email") if isinstance(payload, dict) else None,
-                                 str(exc))
-        return jsonify({"success": False, "message": "Internal server error"}), 500
+        email_safe = payload.get("email") if isinstance(payload, dict) else None
+        current_app.logger.error(f"Login error for {email_safe}: {str(exc)}")
+        return jsonify({"success": False, "message": "Internal server error", "debug": str(exc)}), 500
 
 
 @auth_bp.get("/stats")
