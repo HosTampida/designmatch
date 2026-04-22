@@ -1,0 +1,357 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DesignMatch conecta clientes con estudiantes de diseno para proyectos reales.">
+    <title>DesignMatch - Marketplace de Disenadores</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x1F3A8;</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-content">
+            <a href="#inicio" class="logo" aria-label="Ir a inicio">
+                <span class="logo-icon">&#x1F3A8;</span>
+                <span class="logo-text">DesignMatch</span>
+            </a>
+
+            <nav class="nav">
+                <a class="nav-link" href="#disenadores">Disenadores</a>
+                <a class="nav-link" href="#proyecto">Tu proyecto</a>
+                <a class="nav-link" href="#como-funciona">Como funciona</a>
+                <button type="button" class="nav-link nav-button" data-action="estado">Estado</button>
+            </nav>
+
+            <div class="session-actions hidden" id="sessionActions">
+                <span class="session-pill" id="headerSessionBadge">Sin sesion</span>
+                <button type="button" class="btn btn-outline" id="logoutButton">Cerrar sesion</button>
+            </div>
+
+            <div class="nav-actions" id="guestActions">
+                <button type="button" class="btn btn-outline" data-open-access="login">Iniciar sesión</button>
+                <button type="button" class="btn btn-primary" data-open-access="register">Registrarse</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero" id="inicio">
+        <div class="container hero-content">
+            <!-- DM-UPDATE start: hero refresh -->
+            <div class="hero-layout">
+                <div class="hero-copy">
+                    <p class="hero-kicker">Marketplace creativo listo para presentar</p>
+                    <h1 class="hero-title">DesignMatch: Tu mejor match creativo, impulsado por datos</h1>
+                    <p class="hero-subtitle">
+                        Conecta tu proyecto con el disenador ideal en minutos. Perfiles reales, creacion agil y un ranking de matches claro para tu cliente.
+                    </p>
+
+                    <div class="hero-actions">
+                        <a href="#proyecto" class="btn btn-primary btn-lg">Buscar mejores matches</a>
+                        <button type="button" class="btn btn-outline btn-light" data-action="como-funciona">Ver recorrido</button>
+                    </div>
+                </div>
+
+                <div class="hero-media">
+                    <section class="hero-carousel" id="heroCarousel" aria-label="Banners destacados de DesignMatch">
+                        <div class="hero-carousel-track">
+                            <article class="hero-slide is-active" data-slide-index="0" style="background-image: url('/static/img/Banner.PNG')">
+                                <div class="hero-slide-overlay">
+                                    <p class="hero-slide-kicker">Match inteligente</p>
+                                    <h2 class="hero-slide-title">Presenta una plataforma que conecta talento y necesidad real.</h2>
+                                </div>
+                            </article>
+
+                            <article class="hero-slide" data-slide-index="1" style="background-image: url('/static/img/Banner 2.PNG')">
+                                <div class="hero-slide-overlay">
+                                    <p class="hero-slide-kicker">Experiencia visual</p>
+                                    <h2 class="hero-slide-title">Haz que la demo se sienta como producto, no como maqueta.</h2>
+                                </div>
+                            </article>
+
+                            <article class="hero-slide" data-slide-index="2" style="background-image: url('/static/img/Banner 3.PNG')">
+                                <div class="hero-slide-overlay">
+                                    <p class="hero-slide-kicker">Ranking visible</p>
+                                    <h2 class="hero-slide-title">Muestra seleccion creativa respaldada por datos claros.</h2>
+                                </div>
+                            </article>
+                        </div>
+
+                        <div class="hero-carousel-controls">
+                            <button type="button" class="hero-carousel-arrow" id="heroPrev" aria-label="Banner anterior">‹</button>
+                            <div class="hero-carousel-dots" id="heroDots" aria-label="Seleccion de banners">
+                                <button type="button" class="hero-dot is-active" data-slide-target="0" aria-label="Ver banner 1"></button>
+                                <button type="button" class="hero-dot" data-slide-target="1" aria-label="Ver banner 2"></button>
+                                <button type="button" class="hero-dot" data-slide-target="2" aria-label="Ver banner 3"></button>
+                            </div>
+                            <button type="button" class="hero-carousel-arrow" id="heroNext" aria-label="Siguiente banner">›</button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <!-- DM-UPDATE end: hero refresh -->
+
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="metricDesigners">0</div>
+                    <div class="stat-label">Disenadores</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="metricProjects">0</div>
+                    <div class="stat-label">Proyectos</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="metricStatus">...</div>
+                    <div class="stat-label">Estado</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="main">
+        <div class="container main-grid">
+            <aside class="sidebar-stack">
+                <section class="panel" id="proyecto">
+                    <div class="panel-header">
+                        <div>
+                            <p class="panel-kicker">Tu proyecto</p>
+                            <h2 class="panel-title">Cuentanos que necesitas</h2>
+                        </div>
+                        <span class="session-pill" id="sessionBadge">Sin sesión</span>
+                    </div>
+
+                    <form id="projectForm" class="project-form">
+                        <div class="form-group">
+                            <label class="form-label">Titulo del proyecto</label>
+                            <input type="text" name="title" class="form-input" placeholder="Landing para una marca estudiantil" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Descripcion</label>
+                            <textarea name="description" class="form-input form-textarea" rows="4" placeholder="Describe brevemente lo que busca el cliente"></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Presupuesto minimo</label>
+                                <input type="number" name="budget_min" class="form-input" min="0" step="10" value="150">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Presupuesto maximo</label>
+                                <input type="number" name="budget_max" class="form-input" min="0" step="10" value="500">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Urgencia</label>
+                            <select name="urgency" class="form-input">
+                                <option value="low">Baja</option>
+                                <option value="medium" selected>Media</option>
+                                <option value="high">Alta</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Skills necesarias</label>
+                            <div id="skillsOptions" class="chip-grid"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Estilo preferido</label>
+                            <div id="stylesOptions" class="chip-grid"></div>
+                        </div>
+
+                        <div class="selected-designer" id="pickedDesigner">
+                            Ningun disenador elegido manualmente.
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block" id="submitProject">
+                            Encontrar mejores disenadores
+                        </button>
+                    </form>
+                </section>
+
+                <section class="panel filters-panel">
+                    <div class="panel-header">
+                        <div>
+                            <p class="panel-kicker">Filtros</p>
+                            <h2 class="panel-title">Explora el catalogo</h2>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Skill</label>
+                        <select class="form-input" id="filterSkill">
+                            <option value="">Todas</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Estilo</label>
+                        <select class="form-input" id="filterStyle">
+                            <option value="">Todos</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Precio maximo</label>
+                        <select class="form-input" id="filterBudget">
+                            <option value="">Cualquier rango</option>
+                            <option value="250">Hasta $250</option>
+                            <option value="400">Hasta $400</option>
+                            <option value="600">Hasta $600</option>
+                            <option value="800">Hasta $800</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-actions">
+                        <button type="button" class="btn btn-primary" id="applyFilters">Aplicar</button>
+                        <button type="button" class="btn btn-outline" id="clearFilters">Limpiar</button>
+                    </div>
+                </section>
+            </aside>
+
+            <section class="content-stack">
+                <section class="panel" id="disenadores">
+                    <div class="panel-header panel-header-inline">
+                        <div>
+                            <p class="panel-kicker">Talento disponible</p>
+                            <h2 class="panel-title">Disenadores destacados</h2>
+                        </div>
+                        <button type="button" class="btn btn-outline" data-action="refresh">Actualizar catalogo</button>
+                    </div>
+
+                    <div id="designersGrid" class="designers-grid"></div>
+                </section>
+
+                <section class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <p class="panel-kicker">Resultados</p>
+                            <h2 class="panel-title">Ranking de matches</h2>
+                        </div>
+                    </div>
+
+                    <p id="resultsHint" class="results-hint">Completa el formulario de tu proyecto para ver recomendaciones aqui.</p>
+                    <div id="resultsContainer" class="results-list empty-state">
+                        Aun no hay recomendaciones para mostrar.
+                    </div>
+                </section>
+            </section>
+        </div>
+    </main>
+
+    <section class="info-sections" id="como-funciona">
+        <div class="container info-grid">
+            <article class="info-card">
+                <h3>Como funciona</h3>
+                <p>1. Explora perfiles, portafolios y rangos de precio.</p>
+                <p>2. Describe rapidamente tu proyecto.</p>
+                <p>3. Presenta el ranking recomendado al cliente.</p>
+            </article>
+            <article class="info-card">
+                <h3>Todo responde</h3>
+                <p>Los botones de estado, perfil, ingreso y soporte tienen una accion real o una respuesta visual clara.</p>
+            </article>
+            <article class="info-card">
+                <h3>Listo para demo</h3>
+                <p>El proyecto abre con datos sembrados, ranking visible y una interfaz mas brillante y facil de explicar.</p>
+            </article>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <!-- DM-UPDATE start: footer refresh -->
+            <div class="footer-copy">
+                <p>DesignMatch - Big data designers | kenneth jimenez · valentina rosellon · michelle lascano · silvana olivera</p>
+            </div>
+            <a href="#inicio" class="footer-logo-link" aria-label="Ir a inicio">
+                <img
+                    class="footer-logo logo-img--md"
+                    src="/static/img/Logo variante 1.png"
+                    alt="Logo de DesignMatch"
+                    loading="lazy"
+                    decoding="async">
+            </a>
+            <!-- DM-UPDATE end: footer refresh -->
+        </div>
+    </footer>
+
+    <dialog id="profileDialog" class="dialog">
+        <button class="dialog-close" id="closeProfileDialog" aria-label="Cerrar perfil">&times;</button>
+        <div id="profileContent"></div>
+    </dialog>
+
+    <dialog id="infoDialog" class="dialog">
+        <button class="dialog-close" id="closeInfoDialog" aria-label="Cerrar informacion">&times;</button>
+        <div id="infoContent"></div>
+    </dialog>
+
+    <dialog id="accessDialog" class="dialog dialog-sm">
+        <button class="dialog-close" id="closeAccessDialog" aria-label="Cerrar acceso">&times;</button>
+        <div class="access-header">
+            <p class="panel-kicker">Registro / Login</p>
+            <h2 class="panel-title" id="accessTitle">Registrarse</h2>
+            <p id="accessCopy">Crea tu cuenta como cliente o diseñador.</p>
+        </div>
+
+        <form id="registerForm" class="access-form">
+            <div class="form-group">
+                <label class="form-label">Nombre</label>
+                <input type="text" name="name" class="form-input" placeholder="Tu nombre completo" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-input" placeholder="tu@email.com" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Teléfono / WhatsApp</label>
+                <input type="tel" name="phone" class="form-input" placeholder="+1 234 567 890">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Rol *</label>
+                <select name="role" class="form-input" id="roleSelect">
+                    <option value="client">Cliente</option>
+                    <option value="designer">Diseñador</option>
+                </select>
+            </div>
+            <div class="form-group designer-fields" id="designerFields" style="display:none;">
+                <label class="form-label">Bio / Descripción</label>
+                <textarea name="bio" class="form-input form-textarea" rows="2" placeholder="Breve descripción de tus servicios"></textarea>
+            </div>
+            <div class="form-group designer-fields" id="designerPortfolio">
+                <label class="form-label">Portfolio URL (opcional)</label>
+                <input type="url" name="portfolio_url" class="form-input" placeholder="https://mi-portfolio.com">
+            </div>
+            <div class="form-group designer-fields" id="designerSkills">
+                <label class="form-label">Skills</label>
+                <div id="regSkillsOptions" class="chip-grid"></div>
+            </div>
+            <div class="form-group client-fields" id="clientFields">
+                <label class="form-label">Descripción de tu proyecto (opcional)</label>
+                <textarea name="project_description" class="form-input form-textarea" rows="2" placeholder="Tipo de proyectos que buscas..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Crear cuenta</button>
+        </form>
+
+        <form id="loginForm" class="access-form hidden">
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-input" placeholder="tu@email.com" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Contraseña</label>
+                <input type="password" name="password" class="form-input" placeholder="Tu contraseña" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Iniciar sesión</button>
+        </form>
+    </dialog>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
