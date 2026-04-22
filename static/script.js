@@ -328,6 +328,16 @@ function renderDesigners() {
             const designer = state.designers.find(d => d.designer_id === id);
             if (!designer) return;
 
+            if (state.currentUser && state.currentUser.role === "admin") {
+                if (confirm(`Delete designer ${designer.name}?`)) {
+                    api(`/api/users/${id}`, {method: "DELETE"}).then(() => {
+                        loadDesigners();
+                        alert("Designer deleted");
+                    }).catch(err => alert("Error: " + err.message));
+                }
+                return;
+            }
+
             contactDesigner(
                 designer.phone || null,
                 designer.name,
@@ -717,7 +727,7 @@ function clearCurrentUser() {
 
 function syncSessionBadges() {
     const label = state.currentUser
-        ? `${state.currentUser.name} (${state.currentUser.role === "designer" ? "disenador" : "cliente"})`
+        ? `${state.currentUser.name} (${state.currentUser.role === "admin" ? "👑 ADMIN" : state.currentUser.role === "designer" ? "disenador" : "cliente"})`
         : "Sin sesion";
 
     document.getElementById("sessionBadge").textContent = label;

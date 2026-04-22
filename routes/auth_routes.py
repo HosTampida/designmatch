@@ -161,6 +161,17 @@ def get_info():
         }
     )
 
+@auth_bp.delete("/users/<int:user_id>")
+def delete_user(user_id):
+    from services.auth_service import require_auth
+    user, error = require_auth("admin")()
+    if error:
+        return error
+    
+    target = User.query.get_or_404(user_id)
+    db.session.delete(target)
+    db.session.commit()
+    return jsonify({"success": True, "message": f"User {target.email} deleted"}), 200
 
 def _clean_id_list(raw_values):
     clean_ids = []
