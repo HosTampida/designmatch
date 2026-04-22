@@ -68,7 +68,7 @@ function initHeroCarousel() {
     }
 
     const slides = Array.from(carousel.querySelectorAll(".hero-slide"));
-    const dots = Array.from(document.querySelectorAll("[data-slide-target]"));
+    const dots = Array.from(carousel.querySelectorAll("[data-slide-target]"));
     const prevButton = document.getElementById("heroPrev");
     const nextButton = document.getElementById("heroNext");
 
@@ -77,12 +77,14 @@ function initHeroCarousel() {
     }
 
     const SLIDE_DURATION = 5000; // 5 seconds
+    const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
 
     const renderCarousel = (index) => {
         state.heroCarousel.activeIndex = index;
 
         slides.forEach((slide, slideIndex) => {
             slide.classList.toggle("is-active", slideIndex === index);
+            slide.setAttribute("aria-hidden", slideIndex === index ? "false" : "true");
         });
 
         dots.forEach((dot, dotIndex) => {
@@ -98,6 +100,9 @@ function initHeroCarousel() {
     };
 
     const restartAutoplay = () => {
+        if (prefersReducedMotion) {
+            return;
+        }
         window.clearInterval(state.heroCarousel.timerId);
         state.heroCarousel.timerId = window.setInterval(() => {
             goToSlide(state.heroCarousel.activeIndex + 1);
@@ -119,19 +124,23 @@ function initHeroCarousel() {
         restartAutoplay();
     };
 
-    prevButton.addEventListener("click", handlePrev);
-    nextButton.addEventListener("click", handleNext);
+    prevButton?.addEventListener("click", handlePrev);
+    nextButton?.addEventListener("click", handleNext);
 
     dots.forEach((dot) => {
         dot.addEventListener("click", () => handleDotClick(dot));
     });
 
-    // Pause on hover, resume on leave
-    carousel.addEventListener("mouseenter", () => window.clearInterval(state.heroCarousel.timerId));
-    carousel.addEventListener("mouseleave", restartAutoplay);
+    // Pause on hover, resume on leave (if autoplay is enabled)
+    if (!prefersReducedMotion) {
+        carousel.addEventListener("mouseenter", () => window.clearInterval(state.heroCarousel.timerId));
+        carousel.addEventListener("mouseleave", restartAutoplay);
+    }
 
     // Keyboard navigation
     document.addEventListener("keydown", (event) => {
+        const shouldHandleKey = carousel.matches(":hover") || carousel.contains(document.activeElement);
+        if (!shouldHandleKey) return;
         if (event.key === "ArrowLeft") handlePrev();
         if (event.key === "ArrowRight") handleNext();
     });

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -38,11 +38,34 @@
         </div>
     </header>
 
-    <section class="hero" id="inicio">
-        <div class="container hero-content">
-            <!-- DM-UPDATE start: hero refresh -->
-            <div class="hero-layout">
-                <div class="hero-copy">
+    <section class="hero" id="inicio" aria-label="Seccion principal con banners destacados">
+        <!-- DM-UPDATE start: hero refresh -->
+        <section class="hero-carousel" id="heroCarousel" aria-label="Banners destacados de DesignMatch">
+            <div class="hero-carousel-track">
+                <article class="hero-slide is-active" data-slide-index="0" style="background-image: url('/static/img/Banner.PNG')">
+                    <div class="hero-slide-overlay" aria-hidden="true">
+                        <p class="hero-slide-kicker">Match inteligente</p>
+                        <h2 class="hero-slide-title">Presenta una plataforma que conecta talento y necesidad real.</h2>
+                    </div>
+                </article>
+
+                <article class="hero-slide" data-slide-index="1" style="background-image: url('/static/img/Banner 2.PNG')">
+                    <div class="hero-slide-overlay" aria-hidden="true">
+                        <p class="hero-slide-kicker">Experiencia visual</p>
+                        <h2 class="hero-slide-title">Haz que la demo se sienta como producto, no como maqueta.</h2>
+                    </div>
+                </article>
+
+                <article class="hero-slide" data-slide-index="2" style="background-image: url('/static/img/Banner 3.PNG')">
+                    <div class="hero-slide-overlay" aria-hidden="true">
+                        <p class="hero-slide-kicker">Ranking visible</p>
+                        <h2 class="hero-slide-title">Muestra seleccion creativa respaldada por datos claros.</h2>
+                    </div>
+                </article>
+            </div>
+
+            <div class="hero-center">
+                <div class="container hero-content">
                     <p class="hero-kicker">Marketplace creativo listo para presentar</p>
                     <h1 class="hero-title">DesignMatch: Tu mejor match creativo, impulsado por datos</h1>
                     <p class="hero-subtitle">
@@ -53,62 +76,35 @@
                         <a href="#proyecto" class="btn btn-primary btn-lg">Buscar mejores matches</a>
                         <button type="button" class="btn btn-outline btn-light" data-action="como-funciona">Ver recorrido</button>
                     </div>
-                </div>
 
-                <div class="hero-media">
-                    <section class="hero-carousel" id="heroCarousel" aria-label="Banners destacados de DesignMatch">
-                        <div class="hero-carousel-track">
-                            <article class="hero-slide is-active" data-slide-index="0" style="background-image: url('/static/img/Banner.PNG')">
-                                <div class="hero-slide-overlay">
-                                    <p class="hero-slide-kicker">Match inteligente</p>
-                                    <h2 class="hero-slide-title">Presenta una plataforma que conecta talento y necesidad real.</h2>
-                                </div>
-                            </article>
-
-                            <article class="hero-slide" data-slide-index="1" style="background-image: url('/static/img/Banner 2.PNG')">
-                                <div class="hero-slide-overlay">
-                                    <p class="hero-slide-kicker">Experiencia visual</p>
-                                    <h2 class="hero-slide-title">Haz que la demo se sienta como producto, no como maqueta.</h2>
-                                </div>
-                            </article>
-
-                            <article class="hero-slide" data-slide-index="2" style="background-image: url('/static/img/Banner 3.PNG')">
-                                <div class="hero-slide-overlay">
-                                    <p class="hero-slide-kicker">Ranking visible</p>
-                                    <h2 class="hero-slide-title">Muestra seleccion creativa respaldada por datos claros.</h2>
-                                </div>
-                            </article>
+                    <div class="hero-stats" aria-label="Metricas rapidas">
+                        <div class="stat-item">
+                            <div class="stat-value" id="metricDesigners">0</div>
+                            <div class="stat-label">Disenadores</div>
                         </div>
-
-                        <div class="hero-carousel-controls">
-                            <button type="button" class="hero-carousel-arrow" id="heroPrev" aria-label="Banner anterior">‹</button>
-                            <div class="hero-carousel-dots" id="heroDots" aria-label="Seleccion de banners">
-                                <button type="button" class="hero-dot is-active" data-slide-target="0" aria-label="Ver banner 1"></button>
-                                <button type="button" class="hero-dot" data-slide-target="1" aria-label="Ver banner 2"></button>
-                                <button type="button" class="hero-dot" data-slide-target="2" aria-label="Ver banner 3"></button>
-                            </div>
-                            <button type="button" class="hero-carousel-arrow" id="heroNext" aria-label="Siguiente banner">›</button>
+                        <div class="stat-item">
+                            <div class="stat-value" id="metricProjects">0</div>
+                            <div class="stat-label">Proyectos</div>
                         </div>
-                    </section>
+                        <div class="stat-item">
+                            <div class="stat-value" id="metricStatus">...</div>
+                            <div class="stat-label">Estado</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <!-- DM-UPDATE end: hero refresh -->
 
-            <div class="hero-stats">
-                <div class="stat-item">
-                    <div class="stat-value" id="metricDesigners">0</div>
-                    <div class="stat-label">Disenadores</div>
+            <div class="hero-carousel-controls" aria-label="Controles de carrusel">
+                <button type="button" class="hero-carousel-arrow" id="heroPrev" aria-label="Banner anterior">&lsaquo;</button>
+                <div class="hero-carousel-dots" id="heroDots" aria-label="Seleccion de banners">
+                    <button type="button" class="hero-dot is-active" data-slide-target="0" aria-label="Ver banner 1"></button>
+                    <button type="button" class="hero-dot" data-slide-target="1" aria-label="Ver banner 2"></button>
+                    <button type="button" class="hero-dot" data-slide-target="2" aria-label="Ver banner 3"></button>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="metricProjects">0</div>
-                    <div class="stat-label">Proyectos</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="metricStatus">...</div>
-                    <div class="stat-label">Estado</div>
-                </div>
+                <button type="button" class="hero-carousel-arrow" id="heroNext" aria-label="Siguiente banner">&rsaquo;</button>
             </div>
-        </div>
+        </section>
+        <!-- DM-UPDATE end: hero refresh -->
     </section>
 
     <main class="main">
