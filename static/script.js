@@ -1,5 +1,3 @@
-document.documentElement.classList.add("js");
-
 const state = {
     designers: [],
     filteredDesigners: [],
@@ -13,14 +11,32 @@ const state = {
         activeIndex: 0,
         timerId: null,
     },
+    projectTitle: '',
 };
+
+
+function contactDesigner(phone, name, projectTitle) {
+    if (!phone) {
+        alert("Este diseñador aún no tiene número disponible");
+        return;
+    }
+
+    const cleanPhone = phone.toString().replace(/[\s+\-()]/g, '');
+
+    const message = `Hola ${name}, vi tu perfil en DesignMatch 🚀  
+Estoy interesado en trabajar contigo en: "${projectTitle}"  
+¿Tienes disponibilidad?`;
+
+    const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+
+    window.open(url, '_blank');
+}
 
 
 document.addEventListener("DOMContentLoaded", async () => {
     restoreSession();
     bindEvents();
     initHeroCarousel();
-    initScrollReveal();
     await Promise.all([loadHealth(), loadInfo(), loadStats(), loadReferenceData(), loadDesigners()]);
 });
 
@@ -71,7 +87,7 @@ function initHeroCarousel() {
     }
 
     const slides = Array.from(carousel.querySelectorAll(".hero-slide"));
-    const dots = Array.from(carousel.querySelectorAll("[data-slide-target]"));
+    const dots = Array.from(document.querySelectorAll("[data-slide-target]"));
     const prevButton = document.getElementById("heroPrev");
     const nextButton = document.getElementById("heroNext");
 
@@ -80,14 +96,12 @@ function initHeroCarousel() {
     }
 
     const SLIDE_DURATION = 5000; // 5 seconds
-    const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
 
     const renderCarousel = (index) => {
         state.heroCarousel.activeIndex = index;
 
         slides.forEach((slide, slideIndex) => {
             slide.classList.toggle("is-active", slideIndex === index);
-            slide.setAttribute("aria-hidden", slideIndex === index ? "false" : "true");
         });
 
         dots.forEach((dot, dotIndex) => {
@@ -103,9 +117,6 @@ function initHeroCarousel() {
     };
 
     const restartAutoplay = () => {
-        if (prefersReducedMotion) {
-            return;
-        }
         window.clearInterval(state.heroCarousel.timerId);
         state.heroCarousel.timerId = window.setInterval(() => {
             goToSlide(state.heroCarousel.activeIndex + 1);
@@ -127,58 +138,25 @@ function initHeroCarousel() {
         restartAutoplay();
     };
 
-    prevButton?.addEventListener("click", handlePrev);
-    nextButton?.addEventListener("click", handleNext);
+    prevButton.addEventListener("click", handlePrev);
+    nextButton.addEventListener("click", handleNext);
 
     dots.forEach((dot) => {
         dot.addEventListener("click", () => handleDotClick(dot));
     });
 
-    // Pause on hover, resume on leave (if autoplay is enabled)
-    if (!prefersReducedMotion) {
-        carousel.addEventListener("mouseenter", () => window.clearInterval(state.heroCarousel.timerId));
-        carousel.addEventListener("mouseleave", restartAutoplay);
-    }
+    // Pause on hover, resume on leave
+    carousel.addEventListener("mouseenter", () => window.clearInterval(state.heroCarousel.timerId));
+    carousel.addEventListener("mouseleave", restartAutoplay);
 
     // Keyboard navigation
     document.addEventListener("keydown", (event) => {
-        const shouldHandleKey = carousel.matches(":hover") || carousel.contains(document.activeElement);
-        if (!shouldHandleKey) return;
         if (event.key === "ArrowLeft") handlePrev();
         if (event.key === "ArrowRight") handleNext();
     });
 
     renderCarousel(0);
     restartAutoplay();
-}
-
-function initScrollReveal() {
-    const items = Array.from(document.querySelectorAll("[data-animate]"));
-    if (!items.length) return;
-
-    const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
-    if (prefersReducedMotion) {
-        items.forEach((item) => item.classList.add("is-visible"));
-        return;
-    }
-
-    if (!("IntersectionObserver" in window)) {
-        items.forEach((item) => item.classList.add("is-visible"));
-        return;
-    }
-
-    const observer = new IntersectionObserver(
-        (entries, obs) => {
-            entries.forEach((entry) => {
-                if (!entry.isIntersecting) return;
-                entry.target.classList.add("is-visible");
-                obs.unobserve(entry.target);
-            });
-        },
-        { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
-    );
-
-    items.forEach((item) => observer.observe(item));
 }
 
 async function toggleRoleFields() {
@@ -330,7 +308,10 @@ function renderDesigners() {
 
                     <div class="card-actions">
                         <button type="button" class="btn btn-outline" data-profile-id="${designer.designer_id}">Ver perfil</button>
-                        <button type="button" class="btn btn-primary" data-pick-id="${designer.designer_id}">Elegir</button>
+                        ${designer.phone 
+  ? `<button class="btn btn-primary btn-whatsapp" data-pick-id="${designer.designer_id}">📱 Contactar</button>`
+  : `<button class="btn btn-outline" data-pick-id="${designer.designer_id}">Elegir</button>`
+}
                     </div>
                 </article>
             `;
@@ -342,7 +323,25 @@ function renderDesigners() {
     });
 
     grid.querySelectorAll("[data-pick-id]").forEach((button) => {
-        button.addEventListener("click", () => pickDesigner(Number(button.dataset.pickId)));
+        button.addEventListener("click", () => {
+            const id = Number(button.dataset.pickId);
+            const designer = state.designers.find(d => d.designer_id === id);
+
+            if (!designer) return;
+
+            // Fallback elegante
+            if (!designer.phone) {
+                pickDesigner(id);
+                return;
+            }
+
+            console.log("Lead enviado a:", designer.name);
+            contactDesigner(
+                designer.phone,
+                designer.name,
+                state.projectTitle || "mi proyecto"
+            );
+        });
     });
 }
 
@@ -395,6 +394,7 @@ async function handleProjectSubmit(event) {
     try {
         const form = event.currentTarget;
         const payload = formToProjectPayload(form);
+        state.projectTitle = payload.title;
         const createResponse = await api("/api/projects", {
             method: "POST",
             body: JSON.stringify(payload),
@@ -641,12 +641,13 @@ async function handleRegister(event) {
     const payload = {
         name: String(data.get("name") || "").trim(),
         email: String(data.get("email") || "").trim(),
-        password: String(data.get("password") || "").trim(),
         phone: String(data.get("phone") || "").trim(),
         role: role,
         ...(role === "designer" && {
             bio: String(data.get("bio") || "").trim(),
             portfolio_url: String(data.get("portfolio_url") || "").trim(),
+            skills: collectCheckedValues("reg_skill_ids"),
+            price_min: 100,
             skills: collectCheckedValues("reg_skill_ids"),
             price_min: 100,
             price_max: 500,
@@ -661,7 +662,7 @@ async function handleRegister(event) {
             method: "POST",
             body: JSON.stringify(payload),
         });
-        setCurrentUser({ ...response.data.user, token: response.data.token });
+        setCurrentUser(response.data);
         closeDialog("accessDialog");
         openInfoDialog(`
             <p class="panel-kicker">¡Éxito!</p>
@@ -797,17 +798,8 @@ async function api(url, options = {}) {
         ...options,
     });
 
-    const raw = await response.text();
-    let payload;
-    try {
-        payload = raw ? JSON.parse(raw) : {};
-    } catch (_error) {
-        console.error("[api] Non-JSON response", { url, status: response.status, raw });
-        throw new Error("El servidor devolvio una respuesta invalida");
-    }
-
+    const payload = await response.json();
     if (!response.ok) {
-        console.warn("[api] Request failed", { url, status: response.status, payload });
         throw new Error(payload.message || "La solicitud fallo");
     }
 

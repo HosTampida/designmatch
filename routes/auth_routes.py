@@ -1,6 +1,4 @@
 from flask import Blueprint, current_app, jsonify, request
-from sqlalchemy.exc import IntegrityError
-from urllib.parse import urlsplit, urlunsplit
 from werkzeug.security import check_password_hash, generate_password_hash
 import logging
 
@@ -10,32 +8,6 @@ from services.auth_service import generate_token
 
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api")
-
-
-def _mask_db_uri(uri: str) -> str:
-    """Mask credentials in DB URL for safe logging."""
-    try:
-        parts = urlsplit(uri)
-        if "@" not in parts.netloc or ":" not in parts.netloc.split("@", 1)[0]:
-            return uri
-
-        userinfo, hostinfo = parts.netloc.split("@", 1)
-        username = userinfo.split(":", 1)[0]
-        netloc = f"{username}:***@{hostinfo}"
-        return urlunsplit((parts.scheme, netloc, parts.path, parts.query, parts.fragment))
-    except Exception:
-        return "<unavailable>"
-
-
-def _debug_db(where: str):
-    uri = str(current_app.config.get("SQLALCHEMY_DATABASE_URI", ""))
-    print(f"[DB DEBUG] {where} uri={_mask_db_uri(uri)}")
-    try:
-        probe = User.query.first()
-        print("[DB DEBUG] User.query.first() OK:", probe)
-    except Exception as exc:
-        print("[DB DEBUG] User.query.first() FAILED:", str(exc))
-        raise
 
 
 @auth_bp.get("/health")
@@ -62,8 +34,6 @@ def create_user():
     role = str(payload.get("role", "client")).strip().lower() or "client"
     password = str(payload.get("password", "")).strip()
 
-    current_app.logger.info("Register attempt email=%s role=%s", email, role)
-
     if not name or not email or not password:
         return jsonify({"success": False, "message": "name, email y password son obligatorios"}), 400
 
@@ -74,48 +44,37 @@ def create_user():
     if existing:
         return jsonify({"success": False, "message": "Email already registered"}), 409
 
-    try:
-        user = User(
-            name=name,
-            email=email,
-            phone=str(payload.get("phone") or "").strip() or None,
-            project_description=str(payload.get("project_description") or "").strip() if role == "client" else None,
-            password_hash=generate_password_hash(password),
-            role=role,
+    user = User(
+        name=name,
+        email=email,
+        phone=payload.get("phone"),
+        project_description=payload.get("project_description") if role == "client" else None,
+        password_hash=generate_password_hash(password),
+        role=role,
+    )
+    db.session.add(user)
+    db.session.flush()
+
+    if role == "designer":
+        designer = Designer(
+            user_id=user.id,
+            phone=payload.get("phone"),
+            bio=payload.get("bio", ""),
+            portfolio_url=payload.get("portfolio_url", ""),
+            price_min=float(payload.get("price_min", 0)),
+            price_max=float(payload.get("price_max", 0)),
+            rating=float(payload.get("rating", 0)),
+            completed_projects=int(payload.get("completed_projects", 0) or 0),
         )
-        db.session.add(user)
+        db.session.add(designer)
         db.session.flush()
 
-        if role == "designer":
-            designer = Designer(
-                user_id=user.id,
-                phone=str(payload.get("phone") or "").strip() or None,
-                bio=str(payload.get("bio") or "").strip(),
-                portfolio_url=str(payload.get("portfolio_url") or "").strip(),
-                price_min=_to_float(payload.get("price_min"), 0),
-                price_max=_to_float(payload.get("price_max"), 0),
-                rating=_to_float(payload.get("rating"), 0),
-                completed_projects=_to_int(payload.get("completed_projects"), 0),
-            )
-            db.session.add(designer)
-            db.session.flush()
+        skill_ids = _clean_id_list(payload.get("skills", []))
+        for skill in Skill.query.filter(Skill.id.in_(skill_ids)).all():
+            db.session.add(DesignerSkill(designer_id=designer.id, skill_id=skill.id))
 
-            skill_ids = _clean_id_list(payload.get("skills", []))
-            for skill in Skill.query.filter(Skill.id.in_(skill_ids)).all():
-                db.session.add(DesignerSkill(designer_id=designer.id, skill_id=skill.id))
-
-        db.session.commit()
-    except IntegrityError as exc:
-        db.session.rollback()
-        current_app.logger.warning("Register failed (integrity) email=%s: %s", email, str(exc))
-        return jsonify({"success": False, "message": "Email already registered"}), 409
-    except Exception as exc:
-        db.session.rollback()
-        current_app.logger.exception("Register failed email=%s: %s", email, str(exc))
-        return jsonify({"success": False, "message": "Internal server error"}), 500
-
+    db.session.commit()
     token = generate_token(user)
-    current_app.logger.info("User registered email=%s id=%s", email, user.id)
 
     return jsonify(
         {
@@ -130,45 +89,20 @@ def create_user():
 @auth_bp.post("/login")
 def login():
     try:
-        print("LOGIN START")
-        _debug_db("POST /api/login")
         payload = request.get_json(silent=True) or {}
-        print("Payload:", payload)
         email = str(payload.get("email", "")).strip().lower()
         password = str(payload.get("password", "")).strip()
-        print("Email:", email)
 
         if not email or not password:
             current_app.logger.warning("Login attempt with missing credentials: %s", email)
             return jsonify({"success": False, "message": "Email and password are required"}), 400
 
         user = User.query.filter_by(email=email).first()
-        print("User found:", user)
         if not user:
             current_app.logger.warning("Login failed - user not found: %s", email)
             return jsonify({"success": False, "message": "Invalid credentials"}), 401
 
-        if not user.password_hash:
-            return jsonify({"success": False, "message": "User has no password set"}), 400
-
-        print("Password hash:", user.password_hash)
-
-        password_ok = False
-        try:
-            password_ok = check_password_hash(user.password_hash, password)
-        except (TypeError, ValueError) as exc:
-            current_app.logger.warning("Password hash check failed for %s: %s", email, str(exc))
-            password_ok = False
-
-        # Legacy support: some environments may have stored plain-text passwords.
-        # If it matches, upgrade the stored value to a secure hash (no schema change).
-        if not password_ok and str(user.password_hash or "") == password:
-            current_app.logger.warning("Legacy plain password detected for %s - upgrading hash", email)
-            user.password_hash = generate_password_hash(password)
-            db.session.commit()
-            password_ok = True
-
-        if not password_ok:
+        if not check_password_hash(user.password_hash, password):
             current_app.logger.warning("Login failed - wrong password for user: %s", email)
             return jsonify({"success": False, "message": "Invalid credentials"}), 401
 
@@ -183,35 +117,24 @@ def login():
             }
         )
     except Exception as exc:
-        email_safe = payload.get("email") if isinstance(payload, dict) else None
-        current_app.logger.error(f"Login error for {email_safe}: {str(exc)}")
-        return jsonify({"success": False, "message": "Internal server error", "debug": str(exc)}), 500
+        current_app.logger.error("Unexpected error during login for %s: %s",
+                                 payload.get("email") if isinstance(payload, dict) else None,
+                                 str(exc))
+        return jsonify({"success": False, "message": "Internal server error"}), 500
 
 
 @auth_bp.get("/stats")
 def get_stats():
-    try:
-        users_count = User.query.count()
-    except Exception:
-        users_count = 0
-
-    try:
-        projects_count = Project.query.count()
-    except Exception:
-        projects_count = 0
-
-    try:
-        designers_count = Designer.query.count()
-    except Exception:
-        designers_count = 0
-
     return jsonify(
         {
             "success": True,
             "data": {
-                "users": users_count,
-                "projects": projects_count,
-                "designers": designers_count,
+                "designers": Designer.query.count(),
+                "skills": Skill.query.count(),
+                "styles": Style.query.count(),
+                "projects": Project.query.count(),
+                "matches": Match.query.count(),
+                "applications": Match.query.count(),
             },
         }
     )
@@ -247,21 +170,3 @@ def _clean_id_list(raw_values):
         except (TypeError, ValueError):
             continue
     return clean_ids
-
-
-def _to_float(value, default=0.0):
-    if value in (None, ""):
-        return float(default)
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return float(default)
-
-
-def _to_int(value, default=0):
-    if value in (None, ""):
-        return int(default)
-    try:
-        return int(value)
-    except (TypeError, ValueError):
-        return int(default)

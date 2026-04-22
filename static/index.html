@@ -38,34 +38,11 @@
         </div>
     </header>
 
-    <section class="hero" id="inicio" aria-label="Seccion principal con banners destacados">
-        <!-- DM-UPDATE start: hero refresh -->
-        <section class="hero-carousel" id="heroCarousel" aria-label="Banners destacados de DesignMatch">
-            <div class="hero-carousel-track">
-                <article class="hero-slide is-active" data-slide-index="0" style="background-image: url('/static/img/Banner.PNG')">
-                    <div class="hero-slide-overlay" aria-hidden="true">
-                        <p class="hero-slide-kicker">Match inteligente</p>
-                        <h2 class="hero-slide-title">Presenta una plataforma que conecta talento y necesidad real.</h2>
-                    </div>
-                </article>
-
-                <article class="hero-slide" data-slide-index="1" style="background-image: url('/static/img/Banner 2.PNG')">
-                    <div class="hero-slide-overlay" aria-hidden="true">
-                        <p class="hero-slide-kicker">Experiencia visual</p>
-                        <h2 class="hero-slide-title">Haz que la demo se sienta como producto, no como maqueta.</h2>
-                    </div>
-                </article>
-
-                <article class="hero-slide" data-slide-index="2" style="background-image: url('/static/img/Banner 3.PNG')">
-                    <div class="hero-slide-overlay" aria-hidden="true">
-                        <p class="hero-slide-kicker">Ranking visible</p>
-                        <h2 class="hero-slide-title">Muestra seleccion creativa respaldada por datos claros.</h2>
-                    </div>
-                </article>
-            </div>
-
-            <div class="hero-center">
-                <div class="container hero-content">
+    <section class="hero" id="inicio">
+        <div class="container hero-content">
+            <!-- DM-UPDATE start: hero refresh -->
+            <div class="hero-layout">
+                <div class="hero-copy">
                     <p class="hero-kicker">Marketplace creativo listo para presentar</p>
                     <h1 class="hero-title">DesignMatch: Tu mejor match creativo, impulsado por datos</h1>
                     <p class="hero-subtitle">
@@ -76,116 +53,65 @@
                         <a href="#proyecto" class="btn btn-primary btn-lg">Buscar mejores matches</a>
                         <button type="button" class="btn btn-outline btn-light" data-action="como-funciona">Ver recorrido</button>
                     </div>
+                </div>
 
-                    <div class="hero-stats" aria-label="Metricas rapidas">
-                        <div class="stat-item">
-                            <div class="stat-value" id="metricDesigners">0</div>
-                            <div class="stat-label">Disenadores</div>
+                <div class="hero-media">
+                    <section class="hero-carousel" id="heroCarousel" aria-label="Banners destacados de DesignMatch">
+                        <div class="hero-carousel-track">
+                            <article class="hero-slide is-active" data-slide-index="0" style="background-image: url('/static/img/Banner.PNG')">
+                                <div class="hero-slide-overlay">
+                                    <p class="hero-slide-kicker">Match inteligente</p>
+                                    <h2 class="hero-slide-title">Presenta una plataforma que conecta talento y necesidad real.</h2>
+                                </div>
+                            </article>
+
+                            <article class="hero-slide" data-slide-index="1" style="background-image: url('/static/img/Banner 2.PNG')">
+                                <div class="hero-slide-overlay">
+                                    <p class="hero-slide-kicker">Experiencia visual</p>
+                                    <h2 class="hero-slide-title">Haz que la demo se sienta como producto, no como maqueta.</h2>
+                                </div>
+                            </article>
+
+                            <article class="hero-slide" data-slide-index="2" style="background-image: url('/static/img/Banner 3.PNG')">
+                                <div class="hero-slide-overlay">
+                                    <p class="hero-slide-kicker">Ranking visible</p>
+                                    <h2 class="hero-slide-title">Muestra seleccion creativa respaldada por datos claros.</h2>
+                                </div>
+                            </article>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="metricProjects">0</div>
-                            <div class="stat-label">Proyectos</div>
+
+                        <div class="hero-carousel-controls">
+                            <button type="button" class="hero-carousel-arrow" id="heroPrev" aria-label="Banner anterior">‹</button>
+                            <div class="hero-carousel-dots" id="heroDots" aria-label="Seleccion de banners">
+                                <button type="button" class="hero-dot is-active" data-slide-target="0" aria-label="Ver banner 1"></button>
+                                <button type="button" class="hero-dot" data-slide-target="1" aria-label="Ver banner 2"></button>
+                                <button type="button" class="hero-dot" data-slide-target="2" aria-label="Ver banner 3"></button>
+                            </div>
+                            <button type="button" class="hero-carousel-arrow" id="heroNext" aria-label="Siguiente banner">›</button>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="metricStatus">...</div>
-                            <div class="stat-label">Estado</div>
-                        </div>
-                    </div>
+                    </section>
                 </div>
             </div>
+            <!-- DM-UPDATE end: hero refresh -->
 
-            <div class="hero-carousel-controls" aria-label="Controles de carrusel">
-                <button type="button" class="hero-carousel-arrow" id="heroPrev" aria-label="Banner anterior">&lsaquo;</button>
-                <div class="hero-carousel-dots" id="heroDots" aria-label="Seleccion de banners">
-                    <button type="button" class="hero-dot is-active" data-slide-target="0" aria-label="Ver banner 1"></button>
-                    <button type="button" class="hero-dot" data-slide-target="1" aria-label="Ver banner 2"></button>
-                    <button type="button" class="hero-dot" data-slide-target="2" aria-label="Ver banner 3"></button>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="metricDesigners">0</div>
+                    <div class="stat-label">Disenadores</div>
                 </div>
-                <button type="button" class="hero-carousel-arrow" id="heroNext" aria-label="Siguiente banner">&rsaquo;</button>
-            </div>
-        </section>
-        <!-- DM-UPDATE end: hero refresh -->
-    </section>
-
-    <!-- SaaS landing sections -->
-    <section class="section section-features" id="features">
-        <div class="container">
-            <header class="section-header" data-animate>
-                <p class="section-kicker">Por que DesignMatch</p>
-                <h2 class="section-title">Una demo que se ve como producto real</h2>
-                <p class="section-subtitle">Estructura clara, interfaz limpia y datos listos para presentar en minutos.</p>
-            </header>
-
-            <div class="feature-grid">
-                <article class="feature-card" data-animate>
-                    <div class="feature-icon" aria-hidden="true">🧭</div>
-                    <h3 class="feature-title">Explora talento</h3>
-                    <p class="feature-copy">Perfiles con estilo, skills y rangos de precio listos para comparar.</p>
-                </article>
-                <article class="feature-card" data-animate>
-                    <div class="feature-icon" aria-hidden="true">⚡</div>
-                    <h3 class="feature-title">Crea un proyecto rapido</h3>
-                    <p class="feature-copy">Un formulario simple para capturar contexto y filtrar opciones sin friccion.</p>
-                </article>
-                <article class="feature-card" data-animate>
-                    <div class="feature-icon" aria-hidden="true">📊</div>
-                    <h3 class="feature-title">Ranking entendible</h3>
-                    <p class="feature-copy">Matches visibles, con puntaje y argumentos que facilitan la decision.</p>
-                </article>
-                <article class="feature-card" data-animate>
-                    <div class="feature-icon" aria-hidden="true">🔒</div>
-                    <h3 class="feature-title">Flujos reales</h3>
-                    <p class="feature-copy">Login, estado, perfiles y dialogs funcionando sin romper la experiencia.</p>
-                </article>
-            </div>
-        </div>
-    </section>
-
-    <section class="section section-steps" id="como-funciona">
-        <div class="container">
-            <header class="section-header" data-animate>
-                <p class="section-kicker">Como funciona</p>
-                <h2 class="section-title">Tres pasos, sin vueltas</h2>
-                <p class="section-subtitle">Del brief al match en una secuencia clara para tu cliente.</p>
-            </header>
-
-            <ol class="steps-grid">
-                <li class="step-card" data-animate>
-                    <div class="step-number">1</div>
-                    <h3 class="step-title">Crea tu proyecto</h3>
-                    <p class="step-copy">Describe lo que necesitas y define presupuesto/estilo.</p>
-                </li>
-                <li class="step-card" data-animate>
-                    <div class="step-number">2</div>
-                    <h3 class="step-title">Recibe matches</h3>
-                    <p class="step-copy">Filtra y compara perfiles con informacion accionable.</p>
-                </li>
-                <li class="step-card" data-animate>
-                    <div class="step-number">3</div>
-                    <h3 class="step-title">Elige disenador</h3>
-                    <p class="step-copy">Presenta el ranking y abre perfiles para cerrar la decision.</p>
-                </li>
-            </ol>
-
-            <div class="trust-band" data-animate aria-label="Seccion de confianza">
-                <p class="trust-copy"><strong>Trusted by creatives:</strong> pensado para mostrar trabajo real, no pantallas sueltas.</p>
-                <div class="trust-avatars" aria-hidden="true">
-                    <span class="trust-avatar">DM</span>
-                    <span class="trust-avatar">UX</span>
-                    <span class="trust-avatar">UI</span>
-                    <span class="trust-avatar">BD</span>
-                    <span class="trust-avatar">AI</span>
+                <div class="stat-item">
+                    <div class="stat-value" id="metricProjects">0</div>
+                    <div class="stat-label">Proyectos</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="metricStatus">...</div>
+                    <div class="stat-label">Estado</div>
                 </div>
             </div>
         </div>
     </section>
 
     <main class="main">
-        <div class="container main-intro" data-animate>
-            <p class="section-kicker">Demo en vivo</p>
-            <h2 class="section-title">Prueba el matching ahora</h2>
-            <p class="section-subtitle">Completa el formulario, aplica filtros y revisa el ranking generado.</p>
-        </div>
         <div class="container main-grid">
             <aside class="sidebar-stack">
                 <section class="panel" id="proyecto">
@@ -319,16 +245,22 @@
         </div>
     </main>
 
-    <section class="section section-final-cta" aria-label="Llamado a la accion final">
-        <div class="container final-cta-card" data-animate>
-            <div class="final-cta-copy">
-                <h2 class="final-cta-title">Listo para hacer match con el disenador ideal</h2>
-                <p class="final-cta-subtitle">Crea un proyecto, mira el ranking y presenta resultados con confianza.</p>
-            </div>
-            <div class="final-cta-actions">
-                <a href="#proyecto" class="btn btn-primary btn-lg">Crear proyecto</a>
-                <button type="button" class="btn btn-outline btn-light btn-lg" data-open-access="register">Crear cuenta</button>
-            </div>
+    <section class="info-sections" id="como-funciona">
+        <div class="container info-grid">
+            <article class="info-card">
+                <h3>Como funciona</h3>
+                <p>1. Explora perfiles, portafolios y rangos de precio.</p>
+                <p>2. Describe rapidamente tu proyecto.</p>
+                <p>3. Presenta el ranking recomendado al cliente.</p>
+            </article>
+            <article class="info-card">
+                <h3>Todo responde</h3>
+                <p>Los botones de estado, perfil, ingreso y soporte tienen una accion real o una respuesta visual clara.</p>
+            </article>
+            <article class="info-card">
+                <h3>Listo para demo</h3>
+                <p>El proyecto abre con datos sembrados, ranking visible y una interfaz mas brillante y facil de explicar.</p>
+            </article>
         </div>
     </section>
 
@@ -376,10 +308,6 @@
             <div class="form-group">
                 <label class="form-label">Email</label>
                 <input type="email" name="email" class="form-input" placeholder="tu@email.com" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Contraseña</label>
-                <input type="password" name="password" class="form-input" placeholder="Crea una contraseña" minlength="6" required>
             </div>
             <div class="form-group">
                 <label class="form-label">Teléfono / WhatsApp</label>
