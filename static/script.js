@@ -693,6 +693,7 @@ async function handleLogin(event) {
             }),
         });
         setCurrentUser({ ...response.data.user, token: response.data.token });
+        localStorage.setItem("token", response.data.token); // Bonus direct token
         closeDialog("accessDialog");
         openInfoDialog(`
             <p class="panel-kicker">Bienvenido</p>
@@ -768,6 +769,7 @@ function updateNavButtons() {
 }
 
 function handleLogout() {
+    localStorage.removeItem("token");
     clearCurrentUser();
     openInfoDialog(`
         <p class="panel-kicker">Hasta pronto</p>
@@ -793,13 +795,31 @@ function closeDialog(id) {
 
 
 async function api(url, options = {}) {
+    const stored = localStorage.getItem("designmatch_user");
+    let token = null;
+    if (stored) {
+        try {
+            token = JSON.parse(stored).token;
+        } catch (e) {
+            console.error("[api] Token parse error", e);
+        }
+    }
+    console.log("[api] Token loaded:", !!token);
+
+    const headers = {
+        ...(options.headers || {}),
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+    };
+
     const response = await fetch(url, {
-        headers: { "Content-Type": "application/json" },
+        headers,
         ...options,
     });
 
-    const payload = await response.json();
+    const payload = await response.json().catch(() => ({}));
     if (!response.ok) {
+        console.error("[api] Request failed", { url, status: response.status, payload });
         throw new Error(payload.message || "La solicitud fallo");
     }
 
