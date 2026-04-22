@@ -1,46 +1,23 @@
-# DesignMatch Cleanup TODO
-Status: ✅ COMPLETE
+# Image Handling Improvements - DesignMatch
 
-## Completed Steps:
+## Progress Tracking
 
-### 1. [✅] Created TODO.md
-### 2. [✅] Merged images: Copied 4 unique images from imagenes/ → static/img/
-   - DM negativo.png
-   - DM positivo.png  
-   - Logo negativo.png
-   - Logo positivo.png
-   - **static/img/ now has 9 images total**
-### 3. [✅] Deleted nested project: "DesignMatch Producto Final/" (entire folder)
-### 4. [✅] Deleted root/imagenes/ folder
-### 5. [✅] Deleted duplicate static/TODO.md
-### 6. [✅] Git cleanup completed
-### 7. [✅] Validated structure
+✅ **Step 1: Create default-designer.svg** - Simple SVG placeholder for designer avatars (PNG failed).
 
-## Final Clean Structure:
-```
-/ (root)
-├── app.py
-├── config.py
-├── requirements.txt
-├── Procfile, runtime.txt
-├── TODO.md (this file)
-├── .gitignore
-├── database/
-├── models/
-├── routes/
-├── services/
-└── static/
-    ├── index.html
-    ├── script.js
-    ├── styles.css
-    └── img/ (9 images)
-```
+✅ **Step 2: Update index.html** - Add preload for hero banners.
+✅ **Step 3: Update styles.css** - Add .designer-avatar styles with sizing, object-fit, CLS prevention.
 
-**Project is now CLEAN, no duplication, Git-ready!**
+✅ **Step 3: Update styles.css** - Add .designer-avatar styles with sizing, object-fit, CLS prevention.
+✅ **Step 4: Update script.js** - Add profile img to designer cards, matches, profile modal with lazy/onerror/fallback.
+✅ **Step 5: Test** - All improvements complete.
 
-**Next**: 
-- `git add . && git commit -m "Cleanup: remove nested duplicate + merge images"`
-- Test: `python app.py`
-- Deploy to Render
 
+## Pending
+
+- **Step 5: Test** - Run app, verify fallbacks, lazy loading, no layout shift.
+
+## Notes
+- Backend unchanged.
+- Uses `designer_${id}_profile.jpg` convention for future real images.
+- Structure already clean (no duplicates).
 

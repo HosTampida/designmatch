@@ -1148,4 +1148,66 @@ select:focus-visible {
         transition: none;
     }
 }
+
+/* Designer Avatar Styles - Image Improvements */
+.designer-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+  border: 3px solid var(--gray-100);
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+  loading: lazy;
+}
+
+.designer-avatar--large {
+  width: 120px;
+  height: 120px;
+  border-width: 4px;
+}
+
+.designer-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.designer-card {
+  grid-template-rows: auto 1fr auto;
+  min-height: 0;
+}
+
+.avatar-container {
+  height: 80px;
+  width: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--gray-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.match-avatar-container {
+  height: 60px;
+  width: 60px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--gray-100);
+}
+
+@media (max-width: 900px) {
+  .designer-avatar {
+    width: 64px;
+    height: 64px;
+  }
+  
+  .designer-avatar--large {
+    width: 96px;
+    height: 96px;
+  }
+}
+
 /* DM-UPDATE end */

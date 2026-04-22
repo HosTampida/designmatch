@@ -279,6 +279,13 @@ function renderDesigners() {
 
             return `
                 <article class="designer-card${isSelected}" id="designer-${designer.designer_id}">
+                    <div class="avatar-container">
+                        <img class="designer-avatar" 
+                             src="/static/img/designer_${designer.designer_id}_profile.jpg" 
+                             alt="${designer.name} avatar"
+                             loading="lazy" 
+                             onerror="this.src='/static/img/default-designer.svg'; this.onerror=null;">
+                    </div>
                     <div class="designer-header">
                         <div>
                             <span class="designer-badge">Estudiante recomendado</span>
@@ -317,6 +324,7 @@ function renderDesigners() {
             `;
         })
         .join("");
+
 
     grid.querySelectorAll("[data-profile-id]").forEach((button) => {
         button.addEventListener("click", () => openProfile(Number(button.dataset.profileId)));
@@ -451,11 +459,20 @@ function renderMatches(matches) {
         .map(
             (match, index) => `
                 <article class="match-card">
-                    <div>
-                        <div class="match-rank">Top ${index + 1}</div>
-                        <h3 class="match-name">${match.name}</h3>
-                        <p class="match-score">${match.score.toFixed(1)} / 100 de compatibilidad</p>
-                        <p class="match-price">Rango: $${Math.round(match.price_min)} - $${Math.round(match.price_max)}</p>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div class="match-avatar-container">
+                            <img class="designer-avatar" style="width: 60px; height: 60px; border-radius: 12px; object-fit: cover;" 
+                                 src="/static/img/designer_${match.designer_id}_profile.jpg" 
+                                 alt="${match.name} avatar"
+                                 loading="lazy" 
+                                 onerror="this.src='/static/img/default-designer.svg'; this.onerror=null;">
+                        </div>
+                        <div>
+                            <div class="match-rank">Top ${index + 1}</div>
+                            <h3 class="match-name">${match.name}</h3>
+                            <p class="match-score">${match.score.toFixed(1)} / 100 de compatibilidad</p>
+                            <p class="match-price">Rango: $${Math.round(match.price_min)} - $${Math.round(match.price_max)}</p>
+                        </div>
                     </div>
                     <div class="match-actions">
                         <a class="btn btn-outline" href="${match.portfolio_url}" target="_blank" rel="noreferrer">Portafolio</a>
@@ -464,6 +481,7 @@ function renderMatches(matches) {
                 </article>
             `
         )
+
         .join("");
 
     container.querySelectorAll("[data-match-profile]").forEach((button) => {
@@ -490,8 +508,19 @@ function openProfile(designerId) {
     }
 
     document.getElementById("profileContent").innerHTML = `
-        <p class="panel-kicker">Perfil del disenador</p>
-        <h2 class="panel-title">${designer.name}</h2>
+        <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px;">
+            <div class="avatar-container">
+                <img class="designer-avatar designer-avatar--large" 
+                     src="/static/img/designer_${designer.designer_id}_profile.jpg" 
+                     alt="${designer.name} avatar"
+                     loading="lazy" 
+                     onerror="this.src='/static/img/default-designer.svg'; this.onerror=null;">
+            </div>
+            <div>
+                <p class="panel-kicker">Perfil del disenador</p>
+                <h2 class="panel-title">${designer.name}</h2>
+            </div>
+        </div>
         <p class="modal-copy">${designer.bio}</p>
         <div class="profile-grid">
             <div>
@@ -514,6 +543,7 @@ function openProfile(designerId) {
             <button type="button" class="btn btn-outline" id="profilePickButton">Elegir para mi proyecto</button>
         </div>
     `;
+
 
     showDialog("profileDialog");
     document.getElementById("profilePickButton").addEventListener("click", () => {
