@@ -25,6 +25,10 @@ def health_check():
     )
 
 
+def generate_avatar_url(name):
+    seed = name.strip() if name and name.strip() else "user"
+    return f"https://api.dicebear.com/9.x/adventurer/svg?seed={seed}"
+
 @auth_bp.post("/auth/register")
 @auth_bp.post("/users")
 def create_user():
@@ -47,6 +51,7 @@ def create_user():
     user = User(
         name=name,
         email=email,
+        avatar_url=generate_avatar_url(name),
         phone=payload.get("phone"),
         project_description=payload.get("project_description") if role == "client" else None,
         password_hash=generate_password_hash(password),

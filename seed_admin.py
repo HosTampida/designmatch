@@ -19,6 +19,7 @@ with app.app_context():
         admin = User(
             name="Admin Super",
             email=admin_email,
+            avatar_url="https://api.dicebear.com/9.x/adventurer/svg?seed=Admin Super",
             password_hash=generate_password_hash("admin123"),
             role="admin"
         )

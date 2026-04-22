@@ -17,6 +17,7 @@ class User(db.Model):
     role = db.Column(db.String(20), nullable=False)
     project_description = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    avatar_url = db.Column(db.String(500), nullable=False, default='')
 
     designer_profile = db.relationship(
         "Designer",
@@ -32,6 +33,7 @@ class User(db.Model):
             "name": self.name,
             "email": self.email,
             "role": self.role,
+            "avatar_url": self.avatar_url,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 
@@ -71,6 +73,7 @@ class Designer(db.Model):
             "designer_id": self.id,
             "name": self.user.name if self.user else "",
             "email": self.user.email if self.user else "",
+            "avatar_url": self.user.avatar_url if self.user else "",
             "phone": self.phone,
             "bio": self.bio,
             "portfolio_url": self.portfolio_url,

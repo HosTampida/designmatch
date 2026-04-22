@@ -139,6 +139,7 @@ def import_designers():
                     user = User(
                         name=name,
                         email=email,
+                        avatar_url=generate_avatar_url(name),
                         password_hash=generate_password_hash("demo123"),
                         role="designer",
                     )

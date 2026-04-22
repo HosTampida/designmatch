@@ -19,6 +19,7 @@ function contactDesigner(phone, name, projectTitle) {
     if (!phone) {
         alert("Este diseñador aún no tiene número disponible");
         return;
+    
     }
 
     const cleanPhone = phone.toString().replace(/[\s+\-()]/g, '');
@@ -289,7 +290,7 @@ function renderDesigners() {
                 <article class="designer-card${isSelected}" id="designer-${designer.designer_id}">
                     <div class="avatar-container">
                         <img class="designer-avatar" 
-                             src="/static/img/designer_${designer.designer_id}_profile.jpg" 
+                             src="${designer.avatar_url || '/static/img/default-designer.svg'}" 
                              alt="${designer.name} avatar"
                              loading="lazy" 
                              onerror="this.src='/static/img/default-designer.svg'; this.onerror=null;">
@@ -470,7 +471,7 @@ function renderMatches(matches) {
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <div class="match-avatar-container">
                             <img class="designer-avatar" style="width: 60px; height: 60px; border-radius: 12px; object-fit: cover;" 
-                                 src="/static/img/designer_${match.designer_id}_profile.jpg" 
+                                 src="${match.avatar_url || '/static/img/default-designer.svg'}" 
                                  alt="${match.name} avatar"
                                  loading="lazy" 
                                  onerror="this.src='/static/img/default-designer.svg'; this.onerror=null;">
@@ -519,7 +520,7 @@ function openProfile(designerId) {
         <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px;">
             <div class="avatar-container">
                 <img class="designer-avatar designer-avatar--large" 
-                     src="/static/img/designer_${designer.designer_id}_profile.jpg" 
+                     src="${designer.avatar_url || '/static/img/default-designer.svg'}" 
                      alt="${designer.name} avatar"
                      loading="lazy" 
                      onerror="this.src='/static/img/default-designer.svg'; this.onerror=null;">
