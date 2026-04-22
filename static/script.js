@@ -866,6 +866,7 @@ async function api(url, options = {}) {
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) {
         console.error("[api] Request failed", { url, status: response.status, payload });
+        console.error("Error details:", payload);
         throw new Error(payload.message || "La solicitud fallo");
     }
 

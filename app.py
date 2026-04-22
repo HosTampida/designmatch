@@ -50,24 +50,36 @@ def create_app():
     def server_error(_error):
         return jsonify({"success": False, "message": "Internal server error"}), 500
 
-    @app.errorhandler(Exception)
-    def handle_exception(e):
-        # Keep normal HTTP errors (404, 401, etc.) working as-is.
-        if isinstance(e, HTTPException):
-            return e
+@app.errorhandler(Exception)
+def handle_exception(e):
+    # Keep normal HTTP errors (404, 401, etc.) working as-is.
+    if isinstance(e, HTTPException):
+        return e
 
-        import traceback
+    import traceback
 
-        print("GLOBAL ERROR:", str(e))
-        print(traceback.format_exc())
+    print("🚨 GLOBAL ERROR:", str(e))
+    print("📋 Traceback:")
+    traceback.print_exc()
 
-        return jsonify(
-            {
-                "success": False,
-                "message": "Internal server error",
-                "debug": str(e),
-            }
-        ), 500
+    # DB Schema check
+    try:
+        from database.db import db
+        from models.models import User
+        # Test new column
+        User.query.first()
+        print("✅ DB Schema OK - User model loads")
+    except Exception as schema_err:
+        print("❌ SCHEMA ISSUE:", str(schema_err))
+        print("💡 Run Supabase migration: ALTER TABLE users ADD COLUMN avatar_url VARCHAR(500) DEFAULT '';")
+
+    return jsonify(
+        {
+            "success": False,
+            "message": "Internal server error - check console logs",
+            "debug": str(e),
+        }
+    ), 500
 
     return app
 

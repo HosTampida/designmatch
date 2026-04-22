@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash
 
 from database.db import db
 from models.models import Designer, DesignerSkill, DesignerStyle, Skill, Style, User
+from routes.auth_routes import generate_avatar_url
 
 
 designer_bp = Blueprint("designers", __name__, url_prefix="/api")
@@ -139,7 +140,7 @@ def import_designers():
                     user = User(
                         name=name,
                         email=email,
-                        avatar_url=generate_avatar_url(name),
+                    avatar_url=generate_avatar_url(name),
                         password_hash=generate_password_hash("demo123"),
                         role="designer",
                     )
