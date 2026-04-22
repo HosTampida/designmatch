@@ -1,3 +1,5 @@
+document.documentElement.classList.add("js");
+
 const state = {
     designers: [],
     filteredDesigners: [],
@@ -18,6 +20,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     restoreSession();
     bindEvents();
     initHeroCarousel();
+    initScrollReveal();
     await Promise.all([loadHealth(), loadInfo(), loadStats(), loadReferenceData(), loadDesigners()]);
 });
 
@@ -147,6 +150,35 @@ function initHeroCarousel() {
 
     renderCarousel(0);
     restartAutoplay();
+}
+
+function initScrollReveal() {
+    const items = Array.from(document.querySelectorAll("[data-animate]"));
+    if (!items.length) return;
+
+    const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
+    if (prefersReducedMotion) {
+        items.forEach((item) => item.classList.add("is-visible"));
+        return;
+    }
+
+    if (!("IntersectionObserver" in window)) {
+        items.forEach((item) => item.classList.add("is-visible"));
+        return;
+    }
+
+    const observer = new IntersectionObserver(
+        (entries, obs) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+                entry.target.classList.add("is-visible");
+                obs.unobserve(entry.target);
+            });
+        },
+        { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
+    );
+
+    items.forEach((item) => observer.observe(item));
 }
 
 async function toggleRoleFields() {
