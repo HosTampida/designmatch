@@ -191,23 +191,30 @@ def login():
 @auth_bp.get("/stats")
 def get_stats():
     try:
-        _debug_db("GET /api/stats")
-        return jsonify(
-            {
-                "success": True,
-                "data": {
-                    "designers": Designer.query.count(),
-                    "skills": Skill.query.count(),
-                    "styles": Style.query.count(),
-                    "projects": Project.query.count(),
-                    "matches": Match.query.count(),
-                    "applications": Match.query.count(),
-                },
-            }
-        )
-    except Exception as e:
-        print("ERROR:", str(e))
-        return jsonify({"success": False, "message": "Internal server error", "debug": str(e)}), 500
+        users_count = User.query.count()
+    except Exception:
+        users_count = 0
+
+    try:
+        projects_count = Project.query.count()
+    except Exception:
+        projects_count = 0
+
+    try:
+        designers_count = Designer.query.count()
+    except Exception:
+        designers_count = 0
+
+    return jsonify(
+        {
+            "success": True,
+            "data": {
+                "users": users_count,
+                "projects": projects_count,
+                "designers": designers_count,
+            },
+        }
+    )
 
 
 @auth_bp.get("/info")
