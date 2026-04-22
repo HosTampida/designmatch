@@ -1,30 +1,3 @@
-from flask import Flask, jsonify
-import os
-from urllib.parse import urlsplit, urlunsplit
-from werkzeug.exceptions import HTTPException
-
-from config import Config
-from database.db import init_database
-from routes.auth_routes import auth_bp
-from routes.designer_routes import designer_bp
-from routes.project_routes import project_bp
-
-
-def _mask_db_uri(uri: str) -> str:
-    """Mask credentials in DB URL for safe logging."""
-    try:
-        parts = urlsplit(uri)
-        if "@" not in parts.netloc or ":" not in parts.netloc.split("@", 1)[0]:
-            return uri
-
-        userinfo, hostinfo = parts.netloc.split("@", 1)
-        username = userinfo.split(":", 1)[0]
-        netloc = f"{username}:***@{hostinfo}"
-        return urlunsplit((parts.scheme, netloc, parts.path, parts.query, parts.fragment))
-    except Exception:
-        return "<unavailable>"
-
-
 def create_app():
     app = Flask(__name__, static_folder="static", static_url_path="/static")
     app.config.from_object(Config)
@@ -50,43 +23,29 @@ def create_app():
     def server_error(_error):
         return jsonify({"success": False, "message": "Internal server error"}), 500
 
-@app.errorhandler(Exception)
-def handle_exception(e):
-    # Keep normal HTTP errors (404, 401, etc.) working as-is.
-    if isinstance(e, HTTPException):
-        return e
+    # ✅ GLOBAL ERROR HANDLER (CORRECT LOCATION)
+    @app.errorhandler(Exception)
+    def handle_exception(e):
+        from werkzeug.exceptions import HTTPException
+        import traceback
 
-    import traceback
+        if isinstance(e, HTTPException):
+            return e
 
-    print("🚨 GLOBAL ERROR:", str(e))
-    print("📋 Traceback:")
-    traceback.print_exc()
+        print("🚨 GLOBAL ERROR:", str(e))
+        traceback.print_exc()
 
-    # DB Schema check
-    try:
-        from database.db import db
-        from models.models import User
-        # Test new column
-        User.query.first()
-        print("✅ DB Schema OK - User model loads")
-    except Exception as schema_err:
-        print("❌ SCHEMA ISSUE:", str(schema_err))
-        print("💡 Run Supabase migration: ALTER TABLE users ADD COLUMN avatar_url VARCHAR(500) DEFAULT '';")
+        try:
+            from models.models import User
+            User.query.first()
+            print("✅ DB Schema OK")
+        except Exception as schema_err:
+            print("❌ SCHEMA ISSUE:", str(schema_err))
 
-    return jsonify(
-        {
+        return jsonify({
             "success": False,
             "message": "Internal server error - check console logs",
             "debug": str(e),
-        }
-    ), 500
+        }), 500
 
     return app
-
-
-app = create_app()
-
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # 👈 CLAVE para Render
-    app.run(host="0.0.0.0", port=port, debug=False)
