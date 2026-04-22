@@ -1,5 +1,6 @@
 from flask import Blueprint, current_app, jsonify, request
 from sqlalchemy.exc import IntegrityError
+from urllib.parse import urlsplit, urlunsplit
 from werkzeug.security import check_password_hash, generate_password_hash
 import logging
 
@@ -9,6 +10,32 @@ from services.auth_service import generate_token
 
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api")
+
+
+def _mask_db_uri(uri: str) -> str:
+    """Mask credentials in DB URL for safe logging."""
+    try:
+        parts = urlsplit(uri)
+        if "@" not in parts.netloc or ":" not in parts.netloc.split("@", 1)[0]:
+            return uri
+
+        userinfo, hostinfo = parts.netloc.split("@", 1)
+        username = userinfo.split(":", 1)[0]
+        netloc = f"{username}:***@{hostinfo}"
+        return urlunsplit((parts.scheme, netloc, parts.path, parts.query, parts.fragment))
+    except Exception:
+        return "<unavailable>"
+
+
+def _debug_db(where: str):
+    uri = str(current_app.config.get("SQLALCHEMY_DATABASE_URI", ""))
+    print(f"[DB DEBUG] {where} uri={_mask_db_uri(uri)}")
+    try:
+        probe = User.query.first()
+        print("[DB DEBUG] User.query.first() OK:", probe)
+    except Exception as exc:
+        print("[DB DEBUG] User.query.first() FAILED:", str(exc))
+        raise
 
 
 @auth_bp.get("/health")
@@ -104,6 +131,7 @@ def create_user():
 def login():
     try:
         print("LOGIN START")
+        _debug_db("POST /api/login")
         payload = request.get_json(silent=True) or {}
         print("Payload:", payload)
         email = str(payload.get("email", "")).strip().lower()
@@ -162,19 +190,24 @@ def login():
 
 @auth_bp.get("/stats")
 def get_stats():
-    return jsonify(
-        {
-            "success": True,
-            "data": {
-                "designers": Designer.query.count(),
-                "skills": Skill.query.count(),
-                "styles": Style.query.count(),
-                "projects": Project.query.count(),
-                "matches": Match.query.count(),
-                "applications": Match.query.count(),
-            },
-        }
-    )
+    try:
+        _debug_db("GET /api/stats")
+        return jsonify(
+            {
+                "success": True,
+                "data": {
+                    "designers": Designer.query.count(),
+                    "skills": Skill.query.count(),
+                    "styles": Style.query.count(),
+                    "projects": Project.query.count(),
+                    "matches": Match.query.count(),
+                    "applications": Match.query.count(),
+                },
+            }
+        )
+    except Exception as e:
+        print("ERROR:", str(e))
+        return jsonify({"success": False, "message": "Internal server error", "debug": str(e)}), 500
 
 
 @auth_bp.get("/info")
