@@ -641,13 +641,12 @@ async function handleRegister(event) {
     const payload = {
         name: String(data.get("name") || "").trim(),
         email: String(data.get("email") || "").trim(),
+        password: String(data.get("password") || "").trim(),
         phone: String(data.get("phone") || "").trim(),
         role: role,
         ...(role === "designer" && {
             bio: String(data.get("bio") || "").trim(),
             portfolio_url: String(data.get("portfolio_url") || "").trim(),
-            skills: collectCheckedValues("reg_skill_ids"),
-            price_min: 100,
             skills: collectCheckedValues("reg_skill_ids"),
             price_min: 100,
             price_max: 500,
@@ -662,7 +661,7 @@ async function handleRegister(event) {
             method: "POST",
             body: JSON.stringify(payload),
         });
-        setCurrentUser(response.data);
+        setCurrentUser({ ...response.data.user, token: response.data.token });
         closeDialog("accessDialog");
         openInfoDialog(`
             <p class="panel-kicker">¡Éxito!</p>
@@ -798,8 +797,17 @@ async function api(url, options = {}) {
         ...options,
     });
 
-    const payload = await response.json();
+    const raw = await response.text();
+    let payload;
+    try {
+        payload = raw ? JSON.parse(raw) : {};
+    } catch (_error) {
+        console.error("[api] Non-JSON response", { url, status: response.status, raw });
+        throw new Error("El servidor devolvio una respuesta invalida");
+    }
+
     if (!response.ok) {
+        console.warn("[api] Request failed", { url, status: response.status, payload });
         throw new Error(payload.message || "La solicitud fallo");
     }
 
