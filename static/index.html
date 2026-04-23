@@ -1,418 +1,299 @@
-﻿        <!DOCTYPE html>
-<html lang="es">
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="DesignMatch conecta clientes con estudiantes de diseno para proyectos reales.">
-    <title>DesignMatch - Marketplace de Disenadores</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x1F3A8;</text></svg>">
+    <meta name="description" content="DesignMatch connects founders and teams with creative talent through a polished SaaS experience.">
+    <title>DesignMatch</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/styles.css">
-    <link rel="preload" as="image" href="/static/img/Banner.PNG">
-    <link rel="preload" as="image" href="/static/img/Banner 2.PNG">
-    <link rel="preload" as="image" href="/static/img/Banner 3.PNG">
-
 </head>
 <body>
-    <header class="header">
-        <div class="container header-content">
-            <a href="#inicio" class="logo" aria-label="Ir a inicio">
-                <span class="logo-icon">&#x1F3A8;</span>
-                <span class="logo-text">DesignMatch</span>
-            </a>
+    <div class="page-shell">
+        <header class="site-header">
+            <div class="container header-row">
+                <a href="#top" class="brand" aria-label="DesignMatch home">
+                    <img src="/static/img/Logo variante 1.png" alt="DesignMatch logo" class="brand-mark">
+                    <span class="brand-text">DesignMatch</span>
+                </a>
 
-            <nav class="nav">
-                <a class="nav-link" href="#disenadores">Disenadores</a>
-                <a class="nav-link" href="#proyecto">Tu proyecto</a>
-                <a class="nav-link" href="#como-funciona">Como funciona</a>
-                <button type="button" class="nav-link nav-button" data-action="estado">Estado</button>
-            </nav>
+                <nav class="site-nav" aria-label="Primary">
+                    <a href="#product">Product</a>
+                    <a href="#showcase">Showcase</a>
+                    <a href="#faq">FAQ</a>
+                </nav>
 
-            <div class="session-actions hidden" id="sessionActions">
-                <span class="session-pill" id="headerSessionBadge">Sin sesion</span>
-                <button type="button" class="btn btn-outline" id="logoutButton">Cerrar sesion</button>
-            </div>
-
-            <div class="nav-actions" id="guestActions">
-                <button type="button" class="btn btn-outline" data-open-access="login">Iniciar sesión</button>
-                <button type="button" class="btn btn-primary" data-open-access="register">Registrarse</button>
-            </div>
-        </div>
-    </header>
-
-    <section class="hero" id="inicio">
-        <div class="container hero-content">
-            <!-- DM-UPDATE start: hero refresh -->
-            <div class="hero-layout">
-                <div class="hero-copy">
-                    <p class="hero-kicker">Marketplace creativo listo para presentar</p>
-                    <h1 class="hero-title">DesignMatch: Tu mejor match creativo, impulsado por datos</h1>
-                    <p class="hero-subtitle">
-                        Conecta tu proyecto con el disenador ideal en minutos. Perfiles reales, creacion agil y un ranking de matches claro para tu cliente.
-                    </p>
-
-                    <div class="hero-actions">
-                        <a href="#proyecto" class="btn btn-primary btn-lg">Buscar mejores matches</a>
-                        <button type="button" class="btn btn-outline btn-light" data-action="como-funciona">Ver recorrido</button>
-                    </div>
+                <div class="header-actions" id="guestActions">
+                    <button type="button" class="btn btn-ghost" data-open-auth="login">Log in</button>
+                    <button type="button" class="btn btn-primary" data-open-auth="register">Get started</button>
                 </div>
 
-                <div class="hero-media">
-                    <section class="hero-carousel" id="heroCarousel" aria-label="Banners destacados de DesignMatch">
-                        <div class="hero-carousel-track">
-                            <article class="hero-slide is-active" data-slide-index="0" style="background-image: url('/static/img/Banner.PNG')">
-                                <div class="hero-slide-overlay">
-                                    <p class="hero-slide-kicker">Match inteligente</p>
-                                    <h2 class="hero-slide-title">Presenta una plataforma que conecta talento y necesidad real.</h2>
-                                </div>
-                            </article>
+                <div class="session-menu is-hidden" id="sessionMenu">
+                    <div class="session-pill">
+                        <span class="session-pill-label">Signed in as</span>
+                        <strong id="sessionUserName">User</strong>
+                    </div>
+                    <button type="button" class="btn btn-ghost" id="logoutButton">Log out</button>
+                </div>
+            </div>
+        </header>
 
-                            <article class="hero-slide" data-slide-index="1" style="background-image: url('/static/img/Banner 2.PNG')">
-                                <div class="hero-slide-overlay">
-                                    <p class="hero-slide-kicker">Experiencia visual</p>
-                                    <h2 class="hero-slide-title">Haz que la demo se sienta como producto, no como maqueta.</h2>
-                                </div>
-                            </article>
+        <main id="top">
+            <section class="hero-section">
+                <div class="container hero-grid">
+                    <div class="hero-copy">
+                        <span class="eyebrow">Creative SaaS Marketplace</span>
+                        <h1>Turn a broken landing page into a product people trust.</h1>
+                        <p>
+                            DesignMatch helps clients discover creative talent, authenticate instantly, and move from interest to action with a frontend that behaves like a real SaaS app.
+                        </p>
 
-                            <article class="hero-slide" data-slide-index="2" style="background-image: url('/static/img/Banner 3.PNG')">
-                                <div class="hero-slide-overlay">
-                                    <p class="hero-slide-kicker">Ranking visible</p>
-                                    <h2 class="hero-slide-title">Muestra seleccion creativa respaldada por datos claros.</h2>
-                                </div>
+                        <div class="hero-cta">
+                            <button type="button" class="btn btn-primary btn-large" data-open-auth="register">Create account</button>
+                            <button type="button" class="btn btn-secondary btn-large" data-open-auth="login">Access dashboard</button>
+                        </div>
+
+                        <div class="hero-metrics">
+                            <article class="metric-card">
+                                <span class="metric-label">Designers</span>
+                                <strong id="designersCount">--</strong>
+                            </article>
+                            <article class="metric-card">
+                                <span class="metric-label">Projects</span>
+                                <strong id="projectsCount">--</strong>
+                            </article>
+                            <article class="metric-card">
+                                <span class="metric-label">API Health</span>
+                                <strong id="healthStatus">Checking</strong>
                             </article>
                         </div>
-
-                        <div class="hero-carousel-controls">
-                            <button type="button" class="hero-carousel-arrow" id="heroPrev" aria-label="Banner anterior">‹</button>
-                            <div class="hero-carousel-dots" id="heroDots" aria-label="Seleccion de banners">
-                                <button type="button" class="hero-dot is-active" data-slide-target="0" aria-label="Ver banner 1"></button>
-                                <button type="button" class="hero-dot" data-slide-target="1" aria-label="Ver banner 2"></button>
-                                <button type="button" class="hero-dot" data-slide-target="2" aria-label="Ver banner 3"></button>
-                            </div>
-                            <button type="button" class="hero-carousel-arrow" id="heroNext" aria-label="Siguiente banner">›</button>
-                        </div>
-                    </section>
-                </div>
-            </div>
-            <!-- DM-UPDATE end: hero refresh -->
-
-            <div class="hero-stats">
-                <div class="stat-item">
-                    <div class="stat-value" id="metricDesigners">0</div>
-                    <div class="stat-label">Disenadores</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="metricProjects">0</div>
-                    <div class="stat-label">Proyectos</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="metricStatus">...</div>
-                    <div class="stat-label">Estado</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <main class="main">
-        <div class="container main-grid">
-            <aside class="sidebar-stack">
-                <section class="panel" id="proyecto">
-                    <div class="panel-header">
-                        <div>
-                            <p class="panel-kicker">Tu proyecto</p>
-                            <h2 class="panel-title">Cuentanos que necesitas</h2>
-                        </div>
-                        <span class="session-pill" id="sessionBadge">Sin sesión</span>
                     </div>
 
-                    <form id="projectForm" class="project-form">
-                        <div class="form-group">
-                            <label class="form-label">Titulo del proyecto</label>
-                            <input type="text" name="title" class="form-input" placeholder="Landing para una marca estudiantil" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Descripcion</label>
-                            <textarea name="description" class="form-input form-textarea" rows="4" placeholder="Describe brevemente lo que busca el cliente"></textarea>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Presupuesto minimo</label>
-                                <input type="number" name="budget_min" class="form-input" min="0" step="10" value="150">
+                    <div class="hero-stage" id="showcase">
+                        <div class="slider-frame" aria-label="DesignMatch product highlights">
+                            <div class="slider-track" id="sliderTrack">
+                                <article class="slide is-active" data-slide="0" style="background-image: url('/static/img/Banner.PNG');">
+                                    <div class="slide-content">
+                                        <span>Frictionless onboarding</span>
+                                        <h2>Authentication flows that feel intentional instead of fragile.</h2>
+                                    </div>
+                                </article>
+                                <article class="slide" data-slide="1" style="background-image: url('/static/img/Banner 2.PNG');">
+                                    <div class="slide-content">
+                                        <span>Real product behavior</span>
+                                        <h2>Clean states for loading, success, and failure across the app.</h2>
+                                    </div>
+                                </article>
+                                <article class="slide" data-slide="2" style="background-image: url('/static/img/Banner 3.PNG');">
+                                    <div class="slide-content">
+                                        <span>Ready for demo day</span>
+                                        <h2>A modern presentation layer that finally matches your backend.</h2>
+                                    </div>
+                                </article>
                             </div>
 
-                            <div class="form-group">
-                                <label class="form-label">Presupuesto maximo</label>
-                                <input type="number" name="budget_max" class="form-input" min="0" step="10" value="500">
+                            <div class="slider-controls">
+                                <button type="button" class="slider-arrow" id="sliderPrev" aria-label="Previous slide">&lsaquo;</button>
+                                <div class="slider-dots" id="sliderDots">
+                                    <button type="button" class="slider-dot is-active" data-slide-target="0" aria-label="Go to slide 1"></button>
+                                    <button type="button" class="slider-dot" data-slide-target="1" aria-label="Go to slide 2"></button>
+                                    <button type="button" class="slider-dot" data-slide-target="2" aria-label="Go to slide 3"></button>
+                                </div>
+                                <button type="button" class="slider-arrow" id="sliderNext" aria-label="Next slide">&rsaquo;</button>
                             </div>
                         </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Urgencia</label>
-                            <select name="urgency" class="form-input">
-                                <option value="low">Baja</option>
-                                <option value="medium" selected>Media</option>
-                                <option value="high">Alta</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Skills necesarias</label>
-                            <div id="skillsOptions" class="chip-grid"></div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Estilo preferido</label>
-                            <div id="stylesOptions" class="chip-grid"></div>
-                        </div>
-
-                        <div class="selected-designer" id="pickedDesigner">
-                            Ningun disenador elegido manualmente.
-                        </div>
-
-                        <button type="submit" class="btn btn-primary btn-block" id="submitProject">
-                            Encontrar mejores disenadores
-                        </button>
-                    </form>
-                </section>
-
-                <section class="panel filters-panel">
-                    <div class="panel-header">
-                        <div>
-                            <p class="panel-kicker">Filtros</p>
-                            <h2 class="panel-title">Explora el catalogo</h2>
-                        </div>
                     </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Skill</label>
-                        <select class="form-input" id="filterSkill">
-                            <option value="">Todas</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Estilo</label>
-                        <select class="form-input" id="filterStyle">
-                            <option value="">Todos</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Precio maximo</label>
-                        <select class="form-input" id="filterBudget">
-                            <option value="">Cualquier rango</option>
-                            <option value="250">Hasta $250</option>
-                            <option value="400">Hasta $400</option>
-                            <option value="600">Hasta $600</option>
-                            <option value="800">Hasta $800</option>
-                        </select>
-                    </div>
-
-                    <div class="filter-actions">
-                        <button type="button" class="btn btn-primary" id="applyFilters">Aplicar</button>
-                        <button type="button" class="btn btn-outline" id="clearFilters">Limpiar</button>
-                    </div>
-                </section>
-            </aside>
-
-            <section class="content-stack">
-                <section class="panel" id="disenadores">
-                    <div class="panel-header panel-header-inline">
-                        <div>
-                            <p class="panel-kicker">Talento disponible</p>
-                            <h2 class="panel-title">Disenadores destacados</h2>
-                        </div>
-                        <button type="button" class="btn btn-outline" data-action="refresh">Actualizar catalogo</button>
-                    </div>
-
-                    <div id="designersGrid" class="designers-grid"></div>
-                </section>
-
-                <section class="panel">
-                    <div class="panel-header">
-                        <div>
-                            <p class="panel-kicker">Resultados</p>
-                            <h2 class="panel-title">Ranking de matches</h2>
-                        </div>
-                    </div>
-
-                    <p id="resultsHint" class="results-hint">Completa el formulario de tu proyecto para ver recomendaciones aqui.</p>
-                    <div id="resultsContainer" class="results-list empty-state">
-                        Aun no hay recomendaciones para mostrar.
-                    </div>
-                </section>
-            </section>
-        </div>
-    </main>
-
-    <section class="info-sections" id="como-funciona">
-        <div class="container info-grid">
-            <article class="info-card">
-                <h3>Como funciona</h3>
-                <p>1. Explora perfiles, portafolios y rangos de precio.</p>
-                <p>2. Describe rapidamente tu proyecto.</p>
-                <p>3. Presenta el ranking recomendado al cliente.</p>
-            </article>
-            <article class="info-card">
-                <h3>Todo responde</h3>
-                <p>Los botones de estado, perfil, ingreso y soporte tienen una accion real o una respuesta visual clara.</p>
-            </article>
-            <article class="info-card">
-                <h3>Listo para demo</h3>
-                <p>El proyecto abre con datos sembrados, ranking visible y una interfaz mas brillante y facil de explicar.</p>
-            </article>
-        </div>
-    </section>
-
-    <footer class="footer">
-        <div class="container footer-content">
-            <!-- DM-UPDATE start: footer refresh -->
-            <div class="footer-copy">
-                <p>DesignMatch - Big data designers | kenneth jimenez · valentina rosellon · michelle lascano · silvana olivera</p>
-            </div>
-            <a href="#inicio" class="footer-logo-link" aria-label="Ir a inicio">
-                <img
-                    class="footer-logo logo-img--md"
-                    src="/static/img/Logo variante 1.png"
-                    alt="Logo de DesignMatch"
-                    loading="lazy"
-                    decoding="async">
-            </a>
-            <!-- DM-UPDATE end: footer refresh -->
-        </div>
-    </footer>
-
-    <dialog id="profileDialog" class="dialog">
-        <button class="dialog-close" id="closeProfileDialog" aria-label="Cerrar perfil">&times;</button>
-        <div id="profileContent"></div>
-    </dialog>
-
-    <dialog id="infoDialog" class="dialog">
-        <button class="dialog-close" id="closeInfoDialog" aria-label="Cerrar informacion">&times;</button>
-        <div id="infoContent"></div>
-    </dialog>
-
-<dialog id="accessDialog" class="dialog dialog-auth">
-        <button class="dialog-close" id="closeAccessDialog" aria-label="Cerrar acceso">&times;</button>
-        
-        <div class="auth-layout">
-            <!-- Left: Image Showcase Carousel -->
-            <section class="auth-hero-panel" id="authHeroPanel" aria-label="Showcase creativo de DesignMatch">
-                <div class="auth-hero-carousel-track">
-                    <article class="auth-hero-slide is-active" data-slide-index="0" style="background-image: url('/static/img/Banner.PNG')">
-                        <div class="auth-hero-overlay">
-                            <p class="auth-hero-kicker">Creatividad ilimitada</p>
-                            <h3 class="auth-hero-title">Encuentra tu match perfecto</h3>
-                        </div>
-                    </article>
-                    <article class="auth-hero-slide" data-slide-index="1" style="background-image: url('/static/img/Banner 2.PNG')">
-                        <div class="auth-hero-overlay">
-                            <p class="auth-hero-kicker">Talento real</p>
-                            <h3 class="auth-hero-title">Disenadores estudiantes listos</h3>
-                        </div>
-                    </article>
-                    <article class="auth-hero-slide" data-slide-index="2" style="background-image: url('/static/img/Banner 3.PNG')">
-                        <div class="auth-hero-overlay">
-                            <p class="auth-hero-kicker">Datos inteligentes</p>
-                            <h3 class="auth-hero-title">Matches por compatibilidad</h3>
-                        </div>
-                    </article>
-                </div>
-                <div class="auth-hero-controls">
-                    <button type="button" class="auth-hero-arrow" id="authHeroPrev" aria-label="Banner anterior">‹</button>
-                    <div class="auth-hero-dots" id="authHeroDots" aria-label="Navegación de banners">
-                        <button type="button" class="auth-hero-dot is-active" data-slide-target="0" aria-label="Banner 1"></button>
-                        <button type="button" class="auth-hero-dot" data-slide-target="1" aria-label="Banner 2"></button>
-                        <button type="button" class="auth-hero-dot" data-slide-target="2" aria-label="Banner 3"></button>
-                    </div>
-                    <button type="button" class="auth-hero-arrow" id="authHeroNext" aria-label="Siguiente banner">›</button>
                 </div>
             </section>
 
-            <!-- Right: Form Panel -->
-            <div class="auth-form-panel">
-                <div class="access-header">
-                    <p class="panel-kicker">Acceso a DesignMatch</p>
-                    <h2 class="panel-title" id="accessTitle">Registrarse</h2>
-                    <p id="accessCopy">Únete como cliente o diseñador y conecta con proyectos reales.</p>
+            <section class="product-section" id="product">
+                <div class="container feature-grid">
+                    <article class="feature-card">
+                        <span class="feature-index">01</span>
+                        <h3>Modal auth that works</h3>
+                        <p>Login and registration stay hidden until triggered, with clean transitions and real request handling.</p>
+                    </article>
+                    <article class="feature-card">
+                        <span class="feature-index">02</span>
+                        <h3>Reliable frontend state</h3>
+                        <p>Buttons lock during network requests, errors show in context, and success feedback is immediate.</p>
+                    </article>
+                    <article class="feature-card">
+                        <span class="feature-index">03</span>
+                        <h3>Session-aware UI</h3>
+                        <p>Tokens persist in local storage, guest actions disappear after login, and the app feels consistent.</p>
+                    </article>
+                </div>
+            </section>
+
+            <section class="dashboard-section is-hidden" id="dashboardSection">
+                <div class="container dashboard-grid">
+                    <article class="dashboard-panel dashboard-panel-main">
+                        <div class="panel-header">
+                            <div>
+                                <span class="eyebrow eyebrow-dark">Workspace</span>
+                                <h2 id="dashboardGreeting">Welcome back</h2>
+                            </div>
+                            <span class="status-badge" id="dashboardRole">Client</span>
+                        </div>
+                        <p class="panel-copy" id="dashboardSummary">
+                            Your session is active and your frontend is ready for authenticated requests.
+                        </p>
+                        <div class="dashboard-actions">
+                            <button type="button" class="btn btn-primary" data-open-auth="login" id="switchAccountButton">Switch account</button>
+                            <button type="button" class="btn btn-secondary" id="copyTokenButton">Copy token</button>
+                        </div>
+                    </article>
+
+                    <article class="dashboard-panel">
+                        <span class="mini-label">Account</span>
+                        <ul class="detail-list">
+                            <li><span>Name</span><strong id="dashboardName">--</strong></li>
+                            <li><span>Email</span><strong id="dashboardEmail">--</strong></li>
+                            <li><span>Phone</span><strong id="dashboardPhone">--</strong></li>
+                        </ul>
+                    </article>
+
+                    <article class="dashboard-panel">
+                        <span class="mini-label">Session</span>
+                        <ul class="detail-list">
+                            <li><span>Status</span><strong id="sessionStatus">Active</strong></li>
+                            <li><span>Storage</span><strong>localStorage</strong></li>
+                            <li><span>Authorization</span><strong>Bearer token ready</strong></li>
+                        </ul>
+                    </article>
+                </div>
+            </section>
+
+            <section class="faq-section" id="faq">
+                <div class="container faq-grid">
+                    <article class="faq-card">
+                        <h3>What changed?</h3>
+                        <p>A broken static page becomes a proper SaaS shell with auth modals, a working slider, and persistent session state.</p>
+                    </article>
+                    <article class="faq-card">
+                        <h3>How does auth work?</h3>
+                        <p>Both forms send JSON with `fetch`, handle errors gracefully, and store the token locally on success.</p>
+                    </article>
+                    <article class="faq-card">
+                        <h3>What happens after login?</h3>
+                        <p>The app reveals a simple dashboard view, updates navigation, and prepares the token for future protected requests.</p>
+                    </article>
+                </div>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <div class="container footer-row">
+                <div>
+                    <strong>DesignMatch</strong>
+                    <p>Frontend repaired for a polished SaaS-style experience.</p>
+                </div>
+                <a href="#top" class="footer-link">Back to top</a>
+            </div>
+        </footer>
+    </div>
+
+    <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="true"></div>
+
+    <div class="modal-overlay is-hidden" id="authModal" aria-hidden="true">
+        <div class="modal-shell" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
+            <button type="button" class="modal-close" id="closeAuthModal" aria-label="Close authentication modal">&times;</button>
+
+            <div class="modal-showcase">
+                <span class="eyebrow">DesignMatch Access</span>
+                <h2>Log in or create an account without leaving the page.</h2>
+                <p>Use the same deployed backend endpoints and keep the experience clean, responsive, and dependable.</p>
+            </div>
+
+            <div class="modal-forms">
+                <div class="modal-tabs" role="tablist" aria-label="Authentication forms">
+                    <button type="button" class="modal-tab is-active" data-auth-view="login" role="tab" aria-selected="true">Login</button>
+                    <button type="button" class="modal-tab" data-auth-view="register" role="tab" aria-selected="false">Register</button>
                 </div>
 
-                <div class="auth-form-container">
-                    <form id="registerForm" class="access-form">
-                        <div class="form-group">
-                            <label class="form-label">Nombre completo</label>
-                            <input type="text" name="name" class="form-input" placeholder="Tu nombre completo" required>
-                            <div class="input-error" data-error="name"></div>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Email</label>
-                            <input type="email" name="email" class="form-input" placeholder="tu@email.com" required>
-                            <div class="input-error" data-error="email"></div>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Teléfono / WhatsApp</label>
-                            <input type="tel" name="phone" class="form-input" placeholder="+1 234 567 890">
-                            <div class="input-error" data-error="phone"></div>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Rol *</label>
-                            <select name="role" class="form-input" id="roleSelect">
-                                <option value="client">Cliente</option>
-                                <option value="designer">Diseñador</option>
-                            </select>
-                        </div>
-                        <div class="form-group designer-fields" id="designerFields" style="display:none;">
-                            <label class="form-label">Bio / Descripción</label>
-                            <textarea name="bio" class="form-input form-textarea" rows="2" placeholder="Breve descripción de tus servicios"></textarea>
-                        </div>
-                        <div class="form-group designer-fields" id="designerPortfolio">
-                            <label class="form-label">Portfolio URL (opcional)</label>
-                            <input type="url" name="portfolio_url" class="form-input" placeholder="https://mi-portfolio.com">
-                        </div>
-                        <div class="form-group designer-fields" id="designerSkills">
-                            <label class="form-label">Skills</label>
-                            <div id="regSkillsOptions" class="chip-grid"></div>
-                        </div>
-                        <div class="form-group client-fields" id="clientFields">
-                            <label class="form-label">Descripción de tu proyecto (opcional)</label>
-                            <textarea name="project_description" class="form-input form-textarea" rows="2" placeholder="Tipo de proyectos que buscas..."></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-block" data-loading="Crear cuenta...">
-                            <span class="btn-text">Crear cuenta</span>
-                            <span class="btn-loading hidden">⏳</span>
-                        </button>
-                    </form>
+                <div class="form-view" id="loginView">
+                    <div class="form-copy">
+                        <span class="mini-label">Welcome back</span>
+                        <h3 id="authModalTitle">Sign in to continue</h3>
+                    </div>
 
-                    <form id="loginForm" class="access-form hidden">
-                        <div class="form-group">
-                            <label class="form-label">Email</label>
-                            <input type="email" name="email" class="form-input" placeholder="tu@email.com" required>
-                            <div class="input-error" data-error="email"></div>
+                    <form id="loginForm" novalidate>
+                        <div class="field">
+                            <label for="loginEmail">Email</label>
+                            <input id="loginEmail" name="email" type="email" autocomplete="email" placeholder="you@company.com" required>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Contraseña</label>
-                            <input type="password" name="password" class="form-input" placeholder="Tu contraseña" required>
-                            <div class="input-error" data-error="password"></div>
+                        <div class="field">
+                            <label for="loginPassword">Password</label>
+                            <input id="loginPassword" name="password" type="password" autocomplete="current-password" placeholder="Your password" required>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-block" data-loading="Iniciando...">
-                            <span class="btn-text">Iniciar sesión</span>
-                            <span class="btn-loading hidden">⏳</span>
-                        </button>
+                        <p class="form-message is-hidden" id="loginMessage"></p>
+                        <button type="submit" class="btn btn-primary btn-block" id="loginSubmit">Log in</button>
                     </form>
                 </div>
 
-                <div class="auth-toggle">
-                    <span id="toggleText">¿Ya tienes cuenta? </span>
-                    <button type="button" class="auth-toggle-btn" data-toggle="login">Inicia sesión</button>
+                <div class="form-view is-hidden" id="registerView">
+                    <div class="form-copy">
+                        <span class="mini-label">Create account</span>
+                        <h3>Launch your session in one step</h3>
+                    </div>
+
+                    <form id="registerForm" novalidate>
+                        <div class="field-grid">
+                            <div class="field">
+                                <label for="registerName">Full name</label>
+                                <input id="registerName" name="name" type="text" autocomplete="name" placeholder="Jane Doe" required>
+                            </div>
+                            <div class="field">
+                                <label for="registerEmail">Email</label>
+                                <input id="registerEmail" name="email" type="email" autocomplete="email" placeholder="jane@company.com" required>
+                            </div>
+                        </div>
+
+                        <div class="field-grid">
+                            <div class="field">
+                                <label for="registerPhone">Phone</label>
+                                <input id="registerPhone" name="phone" type="tel" autocomplete="tel" placeholder="+1 555 123 4567">
+                            </div>
+                            <div class="field">
+                                <label for="registerRole">Role</label>
+                                <select id="registerRole" name="role">
+                                    <option value="client">Client</option>
+                                    <option value="designer">Designer</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label for="registerPassword">Password</label>
+                            <input id="registerPassword" name="password" type="password" autocomplete="new-password" placeholder="Create a secure password" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="projectDescription">Project description</label>
+                            <textarea id="projectDescription" name="project_description" rows="3" placeholder="Describe the work you want help with"></textarea>
+                        </div>
+
+                        <div class="field is-hidden" id="designerBioField">
+                            <label for="designerBio">Designer bio</label>
+                            <textarea id="designerBio" name="bio" rows="3" placeholder="Tell clients about your style and strengths"></textarea>
+                        </div>
+
+                        <div class="field is-hidden" id="designerPortfolioField">
+                            <label for="designerPortfolio">Portfolio URL</label>
+                            <input id="designerPortfolio" name="portfolio_url" type="url" placeholder="https://portfolio.example.com">
+                        </div>
+
+                        <p class="form-message is-hidden" id="registerMessage"></p>
+                        <button type="submit" class="btn btn-primary btn-block" id="registerSubmit">Create account</button>
+                    </form>
                 </div>
             </div>
         </div>
-    </dialog>
+    </div>
 
-    <script src="/static/script.js"></script>
+    <script src="/static/app.js"></script>
 </body>
 </html>
