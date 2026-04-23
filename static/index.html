@@ -1,295 +1,277 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="DesignMatch connects founders and teams with creative talent through a polished SaaS experience.">
-    <title>DesignMatch</title>
+    <meta name="description" content="DesignMatch conecta clientes con disenadores para proyectos reales con una experiencia clara, moderna y funcional.">
+    <title>DesignMatch | Marketplace de disenadores</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-    <div class="page-shell">
-        <header class="site-header">
-            <div class="container header-row">
-                <a href="#top" class="brand" aria-label="DesignMatch home">
-                    <img src="/static/img/Logo variante 1.png" alt="DesignMatch logo" class="brand-mark">
-                    <span class="brand-text">DesignMatch</span>
-                </a>
+    <header class="header">
+        <div class="container header-content">
+            <a href="#inicio" class="logo" aria-label="Ir al inicio">
+                <img src="/static/img/Logo variante 1.png" alt="Logo DesignMatch" class="logo-image">
+                <span class="logo-text">DesignMatch</span>
+            </a>
 
-                <nav class="site-nav" aria-label="Primary">
-                    <a href="#product">Product</a>
-                    <a href="#showcase">Showcase</a>
-                    <a href="#faq">FAQ</a>
-                </nav>
+            <nav class="nav" aria-label="Navegacion principal">
+                <a href="#inicio" class="nav-link">Inicio</a>
+                <a href="#disenadores" class="nav-link">Disenadores</a>
+                <a href="#como-funciona" class="nav-link">Como funciona</a>
+                <a href="#footer" class="nav-link">Contacto</a>
+            </nav>
 
-                <div class="header-actions" id="guestActions">
-                    <button type="button" class="btn btn-ghost" data-open-auth="login">Log in</button>
-                    <button type="button" class="btn btn-primary" data-open-auth="register">Get started</button>
-                </div>
-
-                <div class="session-menu is-hidden" id="sessionMenu">
-                    <div class="session-pill">
-                        <span class="session-pill-label">Signed in as</span>
-                        <strong id="sessionUserName">User</strong>
-                    </div>
-                    <button type="button" class="btn btn-ghost" id="logoutButton">Log out</button>
-                </div>
+            <div class="nav-actions" id="guestActions">
+                <button type="button" class="btn btn-outline" data-open-auth="login">Iniciar sesion</button>
+                <button type="button" class="btn btn-primary" data-open-auth="register">Registrarse</button>
             </div>
-        </header>
 
-        <main id="top">
-            <section class="hero-section">
-                <div class="container hero-grid">
-                    <div class="hero-copy">
-                        <span class="eyebrow">Creative SaaS Marketplace</span>
-                        <h1>Turn a broken landing page into a product people trust.</h1>
-                        <p>
-                            DesignMatch helps clients discover creative talent, authenticate instantly, and move from interest to action with a frontend that behaves like a real SaaS app.
-                        </p>
+            <div class="session-actions hidden" id="sessionActions">
+                <div class="session-badge">
+                    <span class="session-label">Sesion activa</span>
+                    <strong id="sessionUserName">Usuario</strong>
+                </div>
+                <button type="button" class="btn btn-outline" id="logoutButton">Cerrar sesion</button>
+            </div>
+        </div>
+    </header>
 
-                        <div class="hero-cta">
-                            <button type="button" class="btn btn-primary btn-large" data-open-auth="register">Create account</button>
-                            <button type="button" class="btn btn-secondary btn-large" data-open-auth="login">Access dashboard</button>
-                        </div>
+    <main>
+        <section class="hero" id="inicio">
+            <div class="container hero-layout">
+                <div class="hero-copy">
+                    <p class="hero-kicker">Tu mejor match creativo, impulsado por datos</p>
+                    <h1 class="hero-title">Conecta tu proyecto con el disenador ideal.</h1>
+                    <p class="hero-subtitle">
+                        Explora talento, compara perfiles y activa tu cuenta en segundos. DesignMatch combina una vitrina visual clara con una experiencia real de producto.
+                    </p>
 
-                        <div class="hero-metrics">
-                            <article class="metric-card">
-                                <span class="metric-label">Designers</span>
-                                <strong id="designersCount">--</strong>
-                            </article>
-                            <article class="metric-card">
-                                <span class="metric-label">Projects</span>
-                                <strong id="projectsCount">--</strong>
-                            </article>
-                            <article class="metric-card">
-                                <span class="metric-label">API Health</span>
-                                <strong id="healthStatus">Checking</strong>
-                            </article>
-                        </div>
+                    <div class="hero-actions">
+                        <a href="#disenadores" class="btn btn-primary">Ver disenadores</a>
+                        <button type="button" class="btn btn-light" data-open-auth="register">Crear cuenta</button>
                     </div>
 
-                    <div class="hero-stage" id="showcase">
-                        <div class="slider-frame" aria-label="DesignMatch product highlights">
-                            <div class="slider-track" id="sliderTrack">
-                                <article class="slide is-active" data-slide="0" style="background-image: url('/static/img/Banner.PNG');">
-                                    <div class="slide-content">
-                                        <span>Frictionless onboarding</span>
-                                        <h2>Authentication flows that feel intentional instead of fragile.</h2>
-                                    </div>
-                                </article>
-                                <article class="slide" data-slide="1" style="background-image: url('/static/img/Banner 2.PNG');">
-                                    <div class="slide-content">
-                                        <span>Real product behavior</span>
-                                        <h2>Clean states for loading, success, and failure across the app.</h2>
-                                    </div>
-                                </article>
-                                <article class="slide" data-slide="2" style="background-image: url('/static/img/Banner 3.PNG');">
-                                    <div class="slide-content">
-                                        <span>Ready for demo day</span>
-                                        <h2>A modern presentation layer that finally matches your backend.</h2>
-                                    </div>
-                                </article>
-                            </div>
+                    <div class="hero-stats">
+                        <article class="hero-stat">
+                            <span class="hero-stat-value" id="metricDesigners">0</span>
+                            <span class="hero-stat-label">Disenadores</span>
+                        </article>
+                        <article class="hero-stat">
+                            <span class="hero-stat-value" id="metricProjects">0</span>
+                            <span class="hero-stat-label">Proyectos</span>
+                        </article>
+                        <article class="hero-stat">
+                            <span class="hero-stat-value" id="metricHealth">...</span>
+                            <span class="hero-stat-label">Estado API</span>
+                        </article>
+                    </div>
+                </div>
 
-                            <div class="slider-controls">
-                                <button type="button" class="slider-arrow" id="sliderPrev" aria-label="Previous slide">&lsaquo;</button>
-                                <div class="slider-dots" id="sliderDots">
-                                    <button type="button" class="slider-dot is-active" data-slide-target="0" aria-label="Go to slide 1"></button>
-                                    <button type="button" class="slider-dot" data-slide-target="1" aria-label="Go to slide 2"></button>
-                                    <button type="button" class="slider-dot" data-slide-target="2" aria-label="Go to slide 3"></button>
+                <div class="hero-media">
+                    <section class="slider" aria-label="Galeria principal de DesignMatch">
+                        <div class="slider-track">
+                            <article class="slide is-active">
+                                <img src="/imagenes/Banner.PNG" alt="Vista principal de DesignMatch">
+                                <div class="slide-overlay">
+                                    <p class="slide-kicker">Marketplace creativo</p>
+                                    <h2 class="slide-title">Una experiencia lista para demo, sin botones rotos ni formularios perdidos.</h2>
                                 </div>
-                                <button type="button" class="slider-arrow" id="sliderNext" aria-label="Next slide">&rsaquo;</button>
+                            </article>
+                            <article class="slide">
+                                <img src="/imagenes/Banner 2.PNG" alt="Seccion visual de DesignMatch">
+                                <div class="slide-overlay">
+                                    <p class="slide-kicker">Interfaz clara</p>
+                                    <h2 class="slide-title">Presenta talento, filtros y autenticacion en un flujo natural.</h2>
+                                </div>
+                            </article>
+                            <article class="slide">
+                                <img src="/imagenes/Banner 3.PNG" alt="Resultados y perfiles en DesignMatch">
+                                <div class="slide-overlay">
+                                    <p class="slide-kicker">Producto funcional</p>
+                                    <h2 class="slide-title">Conecta frontend y backend sin perder el estilo original de la marca.</h2>
+                                </div>
+                            </article>
+                        </div>
+
+                        <div class="slider-controls">
+                            <button type="button" class="slider-arrow" id="sliderPrev" aria-label="Imagen anterior">&lsaquo;</button>
+                            <div class="slider-dots" id="sliderDots">
+                                <button type="button" class="slider-dot is-active" data-slide="0" aria-label="Ir a la imagen 1"></button>
+                                <button type="button" class="slider-dot" data-slide="1" aria-label="Ir a la imagen 2"></button>
+                                <button type="button" class="slider-dot" data-slide="2" aria-label="Ir a la imagen 3"></button>
                             </div>
+                            <button type="button" class="slider-arrow" id="sliderNext" aria-label="Imagen siguiente">&rsaquo;</button>
                         </div>
-                    </div>
+                    </section>
                 </div>
-            </section>
-
-            <section class="product-section" id="product">
-                <div class="container feature-grid">
-                    <article class="feature-card">
-                        <span class="feature-index">01</span>
-                        <h3>Modal auth that works</h3>
-                        <p>Login and registration stay hidden until triggered, with clean transitions and real request handling.</p>
-                    </article>
-                    <article class="feature-card">
-                        <span class="feature-index">02</span>
-                        <h3>Reliable frontend state</h3>
-                        <p>Buttons lock during network requests, errors show in context, and success feedback is immediate.</p>
-                    </article>
-                    <article class="feature-card">
-                        <span class="feature-index">03</span>
-                        <h3>Session-aware UI</h3>
-                        <p>Tokens persist in local storage, guest actions disappear after login, and the app feels consistent.</p>
-                    </article>
-                </div>
-            </section>
-
-            <section class="dashboard-section is-hidden" id="dashboardSection">
-                <div class="container dashboard-grid">
-                    <article class="dashboard-panel dashboard-panel-main">
-                        <div class="panel-header">
-                            <div>
-                                <span class="eyebrow eyebrow-dark">Workspace</span>
-                                <h2 id="dashboardGreeting">Welcome back</h2>
-                            </div>
-                            <span class="status-badge" id="dashboardRole">Client</span>
-                        </div>
-                        <p class="panel-copy" id="dashboardSummary">
-                            Your session is active and your frontend is ready for authenticated requests.
-                        </p>
-                        <div class="dashboard-actions">
-                            <button type="button" class="btn btn-primary" data-open-auth="login" id="switchAccountButton">Switch account</button>
-                            <button type="button" class="btn btn-secondary" id="copyTokenButton">Copy token</button>
-                        </div>
-                    </article>
-
-                    <article class="dashboard-panel">
-                        <span class="mini-label">Account</span>
-                        <ul class="detail-list">
-                            <li><span>Name</span><strong id="dashboardName">--</strong></li>
-                            <li><span>Email</span><strong id="dashboardEmail">--</strong></li>
-                            <li><span>Phone</span><strong id="dashboardPhone">--</strong></li>
-                        </ul>
-                    </article>
-
-                    <article class="dashboard-panel">
-                        <span class="mini-label">Session</span>
-                        <ul class="detail-list">
-                            <li><span>Status</span><strong id="sessionStatus">Active</strong></li>
-                            <li><span>Storage</span><strong>localStorage</strong></li>
-                            <li><span>Authorization</span><strong>Bearer token ready</strong></li>
-                        </ul>
-                    </article>
-                </div>
-            </section>
-
-            <section class="faq-section" id="faq">
-                <div class="container faq-grid">
-                    <article class="faq-card">
-                        <h3>What changed?</h3>
-                        <p>A broken static page becomes a proper SaaS shell with auth modals, a working slider, and persistent session state.</p>
-                    </article>
-                    <article class="faq-card">
-                        <h3>How does auth work?</h3>
-                        <p>Both forms send JSON with `fetch`, handle errors gracefully, and store the token locally on success.</p>
-                    </article>
-                    <article class="faq-card">
-                        <h3>What happens after login?</h3>
-                        <p>The app reveals a simple dashboard view, updates navigation, and prepares the token for future protected requests.</p>
-                    </article>
-                </div>
-            </section>
-        </main>
-
-        <footer class="site-footer">
-            <div class="container footer-row">
-                <div>
-                    <strong>DesignMatch</strong>
-                    <p>Frontend repaired for a polished SaaS-style experience.</p>
-                </div>
-                <a href="#top" class="footer-link">Back to top</a>
             </div>
-        </footer>
-    </div>
+        </section>
 
-    <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="true"></div>
-
-    <div class="modal-overlay is-hidden" id="authModal" aria-hidden="true">
-        <div class="modal-shell" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
-            <button type="button" class="modal-close" id="closeAuthModal" aria-label="Close authentication modal">&times;</button>
-
-            <div class="modal-showcase">
-                <span class="eyebrow">DesignMatch Access</span>
-                <h2>Log in or create an account without leaving the page.</h2>
-                <p>Use the same deployed backend endpoints and keep the experience clean, responsive, and dependable.</p>
-            </div>
-
-            <div class="modal-forms">
-                <div class="modal-tabs" role="tablist" aria-label="Authentication forms">
-                    <button type="button" class="modal-tab is-active" data-auth-view="login" role="tab" aria-selected="true">Login</button>
-                    <button type="button" class="modal-tab" data-auth-view="register" role="tab" aria-selected="false">Register</button>
-                </div>
-
-                <div class="form-view" id="loginView">
-                    <div class="form-copy">
-                        <span class="mini-label">Welcome back</span>
-                        <h3 id="authModalTitle">Sign in to continue</h3>
+        <section class="designers-section" id="disenadores">
+            <div class="container">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Talento disponible</p>
+                        <h2 class="section-title">Disenadores destacados</h2>
+                        <p class="section-copy">Perfiles reales, listos para inspirar confianza y ayudarte a presentar el mejor match creativo.</p>
                     </div>
 
-                    <form id="loginForm" novalidate>
-                        <div class="field">
-                            <label for="loginEmail">Email</label>
-                            <input id="loginEmail" name="email" type="email" autocomplete="email" placeholder="you@company.com" required>
+                    <div class="designers-toolbar">
+                        <button type="button" class="btn btn-outline" id="refreshDesigners">Actualizar</button>
+                    </div>
+                </div>
+
+                <div class="designers-grid" id="designersGrid"></div>
+                <p class="section-feedback hidden" id="designersFeedback"></p>
+            </div>
+        </section>
+
+        <section class="info-section" id="como-funciona">
+            <div class="container info-grid">
+                <article class="info-card">
+                    <span class="info-number">01</span>
+                    <h3>Explora perfiles</h3>
+                    <p>Revisa disenadores con foto, bio, skills, estilos y rango de precios dentro de una misma vista.</p>
+                </article>
+                <article class="info-card">
+                    <span class="info-number">02</span>
+                    <h3>Activa tu acceso</h3>
+                    <p>Abre el login o el registro desde un modal limpio, con estados de carga, error y exito.</p>
+                </article>
+                <article class="info-card">
+                    <span class="info-number">03</span>
+                    <h3>Prepara la demo</h3>
+                    <p>Muestra una landing que si se comporta como SaaS: responsive, conectada a la API y con sesion persistente.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="dashboard hidden" id="dashboardSection">
+            <div class="container dashboard-panel">
+                <div class="dashboard-copy">
+                    <p class="section-kicker">Sesion iniciada</p>
+                    <h2 class="section-title" id="dashboardTitle">Bienvenido a DesignMatch</h2>
+                    <p class="section-copy" id="dashboardMessage">Tu cuenta ya esta lista para continuar con solicitudes autenticadas.</p>
+                </div>
+                <div class="dashboard-meta">
+                    <div class="dashboard-item">
+                        <span>Nombre</span>
+                        <strong id="dashboardName">-</strong>
+                    </div>
+                    <div class="dashboard-item">
+                        <span>Correo</span>
+                        <strong id="dashboardEmail">-</strong>
+                    </div>
+                    <div class="dashboard-item">
+                        <span>Rol</span>
+                        <strong id="dashboardRole">-</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer" id="footer">
+        <div class="container footer-content">
+            <div>
+                <strong class="footer-brand">DesignMatch</strong>
+                <p class="footer-copy">Marketplace de disenadores para proyectos reales. Interfaz restaurada, autenticacion funcional y experiencia lista para produccion.</p>
+            </div>
+            <a href="#inicio" class="footer-link">Volver arriba</a>
+        </div>
+    </footer>
+
+    <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+    <div class="modal-backdrop hidden" id="authModal" aria-hidden="true">
+        <div class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+            <button type="button" class="modal-close" id="closeAuthModal" aria-label="Cerrar">&times;</button>
+
+            <div class="auth-media">
+                <img src="/static/img/DM positivo.png" alt="Identidad visual de DesignMatch" class="auth-brand-image">
+                <p class="auth-kicker">Acceso a DesignMatch</p>
+                <h2 class="auth-heading">Ingresa o crea tu cuenta sin salir de la landing.</h2>
+                <p class="auth-description">Mantuvimos la identidad del producto y corregimos el flujo para que se sienta como una plataforma real.</p>
+            </div>
+
+            <div class="auth-content">
+                <div class="auth-tabs">
+                    <button type="button" class="auth-tab is-active" data-auth-view="login">Iniciar sesion</button>
+                    <button type="button" class="auth-tab" data-auth-view="register">Registrarse</button>
+                </div>
+
+                <section id="loginView" class="auth-view">
+                    <h3 class="auth-view-title" id="authTitle">Bienvenido de nuevo</h3>
+                    <form id="loginForm" class="auth-form" novalidate>
+                        <div class="form-group">
+                            <label for="loginEmail">Correo electronico</label>
+                            <input id="loginEmail" name="email" type="email" placeholder="tu@correo.com" required>
                         </div>
-                        <div class="field">
-                            <label for="loginPassword">Password</label>
-                            <input id="loginPassword" name="password" type="password" autocomplete="current-password" placeholder="Your password" required>
+                        <div class="form-group">
+                            <label for="loginPassword">Contrasena</label>
+                            <input id="loginPassword" name="password" type="password" placeholder="Tu contrasena" required>
                         </div>
-                        <p class="form-message is-hidden" id="loginMessage"></p>
-                        <button type="submit" class="btn btn-primary btn-block" id="loginSubmit">Log in</button>
+                        <p class="form-message hidden" id="loginMessage"></p>
+                        <button type="submit" class="btn btn-primary btn-block" id="loginSubmit">Iniciar sesion</button>
                     </form>
-                </div>
+                </section>
 
-                <div class="form-view is-hidden" id="registerView">
-                    <div class="form-copy">
-                        <span class="mini-label">Create account</span>
-                        <h3>Launch your session in one step</h3>
-                    </div>
-
-                    <form id="registerForm" novalidate>
-                        <div class="field-grid">
-                            <div class="field">
-                                <label for="registerName">Full name</label>
-                                <input id="registerName" name="name" type="text" autocomplete="name" placeholder="Jane Doe" required>
+                <section id="registerView" class="auth-view hidden">
+                    <h3 class="auth-view-title">Crea tu cuenta</h3>
+                    <form id="registerForm" class="auth-form" novalidate>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="registerName">Nombre completo</label>
+                                <input id="registerName" name="name" type="text" placeholder="Tu nombre" required>
                             </div>
-                            <div class="field">
-                                <label for="registerEmail">Email</label>
-                                <input id="registerEmail" name="email" type="email" autocomplete="email" placeholder="jane@company.com" required>
+                            <div class="form-group">
+                                <label for="registerEmail">Correo electronico</label>
+                                <input id="registerEmail" name="email" type="email" placeholder="tu@correo.com" required>
                             </div>
                         </div>
 
-                        <div class="field-grid">
-                            <div class="field">
-                                <label for="registerPhone">Phone</label>
-                                <input id="registerPhone" name="phone" type="tel" autocomplete="tel" placeholder="+1 555 123 4567">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="registerPhone">Telefono</label>
+                                <input id="registerPhone" name="phone" type="tel" placeholder="+57 300 000 0000">
                             </div>
-                            <div class="field">
-                                <label for="registerRole">Role</label>
+                            <div class="form-group">
+                                <label for="registerRole">Rol</label>
                                 <select id="registerRole" name="role">
-                                    <option value="client">Client</option>
-                                    <option value="designer">Designer</option>
+                                    <option value="client">Cliente</option>
+                                    <option value="designer">Disenador</option>
                                 </select>
                             </div>
                         </div>
 
-                        <div class="field">
-                            <label for="registerPassword">Password</label>
-                            <input id="registerPassword" name="password" type="password" autocomplete="new-password" placeholder="Create a secure password" required>
+                        <div class="form-group">
+                            <label for="registerPassword">Contrasena</label>
+                            <input id="registerPassword" name="password" type="password" placeholder="Crea una contrasena" required>
                         </div>
 
-                        <div class="field">
-                            <label for="projectDescription">Project description</label>
-                            <textarea id="projectDescription" name="project_description" rows="3" placeholder="Describe the work you want help with"></textarea>
+                        <div class="form-group">
+                            <label for="projectDescription">Descripcion del proyecto</label>
+                            <textarea id="projectDescription" name="project_description" rows="3" placeholder="Cuentanos que tipo de proyecto buscas"></textarea>
                         </div>
 
-                        <div class="field is-hidden" id="designerBioField">
-                            <label for="designerBio">Designer bio</label>
-                            <textarea id="designerBio" name="bio" rows="3" placeholder="Tell clients about your style and strengths"></textarea>
+                        <div class="form-group hidden" id="designerBioField">
+                            <label for="designerBio">Bio del disenador</label>
+                            <textarea id="designerBio" name="bio" rows="3" placeholder="Describe tu experiencia o enfoque creativo"></textarea>
                         </div>
 
-                        <div class="field is-hidden" id="designerPortfolioField">
-                            <label for="designerPortfolio">Portfolio URL</label>
-                            <input id="designerPortfolio" name="portfolio_url" type="url" placeholder="https://portfolio.example.com">
+                        <div class="form-group hidden" id="designerPortfolioField">
+                            <label for="designerPortfolio">URL de portafolio</label>
+                            <input id="designerPortfolio" name="portfolio_url" type="url" placeholder="https://tu-portafolio.com">
                         </div>
 
-                        <p class="form-message is-hidden" id="registerMessage"></p>
-                        <button type="submit" class="btn btn-primary btn-block" id="registerSubmit">Create account</button>
+                        <p class="form-message hidden" id="registerMessage"></p>
+                        <button type="submit" class="btn btn-primary btn-block" id="registerSubmit">Crear cuenta</button>
                     </form>
-                </div>
+                </section>
             </div>
         </div>
     </div>

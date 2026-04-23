@@ -1,11 +1,11 @@
+import re
 from flask import Blueprint, current_app, jsonify, request
+from sqlalchemy import text
 from werkzeug.security import check_password_hash, generate_password_hash
-import logging
-import traceback
 
 from database.db import db
 from models.models import Designer, DesignerSkill, Match, Project, Skill, Style, User
-from services.auth_service import generate_token
+from services.auth_service import generate_token, require_auth
 
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api")
@@ -13,50 +13,13 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/api")
 
 @auth_bp.get("/health")
 def health_check():
-    """Comprehensive health check - safe even without DB."""
-    status = {
-        "success": True,
-        "message": "DesignMatch is operational", 
-        "data": {
-            "status": "healthy",
-            "version": "1.0-fixed",
-            "environment": {
-                "render": current_app.config.get("IS_RENDER", False),
-                "safe_mode": current_app.config.get("SAFE_STARTUP", False),
-                "prod_mode": current_app.config.get("PROD_MODE", False),
-            }
-        }
-    }
-    
-    # Safe DB probe
+    """Production-safe health check."""
     try:
-        db_uri = str(current_app.config.get("SQLALCHEMY_DATABASE_URI", ""))
-        status["data"]["database"] = {
-            "configured": bool(db_uri),
-            "type": "postgresql" if db_uri.startswith("postgresql://") else "sqlite",
-"safe_mode_active": False
-        }
-        
-        # Quick connectivity test (won't crash)
-        if hasattr(db, 'engine') and db.engine:
-            try:
-                conn = db.engine.connect()
-                conn.close()
-                status["data"]["database"]["connectivity"] = "OK"
-            except Exception as conn_err:
-                status["data"]["database"]["connectivity"] = f"ERROR: {str(conn_err)[:100]}"
-        else:
-            status["data"]["database"]["connectivity"] = "N/A (not initialized)"
-            
-        # Quick model probe
-        first_user = User.query.first()
-        status["data"]["database"]["schema"] = "OK" if first_user is not None else "empty or uninitialized"
-        
-    except Exception as db_err:
-        status["data"]["database"] = f"Probe failed: {str(db_err)}"
-    
-    print(f"[HEALTH] {status['data']['database']}")
-    return jsonify(status)
+        db.session.execute(text("SELECT 1"))
+        return jsonify({"status": "healthy", "database": "ok"}), 200
+    except Exception:
+        current_app.logger.exception("Health check failed")
+        return jsonify({"status": "unhealthy", "database": "error"}), 503
 
 
 def generate_avatar_url(name):
@@ -72,6 +35,7 @@ def create_user():
     email = str(payload.get("email", "")).strip().lower()
     role = str(payload.get("role", "client")).strip().lower() or "client"
     password = str(payload.get("password", "")).strip()
+    phone = _normalize_phone(payload.get("phone"))
 
     if not name or not email or not password:
         return jsonify({"success": False, "message": "name, email y password son obligatorios"}), 400
@@ -87,7 +51,7 @@ def create_user():
         name=name,
         email=email,
         avatar_url=generate_avatar_url(name),
-        phone=payload.get("phone"),
+        phone=phone,
         project_description=payload.get("project_description") if role == "client" else None,
         password_hash=generate_password_hash(password),
         role=role,
@@ -98,7 +62,7 @@ def create_user():
     if role == "designer":
         designer = Designer(
             user_id=user.id,
-            phone=payload.get("phone"),
+            phone=phone,
             bio=payload.get("bio", ""),
             portfolio_url=payload.get("portfolio_url", ""),
             price_min=float(payload.get("price_min", 0)),
@@ -202,12 +166,8 @@ def get_info():
 
 
 @auth_bp.delete("/users/<int:user_id>")
+@require_auth("admin")
 def delete_user(user_id):
-    from services.auth_service import require_auth
-    user, error = require_auth("admin")()
-    if error:
-        return error
-    
     target = User.query.get_or_404(user_id)
     db.session.delete(target)
     db.session.commit()
@@ -222,4 +182,9 @@ def _clean_id_list(raw_values):
         except (TypeError, ValueError):
             continue
     return clean_ids
+
+
+def _normalize_phone(value):
+    phone = re.sub(r"\D", "", str(value or ""))
+    return phone or None
 

@@ -1,8 +1,50 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const fallbackDesigners = [
+        {
+            name: "Valentina R.",
+            email: "valentina@designmatch.com",
+            phone: "573001112233",
+            bio: "Disenadora de branding y contenido visual para marcas emergentes.",
+            avatar_url: null,
+            price_min: 180,
+            price_max: 420,
+            rating: 4.9,
+            portfolio_url: "#",
+            skills: ["Branding", "Redes Sociales"],
+            styles: ["Minimalista", "Editorial"],
+        },
+        {
+            name: "Kenneth J.",
+            email: "kenneth@designmatch.com",
+            phone: "573001223344",
+            bio: "Enfocado en interfaces, sistemas visuales y presentaciones para producto digital.",
+            avatar_url: null,
+            price_min: 220,
+            price_max: 520,
+            rating: 4.8,
+            portfolio_url: "#",
+            skills: ["UI Design", "Prototipos"],
+            styles: ["Moderno", "Tecnologico"],
+        },
+        {
+            name: "Michelle L.",
+            email: "michelle@designmatch.com",
+            phone: "",
+            bio: "Especialista en piezas publicitarias, campanas y storytelling visual.",
+            avatar_url: null,
+            price_min: 160,
+            price_max: 390,
+            rating: 4.7,
+            portfolio_url: "#",
+            skills: ["Publicidad", "Ilustracion"],
+            styles: ["Colorido", "Creativo"],
+        },
+    ];
+
     const state = {
-        currentView: "login",
         sliderIndex: 0,
         sliderTimer: null,
+        currentAuthView: "login",
         token: localStorage.getItem("token") || "",
         user: parseStoredUser(),
     };
@@ -11,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
         authModal: document.getElementById("authModal"),
         closeAuthModal: document.getElementById("closeAuthModal"),
         guestActions: document.getElementById("guestActions"),
-        sessionMenu: document.getElementById("sessionMenu"),
+        sessionActions: document.getElementById("sessionActions"),
         sessionUserName: document.getElementById("sessionUserName"),
         logoutButton: document.getElementById("logoutButton"),
         loginForm: document.getElementById("loginForm"),
@@ -23,47 +65,40 @@ document.addEventListener("DOMContentLoaded", () => {
         registerRole: document.getElementById("registerRole"),
         designerBioField: document.getElementById("designerBioField"),
         designerPortfolioField: document.getElementById("designerPortfolioField"),
-        dashboardSection: document.getElementById("dashboardSection"),
-        dashboardGreeting: document.getElementById("dashboardGreeting"),
-        dashboardRole: document.getElementById("dashboardRole"),
-        dashboardSummary: document.getElementById("dashboardSummary"),
-        dashboardName: document.getElementById("dashboardName"),
-        dashboardEmail: document.getElementById("dashboardEmail"),
-        dashboardPhone: document.getElementById("dashboardPhone"),
-        sessionStatus: document.getElementById("sessionStatus"),
-        copyTokenButton: document.getElementById("copyTokenButton"),
-        switchAccountButton: document.getElementById("switchAccountButton"),
         authTabs: Array.from(document.querySelectorAll("[data-auth-view]")),
         authTriggers: Array.from(document.querySelectorAll("[data-open-auth]")),
         loginView: document.getElementById("loginView"),
         registerView: document.getElementById("registerView"),
-        toastStack: document.getElementById("toastStack"),
-        designersCount: document.getElementById("designersCount"),
-        projectsCount: document.getElementById("projectsCount"),
-        healthStatus: document.getElementById("healthStatus"),
+        toastContainer: document.getElementById("toastContainer"),
+        metricDesigners: document.getElementById("metricDesigners"),
+        metricProjects: document.getElementById("metricProjects"),
+        metricHealth: document.getElementById("metricHealth"),
         sliderPrev: document.getElementById("sliderPrev"),
         sliderNext: document.getElementById("sliderNext"),
         slides: Array.from(document.querySelectorAll(".slide")),
         sliderDots: Array.from(document.querySelectorAll(".slider-dot")),
+        designersGrid: document.getElementById("designersGrid"),
+        designersFeedback: document.getElementById("designersFeedback"),
+        refreshDesigners: document.getElementById("refreshDesigners"),
+        dashboardSection: document.getElementById("dashboardSection"),
+        dashboardTitle: document.getElementById("dashboardTitle"),
+        dashboardMessage: document.getElementById("dashboardMessage"),
+        dashboardName: document.getElementById("dashboardName"),
+        dashboardEmail: document.getElementById("dashboardEmail"),
+        dashboardRole: document.getElementById("dashboardRole"),
     };
 
     bindEvents();
-    setAuthView(state.currentView);
+    setAuthView("login");
     toggleDesignerFields();
     updateSessionUI();
     startSlider();
-    loadStats();
-    loadHealth();
+    loadInitialData();
 
     function bindEvents() {
-        elements.authTriggers.forEach((trigger) => {
-            trigger.addEventListener("click", () => {
-                const view = trigger.dataset.openAuth || "login";
-                if (trigger.id === "switchAccountButton") {
-                    clearSession();
-                    updateSessionUI();
-                }
-                openAuthModal(view);
+        elements.authTriggers.forEach((button) => {
+            button.addEventListener("click", () => {
+                openAuthModal(button.dataset.openAuth || "login");
             });
         });
 
@@ -80,14 +115,20 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         document.addEventListener("keydown", (event) => {
-            if (event.key === "Escape" && elements.authModal && !elements.authModal.classList.contains("is-hidden")) {
+            if (event.key === "Escape" && elements.authModal && !elements.authModal.classList.contains("hidden")) {
                 closeAuthModal();
             }
         });
 
         elements.authTabs.forEach((tab) => {
-            tab.addEventListener("click", () => setAuthView(tab.dataset.authView));
+            tab.addEventListener("click", () => {
+                setAuthView(tab.dataset.authView || "login");
+            });
         });
+
+        if (elements.registerRole) {
+            elements.registerRole.addEventListener("change", toggleDesignerFields);
+        }
 
         if (elements.loginForm) {
             elements.loginForm.addEventListener("submit", handleLogin);
@@ -97,20 +138,27 @@ document.addEventListener("DOMContentLoaded", () => {
             elements.registerForm.addEventListener("submit", handleRegister);
         }
 
-        if (elements.registerRole) {
-            elements.registerRole.addEventListener("change", toggleDesignerFields);
-        }
-
         if (elements.logoutButton) {
-            elements.logoutButton.addEventListener("click", () => {
-                clearSession();
-                updateSessionUI();
-                showToast("You have been logged out.", "success");
-            });
+            elements.logoutButton.addEventListener("click", handleLogout);
         }
 
-        if (elements.copyTokenButton) {
-            elements.copyTokenButton.addEventListener("click", handleCopyToken);
+        if (elements.refreshDesigners) {
+            elements.refreshDesigners.addEventListener("click", loadDesigners);
+        }
+
+        if (elements.designersGrid) {
+            elements.designersGrid.addEventListener("click", (event) => {
+                const whatsappButton = event.target.closest("[data-whatsapp]");
+                if (!whatsappButton) {
+                    return;
+                }
+
+                contactarDisenador({
+                    name: whatsappButton.dataset.name || "disenador",
+                    phone: whatsappButton.dataset.phone || "",
+                    email: whatsappButton.dataset.email || "",
+                });
+            });
         }
 
         if (elements.sliderPrev) {
@@ -129,11 +177,126 @@ document.addEventListener("DOMContentLoaded", () => {
 
         elements.sliderDots.forEach((dot) => {
             dot.addEventListener("click", () => {
-                const index = Number(dot.dataset.slideTarget || 0);
-                showSlide(index);
+                showSlide(Number(dot.dataset.slide || 0));
                 restartSlider();
             });
         });
+    }
+
+    async function loadInitialData() {
+        await Promise.all([loadHealth(), loadStats(), loadDesigners()]);
+    }
+
+    async function loadDesigners() {
+        setFeedback("Cargando disenadores...");
+
+        try {
+            const response = await apiRequest("/api/designers");
+            const designers = Array.isArray(response.data) && response.data.length ? response.data : fallbackDesigners;
+            renderDesigners(designers);
+            setFeedback("");
+        } catch (error) {
+            renderDesigners(fallbackDesigners);
+            setFeedback("No fue posible cargar los disenadores desde la API. Se muestran perfiles de referencia.");
+        }
+    }
+
+    function renderDesigners(designers) {
+        if (!elements.designersGrid) {
+            return;
+        }
+
+        elements.designersGrid.innerHTML = designers.map((designer) => {
+            const avatar = getAvatar(designer);
+            const skills = Array.isArray(designer.skills) ? designer.skills.slice(0, 2) : [];
+            const styles = Array.isArray(designer.styles) ? designer.styles.slice(0, 2) : [];
+            const tags = [...skills, ...styles].slice(0, 4);
+            const role = styles.length ? styles.join(" / ") : "Disenador creativo";
+            const priceText = designer.price_min || designer.price_max
+                ? `$${formatNumber(designer.price_min || 0)} - $${formatNumber(designer.price_max || designer.price_min || 0)}`
+                : "Tarifa a convenir";
+            const sanitizedPhone = sanitizePhone(designer.phone);
+            const hasWhatsapp = Boolean(sanitizedPhone);
+
+            return `
+                <article class="designer-card">
+                    <div class="designer-top">
+                        <img src="${escapeHtml(avatar)}" alt="Foto de ${escapeHtml(designer.name || "Disenador")}" class="designer-avatar">
+                        <div>
+                            <h3 class="designer-name">${escapeHtml(designer.name || "Disenador")}</h3>
+                            <p class="designer-role">${escapeHtml(role)}</p>
+                        </div>
+                    </div>
+                    <p class="designer-bio">${escapeHtml(designer.bio || "Perfil creativo disponible para proyectos visuales y colaboraciones.")}</p>
+                    <div class="designer-tags">
+                        ${tags.length ? tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("") : '<span class="tag">Perfil verificado</span>'}
+                    </div>
+                    <div class="designer-footer">
+                        <div>
+                            <div class="designer-price">${escapeHtml(priceText)}</div>
+                            <div class="designer-rating">Calificacion: ${escapeHtml(String(designer.rating || "4.8"))}</div>
+                        </div>
+                        <div class="designer-actions">
+                            <a class="designer-link" href="${designer.portfolio_url && designer.portfolio_url !== "#" ? escapeHtml(designer.portfolio_url) : "#"}" ${designer.portfolio_url && designer.portfolio_url !== "#" ? 'target="_blank" rel="noopener noreferrer"' : ""}>Ver perfil</a>
+                            ${hasWhatsapp ? `<button type="button" class="designer-whatsapp" data-whatsapp="true" data-name="${escapeHtml(designer.name || "Disenador")}" data-phone="${escapeHtml(sanitizedPhone)}" data-email="${escapeHtml(designer.email || "")}">Contactar por WhatsApp</button>` : ""}
+                        </div>
+                    </div>
+                </article>
+            `;
+        }).join("");
+    }
+
+    function getAvatar(user) {
+        if (!user || !user.avatar_url || String(user.avatar_url).trim() === "") {
+            const seed = user?.email || user?.name || "designmatch";
+            return `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(seed)}`;
+        }
+        return user.avatar_url;
+    }
+
+    function contactarDisenador(user, proyecto = "tu proyecto") {
+        const phone = sanitizePhone(user?.phone);
+        if (!phone) {
+            showToast("Este disenador no tiene WhatsApp disponible.", "error");
+            return;
+        }
+
+        const mensaje = `Hola ${user.name || "disenador"}, vi tu perfil en DesignMatch y me interesa trabajar contigo en ${proyecto}.`;
+        const url = `https://wa.me/${phone}?text=${encodeURIComponent(mensaje)}`;
+        window.open(url, "_blank", "noopener");
+    }
+
+    async function loadStats() {
+        try {
+            const response = await apiRequest("/api/stats");
+            if (elements.metricDesigners) {
+                elements.metricDesigners.textContent = String(response.data?.designers ?? 0);
+            }
+            if (elements.metricProjects) {
+                elements.metricProjects.textContent = String(response.data?.projects ?? 0);
+            }
+        } catch (error) {
+            if (elements.metricDesigners) {
+                elements.metricDesigners.textContent = String(fallbackDesigners.length);
+            }
+            if (elements.metricProjects) {
+                elements.metricProjects.textContent = "0";
+            }
+        }
+    }
+
+    async function loadHealth() {
+        try {
+            const response = await apiRequest("/api/health");
+            const status = response.data?.status || response.status || "activo";
+            if (elements.metricHealth) {
+                elements.metricHealth.textContent = capitalize(String(status));
+            }
+        } catch (error) {
+            if (elements.metricHealth) {
+                elements.metricHealth.textContent = "Offline";
+            }
+        }
     }
 
     function openAuthModal(view) {
@@ -142,7 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         setAuthView(view);
-        elements.authModal.classList.remove("is-hidden");
+        elements.authModal.classList.remove("hidden");
         elements.authModal.setAttribute("aria-hidden", "false");
         document.body.style.overflow = "hidden";
     }
@@ -152,7 +315,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        elements.authModal.classList.add("is-hidden");
+        elements.authModal.classList.add("hidden");
         elements.authModal.setAttribute("aria-hidden", "true");
         document.body.style.overflow = "";
         clearFormMessage(elements.loginMessage);
@@ -160,31 +323,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function setAuthView(view) {
-        state.currentView = view === "register" ? "register" : "login";
-        const isLogin = state.currentView === "login";
+        state.currentAuthView = view === "register" ? "register" : "login";
+        const showLogin = state.currentAuthView === "login";
 
         if (elements.loginView) {
-            elements.loginView.classList.toggle("is-hidden", !isLogin);
+            elements.loginView.classList.toggle("hidden", !showLogin);
         }
 
         if (elements.registerView) {
-            elements.registerView.classList.toggle("is-hidden", isLogin);
+            elements.registerView.classList.toggle("hidden", showLogin);
         }
 
         elements.authTabs.forEach((tab) => {
-            const active = tab.dataset.authView === state.currentView;
-            tab.classList.toggle("is-active", active);
-            tab.setAttribute("aria-selected", String(active));
+            const isActive = tab.dataset.authView === state.currentAuthView;
+            tab.classList.toggle("is-active", isActive);
         });
     }
 
     function toggleDesignerFields() {
         const isDesigner = elements.registerRole && elements.registerRole.value === "designer";
         if (elements.designerBioField) {
-            elements.designerBioField.classList.toggle("is-hidden", !isDesigner);
+            elements.designerBioField.classList.toggle("hidden", !isDesigner);
         }
         if (elements.designerPortfolioField) {
-            elements.designerPortfolioField.classList.toggle("is-hidden", !isDesigner);
+            elements.designerPortfolioField.classList.toggle("hidden", !isDesigner);
         }
     }
 
@@ -199,11 +361,11 @@ document.addEventListener("DOMContentLoaded", () => {
         };
 
         if (!payload.email || !payload.password) {
-            showFormMessage(elements.loginMessage, "Email and password are required.", "error");
+            showFormMessage(elements.loginMessage, "Debes ingresar correo y contrasena.", "error");
             return;
         }
 
-        setButtonLoading(elements.loginSubmit, true, "Signing in...");
+        setButtonLoading(elements.loginSubmit, true, "Ingresando...");
 
         try {
             const response = await apiRequest("/api/auth/login", {
@@ -214,12 +376,12 @@ document.addEventListener("DOMContentLoaded", () => {
             persistSession(response.data);
             updateSessionUI();
             elements.loginForm.reset();
-            showToast("Login successful.", "success");
+            showToast("Sesion iniciada correctamente.", "success");
             closeAuthModal();
         } catch (error) {
-            showFormMessage(elements.loginMessage, error.message || "Unable to log in.", "error");
+            showFormMessage(elements.loginMessage, error.message || "No se pudo iniciar sesion.", "error");
         } finally {
-            setButtonLoading(elements.loginSubmit, false, "Log in");
+            setButtonLoading(elements.loginSubmit, false);
         }
     }
 
@@ -246,11 +408,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (!payload.name || !payload.email || !payload.password) {
-            showFormMessage(elements.registerMessage, "Name, email, and password are required.", "error");
+            showFormMessage(elements.registerMessage, "Nombre, correo y contrasena son obligatorios.", "error");
             return;
         }
 
-        setButtonLoading(elements.registerSubmit, true, "Creating account...");
+        setButtonLoading(elements.registerSubmit, true, "Creando cuenta...");
 
         try {
             const response = await apiRequest("/api/auth/register", {
@@ -262,61 +424,34 @@ document.addEventListener("DOMContentLoaded", () => {
             updateSessionUI();
             elements.registerForm.reset();
             toggleDesignerFields();
-            showToast("Account created successfully.", "success");
+            showToast("Cuenta creada con exito.", "success");
             closeAuthModal();
         } catch (error) {
-            showFormMessage(elements.registerMessage, error.message || "Unable to create account.", "error");
+            showFormMessage(elements.registerMessage, error.message || "No se pudo crear la cuenta.", "error");
         } finally {
-            setButtonLoading(elements.registerSubmit, false, "Create account");
+            setButtonLoading(elements.registerSubmit, false);
         }
     }
 
-    async function loadStats() {
-        try {
-            const response = await apiRequest("/api/stats");
-            if (elements.designersCount) {
-                elements.designersCount.textContent = String(response.data?.designers ?? 0);
-            }
-            if (elements.projectsCount) {
-                elements.projectsCount.textContent = String(response.data?.projects ?? 0);
-            }
-        } catch (error) {
-            if (elements.designersCount) {
-                elements.designersCount.textContent = "N/A";
-            }
-            if (elements.projectsCount) {
-                elements.projectsCount.textContent = "N/A";
-            }
-        }
-    }
-
-    async function loadHealth() {
-        try {
-            const response = await apiRequest("/api/health");
-            const status = response.data?.status || response.status || "healthy";
-            if (elements.healthStatus) {
-                elements.healthStatus.textContent = String(status).replace(/^./, (letter) => letter.toUpperCase());
-            }
-        } catch (error) {
-            if (elements.healthStatus) {
-                elements.healthStatus.textContent = "Offline";
-            }
-        }
+    function handleLogout() {
+        clearSession();
+        updateSessionUI();
+        showToast("Sesion cerrada.", "success");
     }
 
     function updateSessionUI() {
         const isLoggedIn = Boolean(state.token && state.user);
 
         if (elements.guestActions) {
-            elements.guestActions.classList.toggle("is-hidden", isLoggedIn);
+            elements.guestActions.classList.toggle("hidden", isLoggedIn);
         }
 
-        if (elements.sessionMenu) {
-            elements.sessionMenu.classList.toggle("is-hidden", !isLoggedIn);
+        if (elements.sessionActions) {
+            elements.sessionActions.classList.toggle("hidden", !isLoggedIn);
         }
 
         if (elements.dashboardSection) {
-            elements.dashboardSection.classList.toggle("is-hidden", !isLoggedIn);
+            elements.dashboardSection.classList.toggle("hidden", !isLoggedIn);
         }
 
         if (!isLoggedIn) {
@@ -324,32 +459,25 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const user = state.user || {};
-        const role = formatRole(user.role);
-        const firstName = String(user.name || "there").split(" ")[0];
+        const role = user.role === "designer" ? "Disenador" : "Cliente";
 
         if (elements.sessionUserName) {
-            elements.sessionUserName.textContent = user.name || "User";
+            elements.sessionUserName.textContent = user.name || "Usuario";
         }
-        if (elements.dashboardGreeting) {
-            elements.dashboardGreeting.textContent = `Welcome back, ${firstName}`;
+        if (elements.dashboardTitle) {
+            elements.dashboardTitle.textContent = `Bienvenido, ${user.name || "usuario"}`;
+        }
+        if (elements.dashboardMessage) {
+            elements.dashboardMessage.textContent = `Tu cuenta de ${role.toLowerCase()} esta activa y el token ya quedo guardado para futuras solicitudes autenticadas.`;
+        }
+        if (elements.dashboardName) {
+            elements.dashboardName.textContent = user.name || "-";
+        }
+        if (elements.dashboardEmail) {
+            elements.dashboardEmail.textContent = user.email || "-";
         }
         if (elements.dashboardRole) {
             elements.dashboardRole.textContent = role;
-        }
-        if (elements.dashboardSummary) {
-            elements.dashboardSummary.textContent = `${role} session active. Your token is stored and ready to be sent as a Bearer authorization header.`;
-        }
-        if (elements.dashboardName) {
-            elements.dashboardName.textContent = user.name || "--";
-        }
-        if (elements.dashboardEmail) {
-            elements.dashboardEmail.textContent = user.email || "--";
-        }
-        if (elements.dashboardPhone) {
-            elements.dashboardPhone.textContent = user.phone || "Not provided";
-        }
-        if (elements.sessionStatus) {
-            elements.sessionStatus.textContent = "Active";
         }
     }
 
@@ -365,20 +493,6 @@ document.addEventListener("DOMContentLoaded", () => {
         state.user = null;
         localStorage.removeItem("token");
         localStorage.removeItem("currentUser");
-    }
-
-    async function handleCopyToken() {
-        if (!state.token) {
-            showToast("No token available to copy.", "error");
-            return;
-        }
-
-        try {
-            await navigator.clipboard.writeText(state.token);
-            showToast("Token copied to clipboard.", "success");
-        } catch (error) {
-            showToast("Unable to copy token.", "error");
-        }
     }
 
     function startSlider() {
@@ -415,17 +529,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    function setButtonLoading(button, isLoading, label) {
+    function setButtonLoading(button, isLoading, loadingText) {
         if (!button) {
             return;
         }
 
-        if (!button.dataset.defaultLabel) {
-            button.dataset.defaultLabel = button.textContent || "";
+        if (!button.dataset.defaultText) {
+            button.dataset.defaultText = button.textContent || "";
         }
 
         button.disabled = isLoading;
-        button.textContent = isLoading ? label : button.dataset.defaultLabel;
+        button.textContent = isLoading ? loadingText : button.dataset.defaultText;
     }
 
     function showFormMessage(target, message, type) {
@@ -434,8 +548,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         target.textContent = message;
-        target.classList.remove("is-hidden", "is-error", "is-success");
-        target.classList.add(type === "success" ? "is-success" : "is-error");
+        target.classList.remove("hidden", "error", "success");
+        target.classList.add(type === "success" ? "success" : "error");
     }
 
     function clearFormMessage(target) {
@@ -444,41 +558,53 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         target.textContent = "";
-        target.classList.add("is-hidden");
-        target.classList.remove("is-error", "is-success");
+        target.classList.add("hidden");
+        target.classList.remove("error", "success");
     }
 
     function showToast(message, type) {
-        if (!elements.toastStack) {
+        if (!elements.toastContainer) {
             return;
         }
 
         const toast = document.createElement("div");
         toast.className = `toast ${type === "error" ? "toast-error" : "toast-success"}`;
         toast.textContent = message;
-        elements.toastStack.appendChild(toast);
+        elements.toastContainer.appendChild(toast);
 
         window.setTimeout(() => {
             toast.remove();
         }, 3200);
     }
 
-    async function apiRequest(url, options = {}) {
-        const headers = {
-            "Content-Type": "application/json",
-            ...(state.token ? { Authorization: `Bearer ${state.token}` } : {}),
-            ...(options.headers || {}),
-        };
+    function setFeedback(message) {
+        if (!elements.designersFeedback) {
+            return;
+        }
 
+        elements.designersFeedback.textContent = message;
+        elements.designersFeedback.classList.toggle("hidden", !message);
+    }
+
+    async function apiRequest(url, options = {}) {
         const response = await fetch(url, {
             ...options,
-            headers,
+            headers: {
+                "Content-Type": "application/json",
+                ...(state.token ? { Authorization: `Bearer ${state.token}` } : {}),
+                ...(options.headers || {}),
+            },
         });
 
         const payload = await response.json().catch(() => ({}));
-
         if (!response.ok) {
-            throw new Error(payload.message || payload.error || `Request failed with status ${response.status}`);
+            if (response.status === 401 && state.token) {
+                clearSession();
+                updateSessionUI();
+                openAuthModal("login");
+                showToast("Tu sesion expiro. Inicia sesion nuevamente.", "error");
+            }
+            throw new Error(payload.message || `Error ${response.status}`);
         }
 
         return payload;
@@ -493,11 +619,28 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    function formatRole(role) {
-        if (!role) {
-            return "User";
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
+
+    function formatNumber(value) {
+        return new Intl.NumberFormat("es-CO").format(Number(value) || 0);
+    }
+
+    function sanitizePhone(value) {
+        return String(value || "").replace(/[^\d]/g, "");
+    }
+
+    function capitalize(value) {
+        if (!value) {
+            return "";
         }
 
-        return String(role).charAt(0).toUpperCase() + String(role).slice(1);
+        return value.charAt(0).toUpperCase() + value.slice(1);
     }
 });

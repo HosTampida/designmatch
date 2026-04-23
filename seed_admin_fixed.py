@@ -1,55 +1,51 @@
 #!/usr/bin/env python3
 """
-Fixed admin seed script for Supabase/Render.
+Production-safe admin seed script.
 Run: python seed_admin_fixed.py
-Safe for both local + production.
 """
 
-print("🌱 Seeding admin user...")
+import logging
+import os
+import secrets
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+def _seed_admin_password():
+    return os.environ.get("ADMIN_PASSWORD", "").strip() or secrets.token_urlsafe(24)
+
 
 try:
     from app import create_app
     from database.db import db
     from models.models import User
     from werkzeug.security import generate_password_hash
-    from services.auth_service import generate_token
-    
+
     app = create_app()
-    
+
     with app.app_context():
-        print(f"[SEED] DB: {app.config['SQLALCHEMY_DATABASE_URI'][:50]}...")
-        
-        # Skip if postgresql (let register handle it)
-        if app.config['SQLALCHEMY_DATABASE_URI'].startswith('postgresql://'):
-            print("ℹ️ PostgreSQL detected - admin already exists or use /register")
-            print("💡 Test: curl -X POST https://designmatch.onrender.com/api/users ...")
-            exit(0)
-        
-        # Local SQLite only
-        admin_email = "admin@designmatch.com"
+        admin_email = os.environ.get("ADMIN_EMAIL", "admin@designmatch.com").strip().lower()
+        admin_name = os.environ.get("ADMIN_NAME", "Admin Super").strip() or "Admin Super"
         existing = User.query.filter_by(email=admin_email).first()
-        
+
         if not existing:
             admin = User(
-                name="Admin Super",
+                name=admin_name,
                 email=admin_email,
-                avatar_url="https://api.dicebear.com/9.x/adventurer/svg?seed=Admin",
-                password_hash=generate_password_hash("admin123"),
+                avatar_url=f"https://api.dicebear.com/9.x/adventurer/svg?seed={admin_name}",
+                password_hash=generate_password_hash(_seed_admin_password()),
                 role="admin"
             )
             db.session.add(admin)
             db.session.commit()
-            token = generate_token(admin)
-            print(f"✅ Admin created: {admin_email} / admin123")
-            print(f"🔑 Token: {token}")
+            logger.info("Admin user created for email=%s", admin_email)
         else:
-            print(f"⚠️ Admin exists: {admin_email}")
-            
-        print("✅ Done!")
-        
+            logger.info("Admin exists for email=%s", admin_email)
+
+        logger.info("Seed complete")
+
 except ImportError as e:
-    print(f"❌ Missing dep: pip install -r requirements.txt  ({e})")
-except Exception as e:
-    print(f"❌ Error: {e}")
-    import traceback
-    traceback.print_exc()
+    logger.exception("Missing dependency while running seed script: %s", e)
+except Exception:
+    logger.exception("Seed script failed")

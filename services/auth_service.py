@@ -1,10 +1,13 @@
 from functools import wraps
+import logging
 
 from flask import current_app, g, jsonify, request
-from itsdangerous import BadSignature, URLSafeSerializer
+from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 
 from models.models import User
-import logging
+
+
+TOKEN_MAX_AGE_SECONDS = 3600
 
 
 def generate_token(user):
@@ -14,11 +17,9 @@ def generate_token(user):
         "email": user.email,
         "role": user.role,
     })
-    # minimal debug logging
     try:
         current_app.logger.debug("Generated auth token for user_id=%s", user.id)
     except Exception:
-        # current_app may not be available in some test contexts
         logging.debug("Generated auth token for user_id=%s", user.id)
     return token
 
@@ -30,12 +31,22 @@ def load_user_from_request(required_role=None):
         return None, _auth_error("Authorization token required", 401)
 
     try:
-        payload = _get_serializer().loads(token)
+        payload = _get_serializer().loads(token, max_age=TOKEN_MAX_AGE_SECONDS)
+    except SignatureExpired:
+        current_app.logger.info("Expired token provided")
+        return None, _auth_error("Authorization token expired", 401)
     except BadSignature:
         current_app.logger.warning("Invalid token provided")
-        return None, _auth_error("Invalid token", 401)
+        return None, _auth_error("Invalid authorization token", 401)
+    except Exception:
+        current_app.logger.exception("Unexpected token validation error")
+        return None, _auth_error("Invalid authorization token", 401)
 
-    user = User.query.get(payload.get("user_id"))
+    user_id = payload.get("user_id")
+    if not user_id:
+        return None, _auth_error("Invalid authorization token", 401)
+
+    user = db_safe_get_user(user_id)
     if not user:
         return None, _auth_error("User not found", 401)
 
@@ -60,6 +71,14 @@ def require_auth(required_role=None):
     return decorator
 
 
+def db_safe_get_user(user_id):
+    try:
+        return User.query.get(user_id)
+    except Exception:
+        current_app.logger.exception("Failed to load user from token")
+        return None
+
+
 def _extract_bearer_token():
     auth_header = request.headers.get("Authorization", "").strip()
     if not auth_header.startswith("Bearer "):
@@ -68,8 +87,8 @@ def _extract_bearer_token():
 
 
 def _get_serializer():
-    secret_key = current_app.config.get("SECRET_KEY", "designmatch-prod")
-    return URLSafeSerializer(secret_key, salt="designmatch-auth")
+    secret_key = current_app.config["SECRET_KEY"]
+    return URLSafeTimedSerializer(secret_key, salt="designmatch-auth")
 
 
 def _auth_error(message, status_code):

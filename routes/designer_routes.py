@@ -1,43 +1,21 @@
-from flask import Blueprint, current_app, jsonify, request
-from urllib.parse import urlsplit, urlunsplit
+import re
+import secrets
+
+from flask import Blueprint, jsonify, request
 from werkzeug.security import generate_password_hash
 
 from database.db import db
 from models.models import Designer, DesignerSkill, DesignerStyle, Skill, Style, User
 from routes.auth_routes import generate_avatar_url
+from services.auth_service import require_auth
 
 
 designer_bp = Blueprint("designers", __name__, url_prefix="/api")
 
 
-def _mask_db_uri(uri: str) -> str:
-    try:
-        parts = urlsplit(uri)
-        if "@" not in parts.netloc or ":" not in parts.netloc.split("@", 1)[0]:
-            return uri
-        userinfo, hostinfo = parts.netloc.split("@", 1)
-        username = userinfo.split(":", 1)[0]
-        netloc = f"{username}:***@{hostinfo}"
-        return urlunsplit((parts.scheme, netloc, parts.path, parts.query, parts.fragment))
-    except Exception:
-        return "<unavailable>"
-
-
-def _debug_db(where: str):
-    uri = str(current_app.config.get("SQLALCHEMY_DATABASE_URI", ""))
-    print(f"[DB DEBUG] {where} uri={_mask_db_uri(uri)}")
-    try:
-        probe = User.query.first()
-        print("[DB DEBUG] User.query.first() OK:", probe)
-    except Exception as exc:
-        print("[DB DEBUG] User.query.first() FAILED:", str(exc))
-        raise
-
-
 @designer_bp.get("/designers")
 def list_designers():
     try:
-        _debug_db("GET /api/designers")
         skill_filter = request.args.get("skill", "").strip()
         style_filter = request.args.get("style", "").strip()
         max_price = _to_float(request.args.get("max_price"), default=None)
@@ -57,57 +35,42 @@ def list_designers():
             query = query.filter(Designer.price_min <= max_price)
 
         designers = query.order_by(Designer.rating.desc(), Designer.id.asc()).all()
-        payload = []
-        for designer in designers:
-            try:
-                payload.append(designer.to_card_dict())
-            except Exception as exc:
-                print("ERROR: to_card_dict failed:", str(exc))
-                raise
-
-        return jsonify({"success": True, "data": payload})
-    except Exception as e:
-        print("ERROR:", str(e))
-        return jsonify({"success": False, "message": "Internal server error", "debug": str(e)}), 500
+        return jsonify({"success": True, "data": [designer.to_card_dict() for designer in designers]})
+    except Exception:
+        return jsonify({"success": False, "message": "Internal server error"}), 500
 
 
 @designer_bp.get("/designers/<int:designer_id>")
 def get_designer(designer_id):
     try:
-        _debug_db("GET /api/designers/<id>")
         designer = Designer.query.get_or_404(designer_id)
         return jsonify({"success": True, "data": designer.to_card_dict()})
-    except Exception as e:
-        print("ERROR:", str(e))
-        return jsonify({"success": False, "message": "Internal server error", "debug": str(e)}), 500
+    except Exception:
+        return jsonify({"success": False, "message": "Internal server error"}), 500
 
 
 @designer_bp.get("/skills")
 def list_skills():
     try:
-        _debug_db("GET /api/skills")
         skills = Skill.query.order_by(Skill.name.asc()).all()
         return jsonify({"success": True, "data": [{"id": skill.id, "name": skill.name} for skill in skills]})
-    except Exception as e:
-        print("ERROR:", str(e))
-        return jsonify({"success": False, "message": "Internal server error", "debug": str(e)}), 500
+    except Exception:
+        return jsonify({"success": False, "message": "Internal server error"}), 500
 
 
 @designer_bp.get("/styles")
 def list_styles():
     try:
-        _debug_db("GET /api/styles")
         styles = Style.query.order_by(Style.name.asc()).all()
         return jsonify({"success": True, "data": [{"id": style.id, "name": style.name} for style in styles]})
-    except Exception as e:
-        print("ERROR:", str(e))
-        return jsonify({"success": False, "message": "Internal server error", "debug": str(e)}), 500
+    except Exception:
+        return jsonify({"success": False, "message": "Internal server error"}), 500
 
 
 @designer_bp.post("/designers/import")
+@require_auth("admin")
 def import_designers():
     try:
-        _debug_db("POST /api/designers/import")
         payload = request.get_json(silent=True)
         if not isinstance(payload, list):
             return jsonify({"success": False, "message": "Body must be a JSON array"}), 400
@@ -129,6 +92,10 @@ def import_designers():
             if user and user.designer_profile:
                 designer = user.designer_profile
                 user.name = name
+                normalized_phone = _normalize_phone(item.get("phone"))
+                if normalized_phone is not None:
+                    user.phone = normalized_phone
+                    designer.phone = normalized_phone
                 designer.bio = str(item.get("bio", "")).strip()
                 designer.portfolio_url = str(item.get("portfolio_url", "")).strip()
                 designer.price_min = _to_float(item.get("price_min"))
@@ -140,8 +107,9 @@ def import_designers():
                     user = User(
                         name=name,
                         email=email,
-                    avatar_url=generate_avatar_url(name),
-                        password_hash=generate_password_hash("demo123"),
+                        avatar_url=generate_avatar_url(name),
+                        phone=_normalize_phone(item.get("phone")),
+                        password_hash=generate_password_hash(secrets.token_urlsafe(16)),
                         role="designer",
                     )
                     db.session.add(user)
@@ -149,9 +117,17 @@ def import_designers():
                 else:
                     user.name = name
                     user.role = "designer"
+                    normalized_phone = _normalize_phone(item.get("phone"))
+                    if normalized_phone is not None:
+                        user.phone = normalized_phone
+                    if not user.avatar_url:
+                        user.avatar_url = generate_avatar_url(name)
+                    if not user.password_hash:
+                        user.password_hash = generate_password_hash(secrets.token_urlsafe(16))
 
                 designer = Designer(
                     user_id=user.id,
+                    phone=_normalize_phone(item.get("phone")),
                     bio=str(item.get("bio", "")).strip(),
                     portfolio_url=str(item.get("portfolio_url", "")).strip(),
                     price_min=_to_float(item.get("price_min")),
@@ -177,9 +153,8 @@ def import_designers():
                 },
             }
         )
-    except Exception as e:
-        print("ERROR:", str(e))
-        return jsonify({"success": False, "message": "Internal server error", "debug": str(e)}), 500
+    except Exception:
+        return jsonify({"success": False, "message": "Internal server error"}), 500
 
 
 def _replace_designer_links(designer, skill_ids, style_ids):
@@ -215,3 +190,8 @@ def _to_float(value, default=0.0):
         if default is None:
             return None
         return float(default)
+
+
+def _normalize_phone(value):
+    phone = re.sub(r"\D", "", str(value or ""))
+    return phone or None

@@ -1,6 +1,11 @@
+import logging
 from flask import Flask, send_from_directory
 import os
 from config import Config
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 
 def create_app(config_class=Config):
     app = Flask(__name__, static_folder='static')
@@ -18,6 +23,10 @@ def create_app(config_class=Config):
     app.register_blueprint(project_bp)
     
     # Frontend routes
+    @app.route('/imagenes/<path:filename>')
+    def serve_images(filename):
+        return send_from_directory(os.path.join(app.static_folder, 'img'), filename)
+
     @app.route('/')
     @app.route('/<path:path>')
     def serve_frontend(path='index.html'):
@@ -25,20 +34,9 @@ def create_app(config_class=Config):
             return send_from_directory(app.static_folder, 'index.html')
         return send_from_directory(app.static_folder, path)
     
-    @app.route('/api/health')
-    def health():
-        db_uri = app.config.get('SQLALCHEMY_DATABASE_URI', '')
-        return {
-            'status': 'healthy',
-            'database': 'postgresql' if 'postgresql://' in db_uri else 'sqlite',
-            'tables_ready': True
-        }
-    
     @app.errorhandler(Exception)
     def handle_error(e):
-        print(f'ERROR: {e}')
-        import traceback
-        traceback.print_exc()
+        logger.exception("Unhandled application error")
         return {'success': False, 'message': 'server error'}, 500
     
     # Production DB init

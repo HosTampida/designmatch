@@ -5,6 +5,12 @@ from sqlalchemy import UniqueConstraint
 
 from database.db import db
 
+def _normalized_avatar_url(value):
+    if value is None:
+        return None
+    normalized = str(value).strip()
+    return normalized or None
+
 
 class User(db.Model):
     __tablename__ = "users"
@@ -32,8 +38,9 @@ class User(db.Model):
             "id": self.id,
             "name": self.name,
             "email": self.email,
+            "phone": self.phone,
             "role": self.role,
-            "avatar_url": self.avatar_url,
+            "avatar_url": _normalized_avatar_url(self.avatar_url),
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 
@@ -73,7 +80,7 @@ class Designer(db.Model):
             "designer_id": self.id,
             "name": self.user.name if self.user else "",
             "email": self.user.email if self.user else "",
-            "avatar_url": self.user.avatar_url if self.user else "",
+            "avatar_url": _normalized_avatar_url(self.user.avatar_url if self.user else None),
             "phone": self.phone,
             "bio": self.bio,
             "portfolio_url": self.portfolio_url,
