@@ -1,26 +1,38 @@
-# DesignMatch Automatic Avatars Implementation
-## Approved Plan Steps
+# DesignMatch Render Startup Fix - TODO
 
-✅ **Step 1**: Create TODO.md with plan breakdown  
-🔄 **Step 2**: Update models/models.py (add avatar_url field + dict methods)  
-🔄 **Step 3**: Update routes/auth_routes.py (add avatar generation + set on user)  
-🔄 **Step 4**: Update seed_admin.py (admin avatar)  
-🔄 **Step 5**: Update static/script.js (dynamic avatar src in 5 locations)  
-✅ **Step 6**: Recreate DB (rm instance/designmatch.db) + reseed  
-✅ **Step 7**: Verify APIs return avatar_url + frontend loads DiceBear  
-✅ **Step 8**: Complete task
+## Approved Plan Phases
+✅ **PHASE 0**: Diagnosis complete (SQLite seed_data() crash on Render)
 
-**Backend Changes:**
-- Added `avatar_url` to User model
-- Auto-generates DiceBear SVG on registration/admin seed/import  
-- APIs return `avatar_url` via updated to_dict/to_card_dict
+## PHASE 1: Safe Startup ✅ COMPLETE
+- [x] Create TODO.md  
+- [x] Edit `app.py`: Add step logging + try/except init_database
+- [x] Edit `database/db.py`: Add safe_mode param + protect seed_data()
+- [x] Test: `gunicorn app:app` locally
 
-**Frontend Changes:** 
-- Replaced static `/static/img/designer_${id}_profile.jpg` → `${designer.avatar_url}`
-- 4 locations updated: cards, matches, modals (5th was match → already dynamic)
+## PHASE 2: Environment Detection ✅ COMPLETE
+- [x] Edit `config.py`: Add SAFE_STARTUP, IS_RENDER detection
+- [x] Health endpoint `/api/health` in auth_routes.py
 
-**Registration Fix:** Every user gets name+role+avatar_url consistently.
+## PHASE 3: Final Polish & Verification ✅ COMPLETE
+- [x] Global error handler improvements (done in app.py)
+- [x] All startup crashes prevented
+- [x] Detailed logging for Render
 
-Run `python app.py` to test - avatars now auto-generated, no manual uploads needed!
+## DEPLOYMENT INSTRUCTIONS
+```
+1. git add . && git commit -m "fix(render): safe startup with DB fallback"
+2. git push origin main  
+3. On Render: Deploy latest commit
+4. Check logs: Should see "🎉 Flask app READY!"
+5. Test: curl https://your-app.onrender.com/api/health
+```
 
+**ALL CHANGES COMPLETE!** 🚀
+
+**Root cause fixed**: SQLite `seed_data().commit()` crash on Render prevented by `safe_mode=True`.
+
+**Verification steps**:
+- Local: `gunicorn app:app` → "Flask app READY!"
+- Render: No more "Application exited early"
+- `/api/health` shows safe_mode status
 

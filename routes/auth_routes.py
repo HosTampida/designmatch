@@ -1,6 +1,7 @@
 from flask import Blueprint, current_app, jsonify, request
 from werkzeug.security import check_password_hash, generate_password_hash
 import logging
+import traceback
 
 from database.db import db
 from models.models import Designer, DesignerSkill, Match, Project, Skill, Style, User
@@ -12,22 +13,56 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/api")
 
 @auth_bp.get("/health")
 def health_check():
-    database_uri = current_app.config.get("SQLALCHEMY_DATABASE_URI", "")
-    return jsonify(
-        {
-            "success": True,
-            "message": "DesignMatch is operational",
-            "data": {
-                "status": "ok",
-                "database": "postgresql" if str(database_uri).startswith("postgresql://") else "sqlite",
-            },
+    """Comprehensive health check - safe even without DB."""
+    status = {
+        "success": True,
+        "message": "DesignMatch is operational", 
+        "data": {
+            "status": "healthy",
+            "version": "1.0-fixed",
+            "environment": {
+                "render": current_app.config.get("IS_RENDER", False),
+                "safe_mode": current_app.config.get("SAFE_STARTUP", False),
+                "prod_mode": current_app.config.get("PROD_MODE", False),
+            }
         }
-    )
+    }
+    
+    # Safe DB probe
+    try:
+        db_uri = str(current_app.config.get("SQLALCHEMY_DATABASE_URI", ""))
+        status["data"]["database"] = {
+            "configured": bool(db_uri),
+            "type": "postgresql" if db_uri.startswith("postgresql://") else "sqlite",
+            "safe_mode_active": current_app.config.get("SAFE_STARTUP", False)
+        }
+        
+        # Quick connectivity test (won't crash)
+        if hasattr(db, 'engine') and db.engine:
+            try:
+                conn = db.engine.connect()
+                conn.close()
+                status["data"]["database"]["connectivity"] = "OK"
+            except Exception as conn_err:
+                status["data"]["database"]["connectivity"] = f"ERROR: {str(conn_err)[:100]}"
+        else:
+            status["data"]["database"]["connectivity"] = "N/A (not initialized)"
+            
+        # Quick model probe
+        first_user = User.query.first()
+        status["data"]["database"]["schema"] = "OK" if first_user is not None else "empty or uninitialized"
+        
+    except Exception as db_err:
+        status["data"]["database"] = f"Probe failed: {str(db_err)}"
+    
+    print(f"[HEALTH] {status['data']['database']}")
+    return jsonify(status)
 
 
 def generate_avatar_url(name):
     seed = name.strip() if name and name.strip() else "user"
     return f"https://api.dicebear.com/9.x/adventurer/svg?seed={seed}"
+
 
 @auth_bp.post("/auth/register")
 @auth_bp.post("/users")
@@ -69,7 +104,7 @@ def create_user():
             price_min=float(payload.get("price_min", 0)),
             price_max=float(payload.get("price_max", 0)),
             rating=float(payload.get("rating", 0)),
-            completed_projects=int(payload.get("completed_projects", 0) or 0),
+            completed_projects=int(payload.get("completed_projects", 0)),
         )
         db.session.add(designer)
         db.session.flush()
@@ -139,7 +174,6 @@ def get_stats():
                 "styles": Style.query.count(),
                 "projects": Project.query.count(),
                 "matches": Match.query.count(),
-                "applications": Match.query.count(),
             },
         }
     )
@@ -166,6 +200,7 @@ def get_info():
         }
     )
 
+
 @auth_bp.delete("/users/<int:user_id>")
 def delete_user(user_id):
     from services.auth_service import require_auth
@@ -178,6 +213,7 @@ def delete_user(user_id):
     db.session.commit()
     return jsonify({"success": True, "message": f"User {target.email} deleted"}), 200
 
+
 def _clean_id_list(raw_values):
     clean_ids = []
     for value in raw_values or []:
@@ -186,3 +222,4 @@ def _clean_id_list(raw_values):
         except (TypeError, ValueError):
             continue
     return clean_ids
+
