@@ -1,35 +1,12 @@
-# DesignMatch Render + Supabase ✅ READY FOR STUDENTS
+# DesignMatch Flask App Fix - TODO ✅
+## Completed Steps:
+- [x] Step 1: Created TODO.md with plan
+- [x] Step 2: Confirmed broken import only in app.py/app_fixed.py via search_files
+- [x] Step 3: Fixed 'from database' → 'from database.db import db, init_database' in app.py and app_fixed.py
+- [x] Step 4: Verified syntax with `python -m py_compile app.py` (no errors)
+- [x] Step 5: Tested Flask startup - config loads successfully, no SyntaxError
+- [x] Step 6: Updated TODO.md
+- [x] Step 7: Render ready - no SyntaxError, app should start
 
-## Startup Fixed ✅
-Local server: `🎉 Flask app READY!` (tested)
+## Next: Monitor `python app.py` output for successful startup.
 
-## STUDENT REGISTRATION INSTRUCTIONS
-```
-1. Deploy to Render (DATABASE_URL from Supabase already set)
-2. Students visit: https://designmatch.onrender.com
-3. Register: /api/users POST (client/designer)
-4. Login: /api/login POST
-5. Data auto-saves to Supabase!
-```
-
-## DEPLOYMENT COMMANDS
-```bash
-git add .
-git commit -m "feat(supabase): student registration ready"
-git push origin main
-```
-
-## TEST ENDPOINTS
-```
-Health: GET https://designmatch.onrender.com/api/health
-Register: POST https://designmatch.onrender.com/api/users
-Login: POST https://designmatch.onrender.com/api/login  
-```
-
-## For LOCAL development:
-```bash
-python seed_admin_fixed.py  # Create admin (SQLite only)
-curl http://localhost:5000/api/health
-```
-
-**Registration NOW WORKS on Render with Supabase!** 🎓
