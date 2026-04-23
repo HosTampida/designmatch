@@ -1,15 +1,14 @@
-# DesignMatch Flask App Fix - TODO ✅
-## Completed Steps:
-- [x] Step 1: Created TODO.md with plan
-- [x] Step 2: Confirmed broken import only in app.py/app_fixed.py via search_files
-- [x] Step 3: Fixed 'from database' → 'from database.db import db, init_database' in app.py and app_fixed.py
-- [x] Step 4: Verified syntax with `python -m py_compile app.py` (no errors)
-- [x] Step 5: Tested Flask startup - config loads successfully, no SyntaxError
-- [x] Step 6: Updated TODO.md
-- [x] Step 7: Render ready - no SyntaxError, app should start
+# Production SaaS Setup - Remove SAFE_MODE
+✅ Plan approved - stability priority
 
-## Render Fixed ✅
-- Set env var `SAFE_STARTUP=true` in Render dashboard (prevents DB seed crash on PostgreSQL)
-- Deploy: `git add . && git commit -m "Complete app.py + safe startup" && git push`
-- Test: https://your-app.onrender.com/ and https://your-app.onrender.com/api/health
+**Steps:**
+- [x] 1. Create TODO.md
+- [ ] 2. Create production app.py (no safe_mode)
+- [ ] 3. Update config.py (force Postgres, no auto-safe)
+- [ ] 4. Update db.py (always full init, idempotent)
+- [ ] 5. Clean health checks
+- [ ] 6. Test local Flask + endpoints
+- [ ] 7. Git commit/deploy
+- [ ] 8. Verify Supabase tables/seeds
 
+**Production ready:** Full DB init, auth, API on Supabase Postgres.

@@ -34,7 +34,7 @@ def health_check():
         status["data"]["database"] = {
             "configured": bool(db_uri),
             "type": "postgresql" if db_uri.startswith("postgresql://") else "sqlite",
-            "safe_mode_active": current_app.config.get("SAFE_STARTUP", False)
+"safe_mode_active": False
         }
         
         # Quick connectivity test (won't crash)

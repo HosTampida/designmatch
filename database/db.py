@@ -3,14 +3,10 @@ import os
 
 db = SQLAlchemy()
 
-def init_database(app, safe_mode=False):
-    """Initialize database with safe_mode for production startup."""
-    print(f"[DB] Initializing with safe_mode={safe_mode}")
+def init_database(app):
+    """Production database initialization - always full setup."""
+    print("[DB] Production full init")
     db.init_app(app)
-    
-    if safe_mode:
-        print("[DB] ✅ Safe mode active - tables/seed skipped")
-        return
     
     print("[DB] Running full initialization...")
     try:

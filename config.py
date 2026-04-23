@@ -58,6 +58,6 @@ class Config:
     }
     JSON_SORT_KEYS = False
     
-    # Auto-enable safe startup in prod/Render
-    SAFE_STARTUP = SAFE_STARTUP or (PROD_MODE and not SQLALCHEMY_DATABASE_URI.startswith("postgresql://"))
+    # Production: always full init for Postgres
+    SAFE_STARTUP = False
 
