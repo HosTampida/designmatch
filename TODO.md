@@ -8,5 +8,8 @@
 - [x] Step 6: Updated TODO.md
 - [x] Step 7: Render ready - no SyntaxError, app should start
 
-## Next: Monitor `python app.py` output for successful startup.
+## Render Fixed ✅
+- Set env var `SAFE_STARTUP=true` in Render dashboard (prevents DB seed crash on PostgreSQL)
+- Deploy: `git add . && git commit -m "Complete app.py + safe startup" && git push`
+- Test: https://your-app.onrender.com/ and https://your-app.onrender.com/api/health
 
