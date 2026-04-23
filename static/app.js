@@ -1,10 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const dashboardSectionSelector = "#dashboardSection";
     const fallbackDesigners = [
         {
             name: "Valentina R.",
             email: "valentina@designmatch.com",
             phone: "573001112233",
-            bio: "Disenadora de branding y contenido visual para marcas emergentes.",
+            bio: "Dise\u00f1adora de branding y contenido visual para marcas emergentes.",
             avatar_url: null,
             price_min: 180,
             price_max: 420,
@@ -12,6 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
             portfolio_url: "#",
             skills: ["Branding", "Redes Sociales"],
             styles: ["Minimalista", "Editorial"],
+            role: "designer",
         },
         {
             name: "Kenneth J.",
@@ -24,20 +26,22 @@ document.addEventListener("DOMContentLoaded", () => {
             rating: 4.8,
             portfolio_url: "#",
             skills: ["UI Design", "Prototipos"],
-            styles: ["Moderno", "Tecnologico"],
+            styles: ["Moderno", "Tecnol\u00f3gico"],
+            role: "designer",
         },
         {
             name: "Michelle L.",
             email: "michelle@designmatch.com",
             phone: "",
-            bio: "Especialista en piezas publicitarias, campanas y storytelling visual.",
+            bio: "Especialista en piezas publicitarias, campa\u00f1as y storytelling visual.",
             avatar_url: null,
             price_min: 160,
             price_max: 390,
             rating: 4.7,
             portfolio_url: "#",
-            skills: ["Publicidad", "Ilustracion"],
+            skills: ["Publicidad", "Ilustraci\u00f3n"],
             styles: ["Colorido", "Creativo"],
+            role: "designer",
         },
     ];
 
@@ -154,11 +158,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
                 contactarDisenador({
-                    name: whatsappButton.dataset.name || "disenador",
+                    name: whatsappButton.dataset.name || "dise\u00f1ador",
                     phone: whatsappButton.dataset.phone || "",
                     email: whatsappButton.dataset.email || "",
                 });
             });
+
+            elements.designersGrid.addEventListener("error", (event) => {
+                const image = event.target;
+                if (!(image instanceof HTMLImageElement) || !image.classList.contains("designer-avatar")) {
+                    return;
+                }
+
+                const fallback = image.dataset.fallbackAvatar || "";
+                if (fallback && image.src !== fallback) {
+                    image.src = fallback;
+                    return;
+                }
+
+                image.src = "/static/img/default-profile.png";
+            }, true);
         }
 
         if (elements.sliderPrev) {
@@ -188,16 +207,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function loadDesigners() {
-        setFeedback("Cargando disenadores...");
+        setFeedback("Cargando dise\u00f1adores...");
 
         try {
             const response = await apiRequest("/api/designers");
-            const designers = Array.isArray(response.data) && response.data.length ? response.data : fallbackDesigners;
+            const designers = Array.isArray(response.data) ? response.data : [];
+
+            if (!designers.length) {
+                renderEmptyDesignersState();
+                setFeedback("A\u00fan no hay dise\u00f1adores disponibles. S\u00e9 el primero en registrarte \ud83d\ude80", true);
+                return;
+            }
+
             renderDesigners(designers);
             setFeedback("");
         } catch (error) {
             renderDesigners(fallbackDesigners);
-            setFeedback("No fue posible cargar los disenadores desde la API. Se muestran perfiles de referencia.");
+            setFeedback("No fue posible cargar los dise\u00f1adores desde la API. Se muestran perfiles de referencia.");
         }
     }
 
@@ -208,23 +234,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
         elements.designersGrid.innerHTML = designers.map((designer) => {
             const avatar = getAvatar(designer);
+            const fallbackAvatar = getFallbackAvatar(designer);
             const skills = Array.isArray(designer.skills) ? designer.skills.slice(0, 2) : [];
             const styles = Array.isArray(designer.styles) ? designer.styles.slice(0, 2) : [];
             const tags = [...skills, ...styles].slice(0, 4);
-            const role = styles.length ? styles.join(" / ") : "Disenador creativo";
+            const roleLabel = getRoleLabel(designer.role || "designer");
+            const specialty = styles.length ? styles.join(" / ") : "Dise\u00f1ador creativo";
             const priceText = designer.price_min || designer.price_max
                 ? `$${formatNumber(designer.price_min || 0)} - $${formatNumber(designer.price_max || designer.price_min || 0)}`
                 : "Tarifa a convenir";
             const sanitizedPhone = sanitizePhone(designer.phone);
-            const hasWhatsapp = Boolean(sanitizedPhone);
+            const hasWhatsapp = isValidPhone(sanitizedPhone);
+            const onErrorAttribute = `this.onerror=null;this.src='${escapeHtml(fallbackAvatar)}'`;
 
             return `
                 <article class="designer-card">
+                    <span class="designer-role-badge">${escapeHtml(roleLabel)}</span>
                     <div class="designer-top">
-                        <img src="${escapeHtml(avatar)}" alt="Foto de ${escapeHtml(designer.name || "Disenador")}" class="designer-avatar">
+                        <img src="${escapeHtml(avatar)}" onerror="${onErrorAttribute}" alt="Avatar de ${escapeHtml(designer.name || "Dise\u00f1ador")}" class="designer-avatar" data-fallback-avatar="${escapeHtml(fallbackAvatar)}">
                         <div>
-                            <h3 class="designer-name">${escapeHtml(designer.name || "Disenador")}</h3>
-                            <p class="designer-role">${escapeHtml(role)}</p>
+                            <h3 class="designer-name">${escapeHtml(designer.name || "Dise\u00f1ador")}</h3>
+                            <p class="designer-role">${escapeHtml(specialty)}</p>
                         </div>
                     </div>
                     <p class="designer-bio">${escapeHtml(designer.bio || "Perfil creativo disponible para proyectos visuales y colaboraciones.")}</p>
@@ -234,11 +264,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     <div class="designer-footer">
                         <div>
                             <div class="designer-price">${escapeHtml(priceText)}</div>
-                            <div class="designer-rating">Calificacion: ${escapeHtml(String(designer.rating || "4.8"))}</div>
+                            <div class="designer-rating">Calificaci\u00f3n: ${escapeHtml(String(designer.rating || "4.8"))}</div>
                         </div>
                         <div class="designer-actions">
-                            <a class="designer-link" href="${designer.portfolio_url && designer.portfolio_url !== "#" ? escapeHtml(designer.portfolio_url) : "#"}" ${designer.portfolio_url && designer.portfolio_url !== "#" ? 'target="_blank" rel="noopener noreferrer"' : ""}>Ver perfil</a>
-                            ${hasWhatsapp ? `<button type="button" class="designer-whatsapp" data-whatsapp="true" data-name="${escapeHtml(designer.name || "Disenador")}" data-phone="${escapeHtml(sanitizedPhone)}" data-email="${escapeHtml(designer.email || "")}">Contactar por WhatsApp</button>` : ""}
+                            <a class="designer-link" href="${designer.portfolio_url && designer.portfolio_url !== "#" ? escapeHtml(designer.portfolio_url) : "#"}" ${designer.portfolio_url && designer.portfolio_url !== "#" ? 'target="_blank" rel="noopener noreferrer"' : ""}>Explorar perfil</a>
+                            ${hasWhatsapp ? `<button type="button" class="designer-whatsapp" data-whatsapp="true" data-name="${escapeHtml(designer.name || "Dise\u00f1ador")}" data-phone="${escapeHtml(sanitizedPhone)}" data-email="${escapeHtml(designer.email || "")}">Hablar por WhatsApp</button>` : ""}
                         </div>
                     </div>
                 </article>
@@ -246,22 +276,34 @@ document.addEventListener("DOMContentLoaded", () => {
         }).join("");
     }
 
+    function renderEmptyDesignersState() {
+        if (!elements.designersGrid) {
+            return;
+        }
+
+        elements.designersGrid.innerHTML = "";
+    }
+
     function getAvatar(user) {
         if (!user || !user.avatar_url || String(user.avatar_url).trim() === "") {
-            const seed = user?.email || user?.name || "designmatch";
-            return `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(seed)}`;
+            return getFallbackAvatar(user);
         }
         return user.avatar_url;
     }
 
-    function contactarDisenador(user, proyecto = "tu proyecto") {
+    function getFallbackAvatar(user) {
+        const seed = user?.email || user?.name || "designmatch";
+        return `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(seed)}`;
+    }
+
+    function contactarDisenador(user) {
         const phone = sanitizePhone(user?.phone);
-        if (!phone) {
-            showToast("Este disenador no tiene WhatsApp disponible.", "error");
+        if (!isValidPhone(phone)) {
+            showToast("Este dise\u00f1ador no tiene WhatsApp disponible.", "error");
             return;
         }
 
-        const mensaje = `Hola ${user.name || "disenador"}, vi tu perfil en DesignMatch y me interesa trabajar contigo en ${proyecto}.`;
+        const mensaje = `Hola ${user.name || "dise\u00f1ador"}, vi tu perfil en DesignMatch y me interesa trabajar contigo en un proyecto. \u00bfPodemos hablar?`;
         const url = `https://wa.me/${phone}?text=${encodeURIComponent(mensaje)}`;
         window.open(url, "_blank", "noopener");
     }
@@ -361,7 +403,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
 
         if (!payload.email || !payload.password) {
-            showFormMessage(elements.loginMessage, "Debes ingresar correo y contrasena.", "error");
+            showFormMessage(elements.loginMessage, "Debes ingresar correo y contrase\u00f1a.", "error");
             return;
         }
 
@@ -376,10 +418,12 @@ document.addEventListener("DOMContentLoaded", () => {
             persistSession(response.data);
             updateSessionUI();
             elements.loginForm.reset();
-            showToast("Sesion iniciada correctamente.", "success");
+            showFormMessage(elements.loginMessage, "Inicio de sesi\u00f3n exitoso. Te estamos llevando a tu panel.", "success");
+            showToast("Sesi\u00f3n iniciada correctamente.", "success");
             closeAuthModal();
+            redirectToDashboard();
         } catch (error) {
-            showFormMessage(elements.loginMessage, error.message || "No se pudo iniciar sesion.", "error");
+            showFormMessage(elements.loginMessage, error.message || "No se pudo iniciar sesi\u00f3n.", "error");
         } finally {
             setButtonLoading(elements.loginSubmit, false);
         }
@@ -408,7 +452,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (!payload.name || !payload.email || !payload.password) {
-            showFormMessage(elements.registerMessage, "Nombre, correo y contrasena son obligatorios.", "error");
+            showFormMessage(elements.registerMessage, "Nombre, correo y contrase\u00f1a son obligatorios.", "error");
             return;
         }
 
@@ -424,8 +468,10 @@ document.addEventListener("DOMContentLoaded", () => {
             updateSessionUI();
             elements.registerForm.reset();
             toggleDesignerFields();
-            showToast("Cuenta creada con exito.", "success");
+            showFormMessage(elements.registerMessage, "Cuenta creada con \u00e9xito. Tu perfil ya est\u00e1 activo.", "success");
+            showToast("Cuenta creada con \u00e9xito.", "success");
             closeAuthModal();
+            redirectToDashboard();
         } catch (error) {
             showFormMessage(elements.registerMessage, error.message || "No se pudo crear la cuenta.", "error");
         } finally {
@@ -436,7 +482,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function handleLogout() {
         clearSession();
         updateSessionUI();
-        showToast("Sesion cerrada.", "success");
+        showToast("Sesi\u00f3n cerrada.", "success");
     }
 
     function updateSessionUI() {
@@ -459,7 +505,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const user = state.user || {};
-        const role = user.role === "designer" ? "Disenador" : "Cliente";
+        const role = getRoleLabel(user.role);
 
         if (elements.sessionUserName) {
             elements.sessionUserName.textContent = user.name || "Usuario";
@@ -468,7 +514,7 @@ document.addEventListener("DOMContentLoaded", () => {
             elements.dashboardTitle.textContent = `Bienvenido, ${user.name || "usuario"}`;
         }
         if (elements.dashboardMessage) {
-            elements.dashboardMessage.textContent = `Tu cuenta de ${role.toLowerCase()} esta activa y el token ya quedo guardado para futuras solicitudes autenticadas.`;
+            elements.dashboardMessage.textContent = `Tu cuenta de ${role.toLowerCase()} est\u00e1 activa. Ya puedes explorar perfiles, compartir tu informaci\u00f3n y continuar con solicitudes autenticadas.`;
         }
         if (elements.dashboardName) {
             elements.dashboardName.textContent = user.name || "-";
@@ -577,13 +623,25 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 3200);
     }
 
-    function setFeedback(message) {
+    function setFeedback(message, isEmpty = false) {
         if (!elements.designersFeedback) {
             return;
         }
 
         elements.designersFeedback.textContent = message;
         elements.designersFeedback.classList.toggle("hidden", !message);
+        elements.designersFeedback.classList.toggle("is-empty", Boolean(message && isEmpty));
+    }
+
+    function redirectToDashboard() {
+        if (window.location.hash !== dashboardSectionSelector) {
+            window.location.hash = dashboardSectionSelector;
+        }
+
+        const dashboard = document.querySelector(dashboardSectionSelector);
+        if (dashboard) {
+            dashboard.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
     }
 
     async function apiRequest(url, options = {}) {
@@ -602,7 +660,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 clearSession();
                 updateSessionUI();
                 openAuthModal("login");
-                showToast("Tu sesion expiro. Inicia sesion nuevamente.", "error");
+                showToast("Tu sesi\u00f3n expir\u00f3. Inicia sesi\u00f3n nuevamente.", "error");
             }
             throw new Error(payload.message || `Error ${response.status}`);
         }
@@ -636,11 +694,25 @@ document.addEventListener("DOMContentLoaded", () => {
         return String(value || "").replace(/[^\d]/g, "");
     }
 
+    function isValidPhone(value) {
+        return /^\d{10,15}$/.test(String(value || ""));
+    }
+
     function capitalize(value) {
         if (!value) {
             return "";
         }
 
         return value.charAt(0).toUpperCase() + value.slice(1);
+    }
+
+    function getRoleLabel(role) {
+        if (String(role || "").toLowerCase() === "designer") {
+            return "Dise\u00f1ador";
+        }
+        if (String(role || "").toLowerCase() === "admin") {
+            return "Admin";
+        }
+        return "Cliente";
     }
 });

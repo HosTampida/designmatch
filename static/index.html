@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="DesignMatch conecta clientes con disenadores para proyectos reales con una experiencia clara, moderna y funcional.">
-    <title>DesignMatch | Marketplace de disenadores</title>
+    <meta name="description" content="DesignMatch conecta clientes con dise&#241;adores para proyectos reales con una experiencia clara, moderna y funcional.">
+    <title>DesignMatch | Marketplace de dise&#241;adores</title>
+    <link rel="icon" type="image/png" href="/static/img/DM positivo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
@@ -14,28 +15,28 @@
     <header class="header">
         <div class="container header-content">
             <a href="#inicio" class="logo" aria-label="Ir al inicio">
-                <img src="/static/img/Logo variante 1.png" alt="Logo DesignMatch" class="logo-image">
+                <img src="/static/img/Logo negativo.png" alt="Logo DesignMatch" class="logo-image">
                 <span class="logo-text">DesignMatch</span>
             </a>
 
-            <nav class="nav" aria-label="Navegacion principal">
+            <nav class="nav" aria-label="Navegaci&#243;n principal">
                 <a href="#inicio" class="nav-link">Inicio</a>
-                <a href="#disenadores" class="nav-link">Disenadores</a>
-                <a href="#como-funciona" class="nav-link">Como funciona</a>
+                <a href="#disenadores" class="nav-link">Dise&#241;adores</a>
+                <a href="#como-funciona" class="nav-link">C&#243;mo funciona</a>
                 <a href="#footer" class="nav-link">Contacto</a>
             </nav>
 
             <div class="nav-actions" id="guestActions">
-                <button type="button" class="btn btn-outline" data-open-auth="login">Iniciar sesion</button>
-                <button type="button" class="btn btn-primary" data-open-auth="register">Registrarse</button>
+                <button type="button" class="btn btn-outline" data-open-auth="login">Iniciar sesi&#243;n</button>
+                <button type="button" class="btn btn-primary" data-open-auth="register">&#218;nete como dise&#241;ador o cliente</button>
             </div>
 
             <div class="session-actions hidden" id="sessionActions">
                 <div class="session-badge">
-                    <span class="session-label">Sesion activa</span>
+                    <span class="session-label">Sesi&#243;n activa</span>
                     <strong id="sessionUserName">Usuario</strong>
                 </div>
-                <button type="button" class="btn btn-outline" id="logoutButton">Cerrar sesion</button>
+                <button type="button" class="btn btn-outline" id="logoutButton">Cerrar sesi&#243;n</button>
             </div>
         </div>
     </header>
@@ -45,20 +46,20 @@
             <div class="container hero-layout">
                 <div class="hero-copy">
                     <p class="hero-kicker">Tu mejor match creativo, impulsado por datos</p>
-                    <h1 class="hero-title">Conecta tu proyecto con el disenador ideal.</h1>
+                    <h1 class="hero-title">Conecta tu proyecto con el dise&#241;ador ideal.</h1>
                     <p class="hero-subtitle">
                         Explora talento, compara perfiles y activa tu cuenta en segundos. DesignMatch combina una vitrina visual clara con una experiencia real de producto.
                     </p>
 
                     <div class="hero-actions">
-                        <a href="#disenadores" class="btn btn-primary">Ver disenadores</a>
-                        <button type="button" class="btn btn-light" data-open-auth="register">Crear cuenta</button>
+                        <a href="#disenadores" class="btn btn-primary">Ver dise&#241;adores</a>
+                        <button type="button" class="btn btn-light" data-open-auth="register">&#218;nete como dise&#241;ador o cliente</button>
                     </div>
 
                     <div class="hero-stats">
                         <article class="hero-stat">
                             <span class="hero-stat-value" id="metricDesigners">0</span>
-                            <span class="hero-stat-label">Disenadores</span>
+                            <span class="hero-stat-label">Dise&#241;adores</span>
                         </article>
                         <article class="hero-stat">
                             <span class="hero-stat-value" id="metricProjects">0</span>
@@ -72,7 +73,7 @@
                 </div>
 
                 <div class="hero-media">
-                    <section class="slider" aria-label="Galeria principal de DesignMatch">
+                    <section class="slider" aria-label="Galer&#237;a principal de DesignMatch">
                         <div class="slider-track">
                             <article class="slide is-active">
                                 <img src="/imagenes/Banner.PNG" alt="Vista principal de DesignMatch">
@@ -82,10 +83,10 @@
                                 </div>
                             </article>
                             <article class="slide">
-                                <img src="/imagenes/Banner 2.PNG" alt="Seccion visual de DesignMatch">
+                                <img src="/imagenes/Banner 2.PNG" alt="Secci&#243;n visual de DesignMatch">
                                 <div class="slide-overlay">
                                     <p class="slide-kicker">Interfaz clara</p>
-                                    <h2 class="slide-title">Presenta talento, filtros y autenticacion en un flujo natural.</h2>
+                                    <h2 class="slide-title">Presenta talento, filtros y autenticaci&#243;n en un flujo natural.</h2>
                                 </div>
                             </article>
                             <article class="slide">
@@ -116,8 +117,8 @@
                 <div class="section-heading">
                     <div>
                         <p class="section-kicker">Talento disponible</p>
-                        <h2 class="section-title">Disenadores destacados</h2>
-                        <p class="section-copy">Perfiles reales, listos para inspirar confianza y ayudarte a presentar el mejor match creativo.</p>
+                        <h2 class="section-title">Dise&#241;adores destacados</h2>
+                        <p class="section-copy">Perfiles reales, listos para inspirar confianza y ayudarte a encontrar el talento ideal para tu proyecto.</p>
                     </div>
 
                     <div class="designers-toolbar">
@@ -135,17 +136,17 @@
                 <article class="info-card">
                     <span class="info-number">01</span>
                     <h3>Explora perfiles</h3>
-                    <p>Revisa disenadores con foto, bio, skills, estilos y rango de precios dentro de una misma vista.</p>
+                    <p>Revisa dise&#241;adores con foto, bio, habilidades, estilos y rango de precios dentro de una misma vista.</p>
                 </article>
                 <article class="info-card">
                     <span class="info-number">02</span>
                     <h3>Activa tu acceso</h3>
-                    <p>Abre el login o el registro desde un modal limpio, con estados de carga, error y exito.</p>
+                    <p>Abre el login o el registro desde un modal limpio, con estados de carga, error y &#233;xito.</p>
                 </article>
                 <article class="info-card">
                     <span class="info-number">03</span>
                     <h3>Prepara la demo</h3>
-                    <p>Muestra una landing que si se comporta como SaaS: responsive, conectada a la API y con sesion persistente.</p>
+                    <p>Muestra una landing que s&#237; se comporta como SaaS: responsive, conectada a la API y con sesi&#243;n persistente.</p>
                 </article>
             </div>
         </section>
@@ -153,9 +154,9 @@
         <section class="dashboard hidden" id="dashboardSection">
             <div class="container dashboard-panel">
                 <div class="dashboard-copy">
-                    <p class="section-kicker">Sesion iniciada</p>
+                    <p class="section-kicker">Sesi&#243;n iniciada</p>
                     <h2 class="section-title" id="dashboardTitle">Bienvenido a DesignMatch</h2>
-                    <p class="section-copy" id="dashboardMessage">Tu cuenta ya esta lista para continuar con solicitudes autenticadas.</p>
+                    <p class="section-copy" id="dashboardMessage">Tu cuenta ya est&#225; lista para explorar perfiles y continuar con solicitudes autenticadas.</p>
                 </div>
                 <div class="dashboard-meta">
                     <div class="dashboard-item">
@@ -179,7 +180,7 @@
         <div class="container footer-content">
             <div>
                 <strong class="footer-brand">DesignMatch</strong>
-                <p class="footer-copy">Marketplace de disenadores para proyectos reales. Interfaz restaurada, autenticacion funcional y experiencia lista para produccion.</p>
+                <p class="footer-copy">Marketplace de dise&#241;adores para proyectos reales. Interfaz restaurada, autenticaci&#243;n funcional y experiencia lista para producci&#243;n.</p>
             </div>
             <a href="#inicio" class="footer-link">Volver arriba</a>
         </div>
@@ -200,28 +201,30 @@
 
             <div class="auth-content">
                 <div class="auth-tabs">
-                    <button type="button" class="auth-tab is-active" data-auth-view="login">Iniciar sesion</button>
-                    <button type="button" class="auth-tab" data-auth-view="register">Registrarse</button>
+                    <button type="button" class="auth-tab is-active" data-auth-view="login">Iniciar sesi&#243;n</button>
+                    <button type="button" class="auth-tab" data-auth-view="register">&#218;nete como dise&#241;ador o cliente</button>
                 </div>
 
                 <section id="loginView" class="auth-view">
                     <h3 class="auth-view-title" id="authTitle">Bienvenido de nuevo</h3>
+                    <p class="auth-view-copy">Accede a tu cuenta para revisar perfiles, gestionar tu sesi&#243;n y continuar tu proceso.</p>
                     <form id="loginForm" class="auth-form" novalidate>
                         <div class="form-group">
-                            <label for="loginEmail">Correo electronico</label>
-                            <input id="loginEmail" name="email" type="email" placeholder="tu@correo.com" required>
+                            <label for="loginEmail">Correo electr&#243;nico</label>
+                            <input id="loginEmail" name="email" type="email" placeholder="Ingresa tu correo" required>
                         </div>
                         <div class="form-group">
-                            <label for="loginPassword">Contrasena</label>
-                            <input id="loginPassword" name="password" type="password" placeholder="Tu contrasena" required>
+                            <label for="loginPassword">Contrase&#241;a</label>
+                            <input id="loginPassword" name="password" type="password" placeholder="Crea una contrase&#241;a segura" required>
                         </div>
                         <p class="form-message hidden" id="loginMessage"></p>
-                        <button type="submit" class="btn btn-primary btn-block" id="loginSubmit">Iniciar sesion</button>
+                        <button type="submit" class="btn btn-primary btn-block" id="loginSubmit">Iniciar sesi&#243;n</button>
                     </form>
                 </section>
 
                 <section id="registerView" class="auth-view hidden">
-                    <h3 class="auth-view-title">Crea tu cuenta</h3>
+                    <h3 class="auth-view-title">&#218;nete como dise&#241;ador o cliente</h3>
+                    <p class="auth-view-copy">Crea tu perfil en minutos y empieza a conectar con oportunidades reales dentro de DesignMatch.</p>
                     <form id="registerForm" class="auth-form" novalidate>
                         <div class="form-grid">
                             <div class="form-group">
@@ -229,37 +232,37 @@
                                 <input id="registerName" name="name" type="text" placeholder="Tu nombre" required>
                             </div>
                             <div class="form-group">
-                                <label for="registerEmail">Correo electronico</label>
-                                <input id="registerEmail" name="email" type="email" placeholder="tu@correo.com" required>
+                                <label for="registerEmail">Correo electr&#243;nico</label>
+                                <input id="registerEmail" name="email" type="email" placeholder="Ingresa tu correo" required>
                             </div>
                         </div>
 
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="registerPhone">Telefono</label>
+                                <label for="registerPhone">Tel&#233;fono</label>
                                 <input id="registerPhone" name="phone" type="tel" placeholder="+57 300 000 0000">
                             </div>
                             <div class="form-group">
                                 <label for="registerRole">Rol</label>
                                 <select id="registerRole" name="role">
                                     <option value="client">Cliente</option>
-                                    <option value="designer">Disenador</option>
+                                    <option value="designer">Dise&#241;ador</option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="registerPassword">Contrasena</label>
-                            <input id="registerPassword" name="password" type="password" placeholder="Crea una contrasena" required>
+                            <label for="registerPassword">Contrase&#241;a</label>
+                            <input id="registerPassword" name="password" type="password" placeholder="Crea una contrase&#241;a segura" required>
                         </div>
 
                         <div class="form-group">
-                            <label for="projectDescription">Descripcion del proyecto</label>
-                            <textarea id="projectDescription" name="project_description" rows="3" placeholder="Cuentanos que tipo de proyecto buscas"></textarea>
+                            <label for="projectDescription">Descripci&#243;n del proyecto</label>
+                            <textarea id="projectDescription" name="project_description" rows="3" placeholder="Cu&#233;ntanos qu&#233; tipo de proyecto buscas"></textarea>
                         </div>
 
                         <div class="form-group hidden" id="designerBioField">
-                            <label for="designerBio">Bio del disenador</label>
+                            <label for="designerBio">Bio del dise&#241;ador</label>
                             <textarea id="designerBio" name="bio" rows="3" placeholder="Describe tu experiencia o enfoque creativo"></textarea>
                         </div>
 
