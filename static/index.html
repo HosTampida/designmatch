@@ -45,29 +45,27 @@
         <section class="hero" id="inicio">
             <div class="container hero-layout">
                 <div class="hero-copy">
-                    <p class="hero-kicker">Tu mejor match creativo, impulsado por datos</p>
-                    <h1 class="hero-title">Conecta tu proyecto con el dise&#241;ador ideal.</h1>
-                    <p class="hero-subtitle">
-                        Explora talento, compara perfiles y activa tu cuenta en segundos. DesignMatch combina una vitrina visual clara con una experiencia real de producto.
-                    </p>
+                    <p class="hero-kicker">Marketplace de dise&#241;o para equipos que necesitan avanzar r&#225;pido</p>
+                    <h1 class="hero-title">Encuentra al dise&#241;ador perfecto para tu proyecto</h1>
+                    <p class="hero-subtitle">Conecta con dise&#241;adores top en minutos. Sin entrevistas. Sin perder tiempo.</p>
 
                     <div class="hero-actions">
-                        <a href="#disenadores" class="btn btn-primary">Ver dise&#241;adores</a>
-                        <button type="button" class="btn btn-light" data-open-auth="register">&#218;nete como dise&#241;ador o cliente</button>
+                        <button type="button" class="btn btn-primary" data-open-auth="register">Empieza gratis</button>
+                        <a href="#disenadores" class="btn btn-light">Ver dise&#241;adores</a>
                     </div>
 
                     <div class="hero-stats">
                         <article class="hero-stat">
                             <span class="hero-stat-value" id="metricDesigners">0</span>
-                            <span class="hero-stat-label">Dise&#241;adores</span>
+                            <span class="hero-stat-label">Dise&#241;adores disponibles</span>
                         </article>
                         <article class="hero-stat">
                             <span class="hero-stat-value" id="metricProjects">0</span>
-                            <span class="hero-stat-label">Proyectos</span>
+                            <span class="hero-stat-label">Proyectos completados</span>
                         </article>
                         <article class="hero-stat">
                             <span class="hero-stat-value" id="metricHealth">...</span>
-                            <span class="hero-stat-label">Estado API</span>
+                            <span class="hero-stat-label">Estado de la plataforma</span>
                         </article>
                     </div>
                 </div>
@@ -75,22 +73,25 @@
                 <div class="hero-media">
                     <section class="slider" aria-label="Galer&#237;a principal de DesignMatch">
                         <div class="slider-track">
-                            <article class="slide is-active">
-                                <img src="/imagenes/Banner.PNG" alt="Vista principal de DesignMatch">
+                            <article class="slide slide--focus-left is-active">
+                                <div class="slide-bg" style="background-image: url('/imagenes/Banner.PNG');" aria-hidden="true"></div>
+                                <img src="/imagenes/Banner.PNG" alt="Vista principal de DesignMatch" class="slide-img">
                                 <div class="slide-overlay">
                                     <p class="slide-kicker">Marketplace creativo</p>
                                     <h2 class="slide-title">Una experiencia lista para demo, sin botones rotos ni formularios perdidos.</h2>
                                 </div>
                             </article>
-                            <article class="slide">
-                                <img src="/imagenes/Banner 2.PNG" alt="Secci&#243;n visual de DesignMatch">
+                            <article class="slide slide--focus-center">
+                                <div class="slide-bg" style="background-image: url('/imagenes/Banner 2.PNG');" aria-hidden="true"></div>
+                                <img src="/imagenes/Banner 2.PNG" alt="Secci&#243;n visual de DesignMatch" class="slide-img">
                                 <div class="slide-overlay">
                                     <p class="slide-kicker">Interfaz clara</p>
                                     <h2 class="slide-title">Presenta talento, filtros y autenticaci&#243;n en un flujo natural.</h2>
                                 </div>
                             </article>
-                            <article class="slide">
-                                <img src="/imagenes/Banner 3.PNG" alt="Resultados y perfiles en DesignMatch">
+                            <article class="slide slide--focus-right">
+                                <div class="slide-bg" style="background-image: url('/imagenes/Banner 3.PNG');" aria-hidden="true"></div>
+                                <img src="/imagenes/Banner 3.PNG" alt="Resultados y perfiles en DesignMatch" class="slide-img">
                                 <div class="slide-overlay">
                                     <p class="slide-kicker">Producto funcional</p>
                                     <h2 class="slide-title">Conecta frontend y backend sin perder el estilo original de la marca.</h2>
@@ -112,6 +113,17 @@
             </div>
         </section>
 
+        <section class="trust-strip" aria-label="Se&#241;ales de confianza">
+            <div class="container trust-strip-content">
+                <p class="trust-strip-label">Con la confianza de creativos y empresas</p>
+                <div class="trust-items">
+                    <span class="trust-item">+50 proyectos completados</span>
+                    <span class="trust-item">Dise&#241;adores mejor valorados</span>
+                    <span class="trust-item">Matching r&#225;pido y claro</span>
+                </div>
+            </div>
+        </section>
+
         <section class="designers-section" id="disenadores">
             <div class="container">
                 <div class="section-heading">
@@ -128,6 +140,26 @@
 
                 <div class="designers-grid" id="designersGrid"></div>
                 <p class="section-feedback hidden" id="designersFeedback"></p>
+            </div>
+        </section>
+
+        <section class="designers-section" id="oportunidades">
+            <div class="container">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Oportunidades para dise&#241;adores</p>
+                        <h2 class="section-title">Proyectos abiertos para aplicar</h2>
+                        <p class="section-copy">Explora necesidades reales de clientes y post&#250;late primero para aumentar tus posibilidades de cerrar el proyecto.</p>
+                    </div>
+
+                    <div class="designers-toolbar">
+                        <button type="button" class="btn btn-outline" id="refreshOpportunities">Actualizar</button>
+                    </div>
+                </div>
+
+                <div class="opportunity-note">S&#233; el primero en contactar y ganar el proyecto.</div>
+                <div class="designers-grid opportunities-grid" id="opportunitiesGrid"></div>
+                <p class="section-feedback hidden" id="opportunitiesFeedback"></p>
             </div>
         </section>
 

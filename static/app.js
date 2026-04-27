@@ -44,6 +44,26 @@ document.addEventListener("DOMContentLoaded", () => {
             role: "designer",
         },
     ];
+    const fallbackOpportunities = [
+        {
+            project_id: 1001,
+            title: "Landing para startup SaaS",
+            description: "Buscamos apoyo para dise\u00f1ar una landing clara, moderna y enfocada en conversi\u00f3n para lanzamiento de producto.",
+            urgency: "high",
+            skills_used: ["UI Design", "Landing Pages"],
+            applications_count: 2,
+            created_at: "2026-04-25T10:00:00Z",
+        },
+        {
+            project_id: 1002,
+            title: "Branding para marca emergente",
+            description: "Necesitamos identidad visual, sistema de color y piezas base para redes sociales y presentaci\u00f3n comercial.",
+            urgency: "medium",
+            skills_used: ["Branding", "Social Media"],
+            applications_count: 1,
+            created_at: "2026-04-24T16:30:00Z",
+        },
+    ];
 
     const state = {
         sliderIndex: 0,
@@ -84,6 +104,9 @@ document.addEventListener("DOMContentLoaded", () => {
         designersGrid: document.getElementById("designersGrid"),
         designersFeedback: document.getElementById("designersFeedback"),
         refreshDesigners: document.getElementById("refreshDesigners"),
+        opportunitiesGrid: document.getElementById("opportunitiesGrid"),
+        opportunitiesFeedback: document.getElementById("opportunitiesFeedback"),
+        refreshOpportunities: document.getElementById("refreshOpportunities"),
         dashboardSection: document.getElementById("dashboardSection"),
         dashboardTitle: document.getElementById("dashboardTitle"),
         dashboardMessage: document.getElementById("dashboardMessage"),
@@ -150,6 +173,10 @@ document.addEventListener("DOMContentLoaded", () => {
             elements.refreshDesigners.addEventListener("click", loadDesigners);
         }
 
+        if (elements.refreshOpportunities) {
+            elements.refreshOpportunities.addEventListener("click", loadOpportunities);
+        }
+
         if (elements.designersGrid) {
             elements.designersGrid.addEventListener("click", (event) => {
                 const whatsappButton = event.target.closest("[data-whatsapp]");
@@ -180,6 +207,17 @@ document.addEventListener("DOMContentLoaded", () => {
             }, true);
         }
 
+        if (elements.opportunitiesGrid) {
+            elements.opportunitiesGrid.addEventListener("click", (event) => {
+                const applyButton = event.target.closest("[data-apply-project]");
+                if (!applyButton) {
+                    return;
+                }
+
+                handleOpportunityApply(applyButton);
+            });
+        }
+
         if (elements.sliderPrev) {
             elements.sliderPrev.addEventListener("click", () => {
                 showSlide(state.sliderIndex - 1);
@@ -203,7 +241,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function loadInitialData() {
-        await Promise.all([loadHealth(), loadStats(), loadDesigners()]);
+        await Promise.all([loadHealth(), loadStats(), loadDesigners(), loadOpportunities()]);
     }
 
     async function loadDesigners() {
@@ -282,6 +320,113 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         elements.designersGrid.innerHTML = "";
+    }
+
+    async function loadOpportunities() {
+        setOpportunitiesFeedback("Cargando oportunidades...");
+
+        try {
+            const response = await apiRequest("/api/projects");
+            const projects = Array.isArray(response.data) ? response.data : [];
+            const sortedProjects = projects
+                .slice()
+                .sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
+
+            if (!sortedProjects.length) {
+                renderEmptyOpportunitiesState();
+                setOpportunitiesFeedback("A\u00fan no hay oportunidades publicadas para dise\u00f1adores.", true);
+                return;
+            }
+
+            renderOpportunities(sortedProjects);
+            setOpportunitiesFeedback("");
+        } catch (error) {
+            renderOpportunities(fallbackOpportunities);
+            setOpportunitiesFeedback("No fue posible cargar oportunidades desde la API. Se muestran proyectos de referencia.");
+        }
+    }
+
+    function renderOpportunities(projects) {
+        if (!elements.opportunitiesGrid) {
+            return;
+        }
+
+        elements.opportunitiesGrid.innerHTML = projects.map((project) => {
+            const category = getProjectCategory(project);
+            const urgency = getUrgencyLabel(project.urgency);
+            const applications = Number(project.applications_count || 0);
+            const canApply = canCurrentUserApply();
+            const buttonLabel = canApply ? "Aplicar" : "Inicia sesi\u00f3n como dise\u00f1ador";
+
+            return `
+                <article class="designer-card opportunity-card">
+                    <span class="opportunity-badge">Nueva oportunidad</span>
+                    <div>
+                        <h3 class="designer-name">${escapeHtml(project.title || "Proyecto disponible")}</h3>
+                        <p class="designer-role">${escapeHtml(category)}</p>
+                    </div>
+                    <p class="designer-bio">${escapeHtml(project.description || "Un cliente est\u00e1 buscando apoyo creativo para un nuevo proyecto.")}</p>
+                    <div class="designer-tags opportunity-meta">
+                        <span class="tag">Categor\u00eda: ${escapeHtml(category)}</span>
+                        <span class="tag">Urgencia: ${escapeHtml(urgency)}</span>
+                        <span class="tag">${escapeHtml(String(applications))} postulaciones</span>
+                    </div>
+                    <div class="designer-footer opportunity-footer">
+                        <div>
+                            <div class="designer-price">${escapeHtml(formatProjectBudget(project))}</div>
+                            <div class="designer-rating">Publicado ${escapeHtml(formatRelativeDate(project.created_at))}</div>
+                        </div>
+                        <div class="designer-actions">
+                            <button type="button" class="btn btn-primary opportunity-cta" data-apply-project="${escapeHtml(String(project.project_id || ""))}">
+                                ${buttonLabel}
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            `;
+        }).join("");
+    }
+
+    function renderEmptyOpportunitiesState() {
+        if (!elements.opportunitiesGrid) {
+            return;
+        }
+
+        elements.opportunitiesGrid.innerHTML = "";
+    }
+
+    async function handleOpportunityApply(button) {
+        const projectId = Number(button.dataset.applyProject || 0);
+        if (!projectId) {
+            showToast("No se pudo identificar la oportunidad.", "error");
+            return;
+        }
+
+        if (!state.token || !state.user) {
+            openAuthModal("login");
+            showToast("Inicia sesi\u00f3n para aplicar a esta oportunidad.", "error");
+            return;
+        }
+
+        if (String(state.user.role || "").toLowerCase() !== "designer") {
+            showToast("Esta acci\u00f3n est\u00e1 disponible solo para dise\u00f1adores.", "error");
+            return;
+        }
+
+        setButtonLoading(button, true, "Aplicando...");
+
+        try {
+            const response = await apiRequest(`/api/projects/${projectId}/apply`, {
+                method: "POST",
+            });
+
+            showToast(response.message || "Postulaci\u00f3n enviada correctamente.", "success");
+            await loadOpportunities();
+        } catch (error) {
+            showToast(error.message || "No fue posible aplicar a esta oportunidad.", "error");
+        } finally {
+            setButtonLoading(button, false);
+        }
     }
 
     function getAvatar(user) {
@@ -417,6 +562,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             persistSession(response.data);
             updateSessionUI();
+            loadOpportunities();
             elements.loginForm.reset();
             showFormMessage(elements.loginMessage, "Inicio de sesi\u00f3n exitoso. Te estamos llevando a tu panel.", "success");
             showToast("Sesi\u00f3n iniciada correctamente.", "success");
@@ -466,6 +612,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             persistSession(response.data);
             updateSessionUI();
+            loadOpportunities();
             elements.registerForm.reset();
             toggleDesignerFields();
             showFormMessage(elements.registerMessage, "Cuenta creada con \u00e9xito. Tu perfil ya est\u00e1 activo.", "success");
@@ -482,6 +629,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function handleLogout() {
         clearSession();
         updateSessionUI();
+        loadOpportunities();
         showToast("Sesi\u00f3n cerrada.", "success");
     }
 
@@ -633,6 +781,16 @@ document.addEventListener("DOMContentLoaded", () => {
         elements.designersFeedback.classList.toggle("is-empty", Boolean(message && isEmpty));
     }
 
+    function setOpportunitiesFeedback(message, isEmpty = false) {
+        if (!elements.opportunitiesFeedback) {
+            return;
+        }
+
+        elements.opportunitiesFeedback.textContent = message;
+        elements.opportunitiesFeedback.classList.toggle("hidden", !message);
+        elements.opportunitiesFeedback.classList.toggle("is-empty", Boolean(message && isEmpty));
+    }
+
     function redirectToDashboard() {
         if (window.location.hash !== dashboardSectionSelector) {
             window.location.hash = dashboardSectionSelector;
@@ -704,6 +862,68 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         return value.charAt(0).toUpperCase() + value.slice(1);
+    }
+
+    function getProjectCategory(project) {
+        const skills = Array.isArray(project?.skills_used) ? project.skills_used : [];
+        if (skills.length) {
+            return skills[0];
+        }
+
+        const urgency = String(project?.urgency || "").toLowerCase();
+        if (urgency === "high") {
+            return "Proyecto urgente";
+        }
+
+        return "Dise\u00f1o general";
+    }
+
+    function getUrgencyLabel(value) {
+        const urgency = String(value || "").toLowerCase();
+        if (urgency === "high") {
+            return "Alta";
+        }
+        if (urgency === "low") {
+            return "Baja";
+        }
+        return "Media";
+    }
+
+    function formatProjectBudget(project) {
+        const min = Number(project?.budget_min || 0);
+        const max = Number(project?.budget_max || 0);
+        const budget = Number(project?.budget || 0);
+
+        if (min > 0 || max > 0) {
+            return `$${formatNumber(min || budget)} - $${formatNumber(max || min || budget)}`;
+        }
+
+        if (budget > 0) {
+            return `Presupuesto: $${formatNumber(budget)}`;
+        }
+
+        return "Presupuesto por definir";
+    }
+
+    function formatRelativeDate(value) {
+        const date = new Date(value || "");
+        if (Number.isNaN(date.getTime())) {
+            return "recientemente";
+        }
+
+        const diffMs = Date.now() - date.getTime();
+        const diffDays = Math.max(0, Math.floor(diffMs / 86400000));
+        if (diffDays <= 0) {
+            return "hoy";
+        }
+        if (diffDays === 1) {
+            return "hace 1 d\u00eda";
+        }
+        return `hace ${diffDays} d\u00edas`;
+    }
+
+    function canCurrentUserApply() {
+        return Boolean(state.token && state.user && String(state.user.role || "").toLowerCase() === "designer");
     }
 
     function getRoleLabel(role) {
